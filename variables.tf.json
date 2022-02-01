@@ -25,13 +25,6 @@
             }
         },
         {
-            "is_dynamodb_enabled": {
-                "default": false,
-                "description": "Flag to indicate if Clumio Protect for dynamodb is enabled",
-                "type": "bool"
-            }
-        },
-        {
             "is_ebs_enabled": {
                 "default": false,
                 "description": "Flag to indicate if Clumio Protect for ebs is enabled",
