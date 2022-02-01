@@ -34,5 +34,4 @@ module clumio_aws_connection_module {
     is_s3_enabled = true
     is_warm_tier_enabled = true
     is_warm_tier_dynamodb_enabled = true
-    is_dynamodb_enabled = true
 }

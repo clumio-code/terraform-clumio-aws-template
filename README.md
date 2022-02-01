@@ -34,7 +34,7 @@ resource "clumio_aws_connection" "test_conn" {
         aws = aws
         clumio = clumio
         }
-        source = "github.com/clumio/clumio-aws-connection-terraform-module-internal"
+        source = "github.com/clumio/terraform-clumio-aws-template-internal"
         clumio_token = clumio_aws_connection.test_conn.token
         role_external_id = "RoleExternalId_${clumio_aws_connection.test_conn.token}"
         aws_region = clumio_aws_connection.test_conn.aws_region
@@ -46,7 +46,6 @@ resource "clumio_aws_connection" "test_conn" {
         is_s3_enabled = true
         is_warm_tier_enabled = true
         is_warm_tier_dynamodb_enabled = true
-        is_dynamodb_enabled = true
     }
 ```
 
@@ -179,14 +178,6 @@ Type: `string`
 ## Optional Inputs
 
 The following input variables are optional (have default values):
-
-### <a name="input_is_dynamodb_enabled"></a> [is\_dynamodb\_enabled](#input\_is\_dynamodb\_enabled)
-
-Description: Flag to indicate if Clumio Protect for dynamodb is enabled
-
-Type: `bool`
-
-Default: `false`
 
 ### <a name="input_is_ebs_enabled"></a> [is\_ebs\_enabled](#input\_is\_ebs\_enabled)
 
