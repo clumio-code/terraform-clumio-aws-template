@@ -1140,6 +1140,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioEC2ProtectManagedPolicy-${var.aws_region}-${var.clumio_token}",
+                    "path": "/clumio/",
                     "policy": "${data.aws_iam_policy_document.clumio_ec2_protect_managed_policy_document.json}"
                 }
             }
