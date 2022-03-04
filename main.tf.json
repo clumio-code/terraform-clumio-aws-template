@@ -1117,7 +1117,7 @@
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
-                    "name": "ClumioDynamoPolicy-${var.aws_region}-${var.clumio_token}",
+                    "name": "ClumioDiscoverPolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_discover_policy_document.json}"
                 }
