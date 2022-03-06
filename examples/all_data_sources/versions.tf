@@ -2,7 +2,7 @@ terraform {
   required_providers {
     clumio = {
       source  = "clumio-code/clumio"
-      version = ">=0.2.1"
+      version = "~>0.2.2"
     }
     aws = {}
   }

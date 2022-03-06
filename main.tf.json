@@ -1106,7 +1106,7 @@
                 "clumio_ec2_mssql_ssm_instance_profile": {
                     "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
                     "name": "Clumio-SSM-IP-${var.aws_region}-${var.clumio_token}",
-                    "path": "/clumio/",
+                    "path": "${var.path}",
                     "role": "${aws_iam_role.clumio_ec2_mssql_ssm_instance_role_v2[0].name}"
                 }
             }
@@ -1117,7 +1117,8 @@
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
-                    "name": "ClumioDynamoPolicy-${var.aws_region}-${var.clumio_token}",
+                    "name": "ClumioDiscoverPolicy-${var.aws_region}-${var.clumio_token}",
+                    "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_discover_policy_document.json}"
                 }
             }
@@ -1127,7 +1128,7 @@
                 "clumio_ec2_mssql_protect_policy": {
                     "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
                     "name": "ClumioEC2MSSQLProtectPolicy-${var.aws_region}-${var.clumio_token}",
-                    "path": "/clumio/",
+                    "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_ec2_mssql_protect_policy_document[0].json}"
                 }
             }
@@ -1140,6 +1141,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioEC2ProtectManagedPolicy-${var.aws_region}-${var.clumio_token}",
+                    "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_ec2_protect_managed_policy_document.json}"
                 }
             }
@@ -1153,7 +1155,7 @@
                     ],
                     "description": "Grants access to Clumio for S3 protection",
                     "name": "ClumioS3ProtectPolicy-${var.aws_region}-${var.clumio_token}",
-                    "path": "/clumio/",
+                    "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_s3_protect_policy_document.json}"
                 }
             }
@@ -1167,7 +1169,7 @@
                     ],
                     "description": "Grants access to Clumio for DynamoDB warm-tier protection.",
                     "name": "ClumioWarmProtectDynamoDbPolicy-${var.aws_region}-${var.clumio_token}",
-                    "path": "/clumio/",
+                    "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_warm_protect_dynamodb_policy_document.json}"
                 }
             }
@@ -1181,7 +1183,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioSSM-${var.aws_region}-${var.clumio_token}",
-                    "path": "/clumio/"
+                    "path": "${var.path}"
                 }
             }
         },
@@ -1193,7 +1195,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioRole-${var.aws_region}-${var.clumio_token}",
-                    "path": "/clumio/"
+                    "path": "${var.path}"
                 }
             }
         },
@@ -1206,7 +1208,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioSSMNotifRole-${var.clumio_token}",
-                    "path": "/clumio/"
+                    "path": "${var.path}"
                 }
             }
         },
@@ -1219,7 +1221,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioSuppt-${var.aws_region}-${var.clumio_token}",
-                    "path": "/clumio/"
+                    "path": "${var.path}"
                 }
             }
         },
