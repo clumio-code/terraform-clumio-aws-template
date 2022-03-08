@@ -25,6 +25,13 @@
             }
         },
         {
+            "is_dynamodb_enabled": {
+                "default": false,
+                "description": "Flag to indicate if Clumio Protect for dynamodb is enabled",
+                "type": "bool"
+            }
+        },
+        {
             "is_ebs_enabled": {
                 "default": false,
                 "description": "Flag to indicate if Clumio Protect for ebs is enabled",
@@ -67,10 +74,10 @@
             }
         },
         {
-            "is_warmtier_enabled": {
-                "default": false,
-                "description": "Flag to indicate if Clumio Protect for warmtier is enabled",
-                "type": "bool"
+            "path": {
+                "default": "/clumio/",
+                "description": "Value of path set on the AWS IAM roles, policies and instance_profile resources of the module. If not specified the default value is /clumio/.",
+                "type": "string"
             }
         },
         {
@@ -83,13 +90,6 @@
             "wait_time_before_create": {
                 "default": "60s",
                 "description": "Time in seconds to wait before creation of resources. This will be required to be set to a value above 45s in the case of shifting from old terraform template to the module based template.",
-                "type": "string"
-            }
-        },
-        {
-            "path": {
-                "default": "/clumio/",
-                "description": "Value of path set on the AWS IAM roles, policies and instance_profile resources of the module. If not specified the default value is /clumio/.",
                 "type": "string"
             }
         }
