@@ -43,7 +43,7 @@ module clumio_aws_connection_module {
     is_rds_enabled = true
     is_ec2_mssql_enabled = true
     is_s3_enabled = true
-    is_warm_tier_dynamodb_enabled = true
+    is_dynamodb_enabled = true
 }
 ```
 
@@ -158,10 +158,19 @@ No modules.
 | <a name="input_is_protect_enabled"></a> [is\_protect\_enabled](#input\_is\_protect\_enabled) | Flag to indicate if Clumio Protect for ebs is enabled | `bool` | `true` | no |
 | <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect for rds is enabled | `bool` | `false` | no |
 | <a name="input_is_s3_enabled"></a> [is\_s3\_enabled](#input\_is\_s3\_enabled) | Flag to indicate if Clumio Protect for S3 is enabled | `bool` | `false` | no |
-| <a name="input_is_warmtier_dynamodb_enabled"></a> [is\_warmtier\_dynamodb\_enabled](#input\_is\_warmtier\_dynamodb\_enabled) | Flag to indicate if Clumio Protect for warmtier dynamodb is enabled | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | Value of path set on the AWS IAM roles, policies and instance\_profile resources of the module. If not specified the default value is /clumio/. | `string` | `"/clumio/"` | no |
 | <a name="input_role_external_id"></a> [role\_external\_id](#input\_role\_external\_id) | A key that must be used by Clumio to assume the service role in your account. This should be a secure string, like a password, but it does not need to be remembered (random characters are best). | `string` | n/a | yes |
 | <a name="input_wait_time_before_create"></a> [wait\_time\_before\_create](#input\_wait\_time\_before\_create) | Time in seconds to wait before creation of resources. This will be required to be set to a value above 45s in the case of shifting from old terraform template to the module based template. | `string` | `"60s"` | no |
+
+## Deprecated Inputs
+The following inputs are deprecated and will be removed in the next version of the module.
+Instead of these two deprecated inputs, use [is_dynamodb_enabled](#input\_is\_dynamodb\_enabled).
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_is_warmtier_dynamodb_enabled"></a> [is\_warmtier\_dynamodb\_enabled](#input\_is\_warmtier\_dynamodb\_enabled) | Flag to indicate if Clumio Protect for warmtier dynamodb is enabled | `bool` | `false` | no |
+| <a name="input_is_warmtier_enabled"></a> [is\_warmtier\_enabled](#input\_is\_warmtier\_enabled) | Flag to indicate if Clumio Protect for warmtier is enabled | `bool` | `false` | no |
+
 
 ## Outputs
 

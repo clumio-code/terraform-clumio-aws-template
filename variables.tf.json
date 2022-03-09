@@ -74,6 +74,13 @@
             }
         },
         {
+            "is_warmtier_enabled": {
+                "default": false,
+                "description": "Flag to indicate if Clumio Protect for warmtier is enabled",
+                "type": "bool"
+            }
+        },
+        {
             "path": {
                 "default": "/clumio/",
                 "description": "Value of path set on the AWS IAM roles, policies and instance_profile resources of the module. If not specified the default value is /clumio/.",
