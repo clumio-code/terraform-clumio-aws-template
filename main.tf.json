@@ -1565,8 +1565,8 @@
                     ],
                     "discover_version": "4.2",
                     "properties": {
-                        "DynamoDbSecureVaultPolicyArn": "${aws_iam_policy.clumio_dynamodb_policy[0].arn}",
-                        "DynamoDbWarmProtectPolicyArn": "${aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn}",
+                        "DynamoDbSecureVaultPolicyArn": "${var.is_protect_enabled && var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
+                        "DynamoDbWarmProtectPolicyArn": "${var.is_protect_enabled && var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
                         "PermissionsBoundaryArn": "${aws_iam_policy.clumio_iam_permissions_boundary.arn}"
                     },
                     "protect_config_version": "${var.is_protect_enabled ? \"19.2\" : \"\"}",
