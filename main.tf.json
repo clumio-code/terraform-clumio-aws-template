@@ -61,6 +61,26 @@
                     "statement": [
                         {
                             "actions": [
+                                "s3:ListAllMyBuckets",
+                                "s3:GetBucketLocation",
+                                "s3:GetEncryptionConfiguration",
+                                "s3:GetBucketVersioning",
+                                "s3:GetBucketPolicy",
+                                "s3:GetBucketTagging",
+                                "s3:GetReplicationConfiguration",
+                                "s3:GetInventoryConfiguration",
+                                "s3:PutInventoryConfiguration",
+                                "s3:ListBucket*",
+                                "s3:GetObject*"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "DescribeS3Resources"
+                        },
+                        {
+                            "actions": [
                                 "dynamodb:DescribeBackup",
                                 "dynamodb:DescribeContinuousBackups",
                                 "dynamodb:DescribeTable",
@@ -134,26 +154,6 @@
                                 "*"
                             ],
                             "sid": "DescribeRdsResources"
-                        },
-                        {
-                            "actions": [
-                                "s3:ListAllMyBuckets",
-                                "s3:GetBucketLocation",
-                                "s3:GetEncryptionConfiguration",
-                                "s3:GetBucketVersioning",
-                                "s3:GetBucketPolicy",
-                                "s3:GetBucketTagging",
-                                "s3:GetReplicationConfiguration",
-                                "s3:GetInventoryConfiguration",
-                                "s3:PutInventoryConfiguration",
-                                "s3:ListBucket*",
-                                "s3:GetObject*"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeS3Resources"
                         }
                     ]
                 }
@@ -187,13 +187,13 @@
                                 "${aws_iam_role.clumio_iam_role.arn}",
                                 "${aws_sns_topic.clumio_event_pub.arn}",
                                 "${aws_cloudwatch_event_rule.clumio_tag_event_rule.arn}",
+                                "${aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule.arn}",
                                 "${aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule.arn}",
                                 "${aws_cloudwatch_event_rule.clumio_ec2_cloudwatch_event_rule.arn}",
-                                "${aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule.arn}",
                                 "${aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule.arn}",
                                 "${aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule.arn}",
-                                "${ aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule.arn}",
-                                "${aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule.arn}"
+                                "${aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule.arn}",
+                                "${ aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule.arn}"
                             ],
                             "sid": "ReflectOnClumioCfnStack"
                         }
@@ -257,7 +257,7 @@
         {
             "aws_iam_policy_document": {
                 "clumio_ec2_mssql_protect_policy_document": {
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "statement": [
                         {
                             "actions": [
@@ -1124,7 +1124,7 @@
         {
             "aws_cloudwatch_event_rule": {
                 "clumio_s3_cloudtrail_event_rule": {
-                    "count": "${var.is_protect_enabled && var.is_s3_enabled ? 1 : 0}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_before_create",
                         "time_sleep.wait_10_seconds_before_creating_clumio_s3_cloudtrail_event_rule"
@@ -1142,7 +1142,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "description": "Watches for tag changes",
-                    "event_pattern": "{\"source\": [\"aws.tag\"], \"detail\": {\"service\": [\"ec2\", \"ebs\", \"dynamodb\"]}}",
+                    "event_pattern": "{\"detail\":{\"service\":[\"dynamodb\",\"ec2\",\"ebs\"]},\"source\":[\"aws.tag\"]}",
                     "name": "ClumioTagCloudwatchRule_${var.clumio_token}"
                 }
             }
@@ -1214,7 +1214,7 @@
             "aws_cloudwatch_event_target": {
                 "clumio_s3_cloudtrail_event_rule_target": {
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "count": "${var.is_protect_enabled && var.is_s3_enabled ? 1 : 0}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_s3_cloudtrail_event_rule[0].name}",
                     "target_id": "clumio-s3-ctrail-publish"
                 }
@@ -1232,7 +1232,7 @@
         {
             "aws_iam_instance_profile": {
                 "clumio_ec2_mssql_ssm_instance_profile": {
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "name": "Clumio-SSM-IP-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
                     "role": "${aws_iam_role.clumio_ec2_mssql_ssm_instance_role_v2[0].name}"
@@ -1254,7 +1254,7 @@
         {
             "aws_iam_policy": {
                 "clumio_dynamodb_policy": {
-                    "count": "${var.is_protect_enabled && var.is_dynamodb_enabled ? 1 : 0}",
+                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
@@ -1268,7 +1268,7 @@
         {
             "aws_iam_policy": {
                 "clumio_ec2_mssql_protect_policy": {
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "name": "ClumioEC2MSSQLProtectPolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_ec2_mssql_protect_policy_document[0].json}"
@@ -1278,7 +1278,7 @@
         {
             "aws_iam_policy": {
                 "clumio_ec2_protect_managed_policy": {
-                    "count": "${var.is_protect_enabled && var.is_ebs_enabled ? 1 : 0}",
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
@@ -1315,7 +1315,7 @@
         {
             "aws_iam_policy": {
                 "clumio_s3_protect_policy": {
-                    "count": "${var.is_protect_enabled && var.is_s3_enabled ? 1 : 0}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
@@ -1329,7 +1329,7 @@
         {
             "aws_iam_policy": {
                 "clumio_warm_protect_dynamodb_policy": {
-                    "count": "${var.is_protect_enabled && var.is_dynamodb_enabled ? 1 : 0}",
+                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
@@ -1344,12 +1344,13 @@
             "aws_iam_role": {
                 "clumio_ec2_mssql_ssm_instance_role_v2": {
                     "assume_role_policy": "${data.aws_iam_policy_document.clumio_ec2_mssql_ssm_instance_role_v2_document.json}",
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioSSM-${var.aws_region}-${var.clumio_token}",
-                    "path": "${var.path}"
+                    "path": "${var.path}",
+                    "tags": "${var.clumio_iam_role_tags}"
                 }
             }
         },
@@ -1361,7 +1362,8 @@
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioRole-${var.aws_region}-${var.clumio_token}",
-                    "path": "${var.path}"
+                    "path": "${var.path}",
+                    "tags": "${var.clumio_iam_role_tags}"
                 }
             }
         },
@@ -1369,12 +1371,13 @@
             "aws_iam_role": {
                 "clumio_ssm_notification_role": {
                     "assume_role_policy": "${data.aws_iam_policy_document.clumio_ssm_notification_role_document.json}",
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioSSMNotifRole-${var.clumio_token}",
-                    "path": "${var.path}"
+                    "path": "${var.path}",
+                    "tags": "${var.clumio_iam_role_tags}"
                 }
             }
         },
@@ -1382,19 +1385,20 @@
             "aws_iam_role": {
                 "clumio_support_role": {
                     "assume_role_policy": "${data.aws_iam_policy_document.aws_iam_role_document.json}",
-                    "count": "${var.is_protect_enabled ? 1 : 0}",
+                    "count": "1",
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
                     "name": "ClumioSuppt-${var.aws_region}-${var.clumio_token}",
-                    "path": "${var.path}"
+                    "path": "${var.path}",
+                    "tags": "${var.clumio_iam_role_tags}"
                 }
             }
         },
         {
             "aws_iam_role_policy_attachment": {
                 "clumio_ec2_mssql_protect_policy_role_attachment": {
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "policy_arn": "${aws_iam_policy.clumio_ec2_mssql_protect_policy[0].arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
@@ -1411,7 +1415,7 @@
         {
             "aws_iam_role_policy_attachment": {
                 "clumio_iam_role_clumio_dynamodb_policy_attachment": {
-                    "count": "${var.is_protect_enabled && var.is_dynamodb_enabled ? 1 : 0}",
+                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "policy_arn": "${aws_iam_policy.clumio_dynamodb_policy[0].arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
@@ -1420,7 +1424,7 @@
         {
             "aws_iam_role_policy_attachment": {
                 "clumio_iam_role_clumio_ec2_protect_managed_policy_attachment": {
-                    "count": "${var.is_protect_enabled && var.is_ebs_enabled ? 1 : 0}",
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "policy_arn": "${aws_iam_policy.clumio_ec2_protect_managed_policy[0].arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
@@ -1429,7 +1433,7 @@
         {
             "aws_iam_role_policy_attachment": {
                 "clumio_iam_role_clumio_s3_protect_policy_attachment": {
-                    "count": "${var.is_protect_enabled && var.is_s3_enabled ? 1 : 0}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "depends_on": [
                         "time_sleep.wait_5_seconds_for_clumio_s3_protect_policy"
                     ],
@@ -1441,7 +1445,7 @@
         {
             "aws_iam_role_policy_attachment": {
                 "clumio_iam_role_clumio_warm_protect_dynamodb_policy_attachment": {
-                    "count": "${var.is_protect_enabled && var.is_dynamodb_enabled ? 1 : 0}",
+                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "policy_arn": "${aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
@@ -1476,7 +1480,7 @@
         {
             "aws_iam_role_policy": {
                 "clumio_ec2_mssql_ssm_instance_policy": {
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "name": "Clumio-SSM-Policy-${var.aws_region}-${var.clumio_token}",
                     "policy": "${data.aws_iam_policy_document.clumio_ec2_mssql_ssm_instance_policy_document.json}",
                     "role": "${aws_iam_role.clumio_ec2_mssql_ssm_instance_role_v2[0].id}"
@@ -1486,7 +1490,7 @@
         {
             "aws_iam_role_policy": {
                 "clumio_rds_protect_policy": {
-                    "count": "${var.is_protect_enabled && var.is_rds_enabled ? 1 : 0}",
+                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "name": "ClumioRdsProtectPolicy-${var.aws_region}-${var.clumio_token}",
                     "policy": "${data.aws_iam_policy_document.clumio_rds_protect_policy_document.json}",
                     "role": "${aws_iam_role.clumio_iam_role.id}"
@@ -1496,7 +1500,7 @@
         {
             "aws_iam_role_policy": {
                 "clumio_ssm_notification_policy": {
-                    "count": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? 1 : 0}",
+                    "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "name": "ClumioSSMNotificationPolicy-${var.aws_account_id}-${var.aws_region}-${var.clumio_token}",
                     "policy": "${data.aws_iam_policy_document.clumio_ssm_notification_policy_document.json}",
                     "role": "${aws_iam_role.clumio_ssm_notification_role[0].id}"
@@ -1506,7 +1510,7 @@
         {
             "aws_iam_role_policy": {
                 "clumio_support_policy": {
-                    "count": "${var.is_protect_enabled ? 1 : 0}",
+                    "count": "1",
                     "name": "ClumioSupportPolicy-${var.aws_region}-${var.clumio_token}",
                     "policy": "${data.aws_iam_policy_document.clumio_support_policy_document.json}",
                     "role": "${aws_iam_role.clumio_support_role[0].id}"
@@ -1537,7 +1541,7 @@
                 "clumio_callback": {
                     "account_id": "${var.aws_account_id}",
                     "clumio_event_pub_id": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "config_version": "2.0",
+                    "config_version": "2.1",
                     "depends_on": [
                         "aws_iam_role.clumio_iam_role",
                         "time_sleep.wait_30_seconds_for_iam_propagation",
@@ -1545,14 +1549,6 @@
                         "aws_iam_role_policy.clumio_drift_detect_policy",
                         "aws_iam_policy.clumio_discover_policy",
                         "aws_cloudwatch_event_target.clumio_tag_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ebs_cloudtrail_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ec2_cloudwatch_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ec2_cloudtrail_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_rds_cloudwatch_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_rds_cloudtrail_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target",
                         "aws_iam_policy.clumio_ec2_mssql_protect_policy",
                         "aws_iam_instance_profile.clumio_ec2_mssql_ssm_instance_profile",
                         "aws_iam_role.clumio_ec2_mssql_ssm_instance_role_v2",
@@ -1560,23 +1556,31 @@
                         "aws_iam_role.clumio_ssm_notification_role",
                         "aws_iam_role_policy.clumio_ssm_notification_policy",
                         "aws_iam_policy.clumio_s3_protect_policy",
+                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target",
                         "aws_iam_policy.clumio_dynamodb_policy",
-                        "aws_iam_policy.clumio_warm_protect_dynamodb_policy"
+                        "aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target",
+                        "aws_iam_policy.clumio_warm_protect_dynamodb_policy",
+                        "aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_ebs_cloudtrail_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_ec2_cloudwatch_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_ec2_cloudtrail_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_rds_cloudwatch_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_rds_cloudtrail_event_rule_target"
                     ],
                     "discover_version": "4.2",
                     "properties": {
-                        "DynamoDbSecureVaultPolicyArn": "${var.is_protect_enabled && var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
-                        "DynamoDbWarmProtectPolicyArn": "${var.is_protect_enabled && var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
+                        "DynamoDbSecureVaultPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
+                        "DynamoDbWarmProtectPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
                         "PermissionsBoundaryArn": "${aws_iam_policy.clumio_iam_permissions_boundary.arn}"
                     },
-                    "protect_config_version": "${var.is_protect_enabled ? \"19.2\" : \"\"}",
-                    "protect_dynamodb_version": "${var.is_protect_enabled && var.is_dynamodb_enabled ? \"2.0\" : \"\"}",
-                    "protect_ebs_version": "${var.is_protect_enabled && var.is_ebs_enabled ? \"20.1\" : \"\"}",
-                    "protect_ec2_mssql_version": "${var.is_protect_enabled && var.is_ec2_mssql_enabled ? \"2.1\" : \"\"}",
-                    "protect_rds_version": "${var.is_protect_enabled && var.is_rds_enabled ? \"18.1\" : \"\"}",
-                    "protect_s3_version": "${var.is_protect_enabled && var.is_s3_enabled ? \"2.1\" : \"\"}",
-                    "protect_warm_tier_dynamodb_version": "${var.is_protect_enabled && var.is_dynamodb_enabled? \"2.1\" : \"\"}",
-                    "protect_warm_tier_version": "${var.is_protect_enabled && var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
+                    "protect_config_version": "20.0",
+                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"2.0\" : \"\"}",
+                    "protect_ebs_version": "${var.is_ebs_enabled ? \"20.1\" : \"\"}",
+                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.1\" : \"\"}",
+                    "protect_rds_version": "${var.is_rds_enabled ? \"18.1\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"2.1\" : \"\"}",
+                    "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"2.1\" : \"\"}",
+                    "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
                     "role_arn": "${aws_iam_role.clumio_iam_role.arn}",
                     "role_external_id": "${var.role_external_id}",
@@ -1587,7 +1591,7 @@
         {
             "time_sleep": {
                 "wait_10_seconds_before_creating_clumio_s3_cloudtrail_event_rule": {
-                    "count": "${var.is_protect_enabled && var.is_s3_enabled ? 1 : 0}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "create_duration": "10s"
                 }
             }
@@ -1605,7 +1609,7 @@
         {
             "time_sleep": {
                 "wait_5_seconds_for_clumio_s3_protect_policy": {
-                    "count": "${var.is_protect_enabled && var.is_s3_enabled ? 1 : 0}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "create_duration": "5s",
                     "depends_on": [
                         "aws_iam_policy.clumio_s3_protect_policy"
@@ -1622,3 +1626,4 @@
         }
     ]
 }
+
