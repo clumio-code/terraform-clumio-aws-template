@@ -19,6 +19,15 @@
             }
         },
         {
+            "clumio_iam_role_tags": {
+                "default": {
+                    "Vendor": "Clumio"
+                },
+                "description": "Additional tags for Clumio IAM Roles",
+                "type": "map(string)"
+            }
+        },
+        {
             "clumio_token": {
                 "description": "The AWS integration ID token.",
                 "type": "string"
@@ -27,56 +36,35 @@
         {
             "is_dynamodb_enabled": {
                 "default": false,
-                "description": "Flag to indicate if Clumio Protect for dynamodb is enabled",
+                "description": "Flag to indicate if Clumio Protect and Discover for dynamodb are enabled",
                 "type": "bool"
             }
         },
         {
             "is_ebs_enabled": {
                 "default": false,
-                "description": "Flag to indicate if Clumio Protect for ebs is enabled",
+                "description": "Flag to indicate if Clumio Protect and Discover for ebs are enabled",
                 "type": "bool"
             }
         },
         {
             "is_ec2_mssql_enabled": {
                 "default": false,
-                "description": "Flag to indicate if Clumio Protect for ec2_mssql is enabled",
-                "type": "bool"
-            }
-        },
-        {
-            "is_protect_enabled": {
-                "default": true,
-                "description": "Flag to indicate if Clumio Protect for ebs is enabled",
+                "description": "Flag to indicate if Clumio Protect and Discover for ec2_mssql are enabled",
                 "type": "bool"
             }
         },
         {
             "is_rds_enabled": {
                 "default": false,
-                "description": "Flag to indicate if Clumio Protect for rds is enabled",
+                "description": "Flag to indicate if Clumio Protect and Discover for rds are enabled",
                 "type": "bool"
             }
         },
         {
             "is_s3_enabled": {
                 "default": false,
-                "description": "Flag to indicate if Clumio Protect for S3 is enabled",
-                "type": "bool"
-            }
-        },
-        {
-            "is_warmtier_dynamodb_enabled": {
-                "default": false,
-                "description": "Flag to indicate if Clumio Protect for warmtier dynamodb is enabled",
-                "type": "bool"
-            }
-        },
-        {
-            "is_warmtier_enabled": {
-                "default": false,
-                "description": "Flag to indicate if Clumio Protect for warmtier is enabled",
+                "description": "Flag to indicate if Clumio Protect and Discover for S3 are enabled",
                 "type": "bool"
             }
         },

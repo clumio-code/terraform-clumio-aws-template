@@ -8,7 +8,7 @@
                 {
                     "clumio": {
                         "source": "clumio-code/clumio",
-                        "version": "~>0.2.2"
+                        "version": "~>0.2.4"
                     },
 		    "aws": {}
                 }
