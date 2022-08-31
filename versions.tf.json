@@ -1,18 +1,18 @@
 {
     "terraform": [
         {
-            "required_version": ">=0.14.0"
-        },
-        {
             "required_providers": [
                 {
+                    "aws": {},
                     "clumio": {
                         "source": "clumio-code/clumio",
                         "version": "~>0.3.0"
-                    },
-		    "aws": {}
+                    }
                 }
             ]
+        },
+        {
+            "required_version": ">=0.14.0"
         }
     ]
 }

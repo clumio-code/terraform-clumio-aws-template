@@ -61,47 +61,6 @@
                     "statement": [
                         {
                             "actions": [
-                                "rds:DescribeDBClusters",
-                                "rds:DescribeDBClusterSnapshotAttributes",
-                                "rds:DescribeDBClusterSnapshots",
-                                "rds:DescribeDBInstanceAutomatedBackups",
-                                "rds:DescribeDBInstances",
-                                "rds:DescribeDBSnapshotAttributes",
-                                "rds:DescribeDBSnapshots",
-                                "rds:DescribeGlobalClusters",
-                                "rds:ListTagsForResource",
-                                "rds:DescribeOptionGroups",
-                                "rds:DescribeOptionGroupOptions",
-                                "cloudwatch:GetMetricStatistics"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeRdsResources"
-                        },
-                        {
-                            "actions": [
-                                "s3:ListAllMyBuckets",
-                                "s3:GetBucketLocation",
-                                "s3:GetEncryptionConfiguration",
-                                "s3:GetBucketVersioning",
-                                "s3:GetBucketPolicy",
-                                "s3:GetBucketTagging",
-                                "s3:GetReplicationConfiguration",
-                                "s3:GetInventoryConfiguration",
-                                "s3:PutInventoryConfiguration",
-                                "s3:ListBucket*",
-                                "s3:GetObject*"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeS3Resources"
-                        },
-                        {
-                            "actions": [
                                 "dynamodb:DescribeBackup",
                                 "dynamodb:DescribeContinuousBackups",
                                 "dynamodb:DescribeGlobalTable",
@@ -157,6 +116,47 @@
                                 "*"
                             ],
                             "sid": "DescribeEbsResources"
+                        },
+                        {
+                            "actions": [
+                                "rds:DescribeDBClusters",
+                                "rds:DescribeDBClusterSnapshotAttributes",
+                                "rds:DescribeDBClusterSnapshots",
+                                "rds:DescribeDBInstanceAutomatedBackups",
+                                "rds:DescribeDBInstances",
+                                "rds:DescribeDBSnapshotAttributes",
+                                "rds:DescribeDBSnapshots",
+                                "rds:DescribeGlobalClusters",
+                                "rds:ListTagsForResource",
+                                "rds:DescribeOptionGroups",
+                                "rds:DescribeOptionGroupOptions",
+                                "cloudwatch:GetMetricStatistics"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "DescribeRdsResources"
+                        },
+                        {
+                            "actions": [
+                                "s3:ListAllMyBuckets",
+                                "s3:GetBucketLocation",
+                                "s3:GetEncryptionConfiguration",
+                                "s3:GetBucketVersioning",
+                                "s3:GetBucketPolicy",
+                                "s3:GetBucketTagging",
+                                "s3:GetReplicationConfiguration",
+                                "s3:GetInventoryConfiguration",
+                                "s3:PutInventoryConfiguration",
+                                "s3:ListBucket*",
+                                "s3:GetObject*"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "DescribeS3Resources"
                         }
                     ]
                 }
@@ -554,6 +554,22 @@
                         },
                         {
                             "actions": [
+                                "SNS:ListSubscriptionsByTopic"
+                            ],
+                            "effect": "Allow",
+                            "principals": {
+                                "identifiers": [
+                                    "arn:aws:iam::786578629570:root"
+                                ],
+                                "type": "AWS"
+                            },
+                            "resources": [
+                                "${aws_sns_topic.clumio_event_pub.arn}"
+                            ],
+                            "sid": "__desc_sub_statement"
+                        },
+                        {
+                            "actions": [
                                 "SNS:Publish"
                             ],
                             "effect": "Allow",
@@ -695,7 +711,8 @@
                                 "rds:ListTagsForResource",
                                 "rds:AddTagsToResource",
                                 "rds:CreateOptionGroup",
-                                "rds:CreateDBParameterGroup"
+                                "rds:CreateDBParameterGroup",
+                                "rds:ModifyOptionGroup"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -833,6 +850,16 @@
                                 "*"
                             ],
                             "sid": "AllowS3PutForRestores"
+                        },
+                        {
+                            "actions": [
+                                "organizations:DescribeOrganization"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "AllowDescribeOrganization"
                         }
                     ]
                 }
@@ -1086,7 +1113,7 @@
                         "time_sleep.wait_before_create"
                     ],
                     "description": "Watches for resource changes in EC2 (CloudTrail).",
-                    "event_pattern": "{ \"source\": [\"aws.ec2\"], \"detail-type\": [\"AWS API Call via CloudTrail\"], \"detail\": { \"eventName\": [ \"CreateImage\", \"DeregisterImage\", \"DeleteImage\", \"RegisterImage\", \"CopyImage\", \"AssociateIamInstanceProfile\", \"DisassociateIamInstanceProfile\", \"ReplaceIamInstanceProfileAssociation\" ], \"errorCode\": [{\"exists\": false}] } }",
+                    "event_pattern": "{ \"source\": [\"aws.ec2\"], \"detail-type\": [\"AWS API Call via CloudTrail\"], \"detail\": { \"eventName\": [ \"CreateImage\", \"DeregisterImage\", \"DeleteImage\", \"RegisterImage\", \"CopyImage\", \"AssociateIamInstanceProfile\", \"DisassociateIamInstanceProfile\", \"ReplaceIamInstanceProfileAssociation\", \"AttachVolume\", \"DetachVolume\" ], \"errorCode\": [{\"exists\": false}] } }",
                     "name": "ClumioEC2CloudtrailRule_${var.clumio_token}"
                 }
             }
@@ -1159,8 +1186,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_dynamo_cloudtrail_event_rule_target": {
-                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule[0].name}",
                     "target_id": "clumio-dynamo-ctrail-publish"
                 }
@@ -1169,8 +1196,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_ebs_cloudtrail_event_rule_target": {
-                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule[0].name}",
                     "target_id": "clumio-ebs-ctrail-publish"
                 }
@@ -1179,8 +1206,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_ebs_cloudwatch_event_rule_target": {
-                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule[0].name}",
                     "target_id": "clumio-ebs-cwatch-publish"
                 }
@@ -1189,8 +1216,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_ec2_cloudtrail_event_rule_target": {
-                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule[0].name}",
                     "target_id": "clumio-ec2-ctrail-publish"
                 }
@@ -1199,8 +1226,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_ec2_cloudwatch_event_rule_target": {
-                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_ec2_cloudwatch_event_rule[0].name}",
                     "target_id": "clumio-ec2-cwatch-publish"
                 }
@@ -1578,6 +1605,13 @@
                         "aws_iam_policy.clumio_discover_policy",
                         "aws_iam_policy.clumio_kms_managed_policy",
                         "aws_cloudwatch_event_target.clumio_tag_event_rule_target",
+                        "aws_iam_policy.clumio_dynamodb_policy",
+                        "aws_iam_policy.clumio_warm_protect_dynamodb_policy",
+                        "aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_ebs_cloudtrail_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_ec2_cloudwatch_event_rule_target",
+                        "aws_cloudwatch_event_target.clumio_ec2_cloudtrail_event_rule_target",
                         "aws_cloudwatch_event_target.clumio_rds_cloudwatch_event_rule_target",
                         "aws_cloudwatch_event_target.clumio_rds_cloudtrail_event_rule_target",
                         "aws_iam_policy.clumio_ec2_mssql_protect_policy",
@@ -1587,14 +1621,7 @@
                         "aws_iam_role.clumio_ssm_notification_role",
                         "aws_iam_role_policy.clumio_ssm_notification_policy",
                         "aws_iam_policy.clumio_s3_protect_policy",
-                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target",
-                        "aws_iam_policy.clumio_dynamodb_policy",
-                        "aws_iam_policy.clumio_warm_protect_dynamodb_policy",
-                        "aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ebs_cloudtrail_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ec2_cloudwatch_event_rule_target",
-                        "aws_cloudwatch_event_target.clumio_ec2_cloudtrail_event_rule_target"
+                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target"
                     ],
                     "discover_version": "4.2",
                     "properties": {
@@ -1604,9 +1631,9 @@
                     },
                     "protect_config_version": "20.1",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"3.0\" : \"\"}",
-                    "protect_ebs_version": "${var.is_ebs_enabled ? \"20.2\" : \"\"}",
+                    "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.1\" : \"\"}",
-                    "protect_rds_version": "${var.is_rds_enabled ? \"18.1\" : \"\"}",
+                    "protect_rds_version": "${var.is_rds_enabled ? \"18.2\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"2.1\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.1\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
