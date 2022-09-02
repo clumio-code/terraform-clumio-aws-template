@@ -150,7 +150,8 @@
                                 "s3:GetInventoryConfiguration",
                                 "s3:PutInventoryConfiguration",
                                 "s3:ListBucket*",
-                                "s3:GetObject*"
+                                "s3:GetObject*",
+                                "s3:PutBucketNotification"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -202,7 +203,10 @@
                                 "dynamodb:CreateTable",
                                 "dynamodb:CreateTableReplica",
                                 "dynamodb:ExportTableToPointInTime",
-                                "dynamodb:UpdateTableReplicaAutoScaling"
+                                "dynamodb:UpdateTableReplicaAutoScaling",
+                                "dynamodb:ImportTable",
+                                "dynamodb:DescribeImport",
+                                "dynamodb:ListImports"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -243,6 +247,46 @@
                                 "arn:aws:s3:::clumio-ddb-export-*/*"
                             ],
                             "sid": "ClumioDynamoDbSecureVaultExportS3Actions"
+                        },
+                        {
+                            "actions": [
+                                "dynamodb:ImportTable",
+                                "dynamodb:DescribeImport",
+                                "dynamodb:ListImports"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
+                            ],
+                            "sid": "ClumioDynamoDbSecureVaultImportActions"
+                        },
+                        {
+                            "actions": [
+                                "s3:GetObject",
+                                "s3:ListBucket"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:s3:::clumio-ddb-export-*/*",
+                                "arn:aws:s3:::clumio-ddb-export-*"
+                            ],
+                            "sid": "ClumioDynamoDbSecureVaultImportFromS3Actions"
+                        },
+                        {
+                            "actions": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:DescribeLogGroups",
+                                "logs:DescribeLogStreams",
+                                "logs:PutLogEvents",
+                                "logs:PutRetentionPolicy"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:logs:*:${var.aws_account_id}:log-group:/aws-dynamodb/imports:*",
+                                "arn:${data.aws_partition.current.partition}:logs:*:${var.aws_account_id}:log-group::log-stream:*"
+                            ],
+                            "sid": "ClumioDynamoDbSecureVaultCloudWatchActions"
                         }
                     ]
                 }
@@ -559,7 +603,7 @@
                             "effect": "Allow",
                             "principals": {
                                 "identifiers": [
-                                    "arn:aws:iam::786578629570:root"
+                                    "arn:aws:iam::${var.clumio_aws_account_id}:root"
                                 ],
                                 "type": "AWS"
                             },
@@ -593,16 +637,6 @@
                 "clumio_iam_permissions_boundary_document": {
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "statement": [
-                        {
-                            "actions": [
-                                "support:*"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "AllowClumioSupportAccess"
-                        },
                         {
                             "actions": [
                                 "dynamodb:*"
@@ -862,6 +896,31 @@
                                 "*"
                             ],
                             "sid": "AllowDescribeOrganization"
+                        },
+                        {
+                            "actions": [
+                                "events:DescribeRule",
+                                "events:PutRule",
+                                "events:DeleteRule",
+                                "events:PutTargets",
+                                "events:RemoveTargets",
+                                "events:ListTargetsByRule"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:events:*:${data.aws_caller_identity.current.account_id}:rule/clumio-s3-event-rule-*"
+                            ],
+                            "sid": "AllowS3EventRuleUpdate"
+                        },
+                        {
+                            "actions": [
+                                "events:PutEvents"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:events:*:*:event-bus/clumio-s3-event-bus-*"
+                            ],
+                            "sid": "AllowS3EventFwdToClumio"
                         }
                     ]
                 }
@@ -1238,8 +1297,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_rds_cloudtrail_event_rule_target": {
-                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule[0].name}",
                     "target_id": "clumio-rds-ctrail-publish"
                 }
@@ -1248,8 +1307,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_rds_cloudwatch_event_rule_target": {
-                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].name}",
                     "target_id": "clumio-rds-cwatch-publish"
                 }
@@ -1601,7 +1660,7 @@
                 "clumio_callback": {
                     "account_id": "${var.aws_account_id}",
                     "clumio_event_pub_id": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "config_version": "2.1",
+                    "config_version": "2.3",
                     "depends_on": [
                         "aws_iam_role.clumio_iam_role",
                         "time_sleep.wait_30_seconds_for_iam_propagation",
@@ -1610,7 +1669,6 @@
                         "aws_iam_policy.clumio_discover_policy",
                         "aws_iam_policy.clumio_kms_managed_policy",
                         "aws_cloudwatch_event_target.clumio_tag_event_rule_target",
-                        "aws_iam_policy.clumio_dynamodb_policy",
                         "aws_iam_policy.clumio_warm_protect_dynamodb_policy",
                         "aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target",
                         "aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target",
@@ -1626,20 +1684,21 @@
                         "aws_iam_role.clumio_ssm_notification_role",
                         "aws_iam_role_policy.clumio_ssm_notification_policy",
                         "aws_iam_policy.clumio_s3_protect_policy",
-                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target"
+                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target",
+                        "aws_iam_policy.clumio_dynamodb_policy"
                     ],
                     "discover_version": "4.2",
                     "properties": {
                         "DynamoDbSecureVaultPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
                         "DynamoDbWarmProtectPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
-                        "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
+                        "PermissionsBoundaryArn": "\"${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
                     },
                     "protect_config_version": "20.1",
-                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"3.0\" : \"\"}",
+                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"4.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.1\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.2\" : \"\"}",
-                    "protect_s3_version": "${var.is_s3_enabled ? \"2.1\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"4.0\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.1\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",

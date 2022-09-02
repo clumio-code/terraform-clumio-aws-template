@@ -23,7 +23,7 @@
                 "default": {
                     "Vendor": "Clumio"
                 },
-                "description": "Additional tags for Clumio IAM Roles",
+                "description": "Additional tags for Clumio IAM Roles.",
                 "type": "map(string)"
             }
         },
