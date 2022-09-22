@@ -2,19 +2,19 @@
     "variable": [
         {
             "aws_account_id": {
-                "description": "Client AWS Account Id",
+                "description": "Client AWS Account Id.",
                 "type": "string"
             }
         },
         {
             "aws_region": {
-                "description": "AWS Region",
+                "description": "AWS Region.",
                 "type": "string"
             }
         },
         {
             "clumio_aws_account_id": {
-                "description": "Clumio Control Plane Account Id",
+                "description": "Clumio Control Plane Account Id.",
                 "type": "string"
             }
         },
@@ -23,7 +23,7 @@
                 "default": {
                     "Vendor": "Clumio"
                 },
-                "description": "Additional tags for Clumio IAM Roles",
+                "description": "Additional tags for Clumio IAM Roles.",
                 "type": "map(string)"
             }
         },
@@ -90,3 +90,4 @@
         }
     ]
 }
+
