@@ -1417,6 +1417,7 @@
                     ],
                     "name": "ClumioSSM-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1430,6 +1431,7 @@
                     ],
                     "name": "ClumioRole-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1444,6 +1446,7 @@
                     ],
                     "name": "ClumioSSMNotifRole-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1458,6 +1461,7 @@
                     ],
                     "name": "ClumioSuppt-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
