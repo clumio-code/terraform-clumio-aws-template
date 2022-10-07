@@ -58,105 +58,140 @@
         {
             "aws_iam_policy_document": {
                 "clumio_discover_policy_document": {
-                    "statement": [
+                    "dynamic": [
                         {
-                            "actions": [
-                                "dynamodb:DescribeBackup",
-                                "dynamodb:DescribeContinuousBackups",
-                                "dynamodb:DescribeGlobalTable",
-                                "dynamodb:DescribeGlobalTableSettings",
-                                "dynamodb:DescribeTable",
-                                "dynamodb:DescribeTableReplicaAutoScaling",
-                                "dynamodb:ListBackups",
-                                "dynamodb:ListGlobalTables",
-                                "dynamodb:ListTables",
-                                "dynamodb:ListTagsOfResource"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeDynamoResources"
+                            "statement": {
+                                "for_each":"${var.is_dynamodb_enabled ? [1] : []}",
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "dynamodb:DescribeBackup",
+                                            "dynamodb:DescribeContinuousBackups",
+                                            "dynamodb:DescribeGlobalTable",
+                                            "dynamodb:DescribeGlobalTableSettings",
+                                            "dynamodb:DescribeTable",
+                                            "dynamodb:DescribeTableReplicaAutoScaling",
+                                            "dynamodb:ListBackups",
+                                            "dynamodb:ListGlobalTables",
+                                            "dynamodb:ListTables",
+                                            "dynamodb:ListTagsOfResource"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "*"
+                                        ],
+                                        "sid": "DescribeDynamoResources"
+                                    }
+                                ]
+                            }
                         },
                         {
-                            "actions": [
-                                "ec2:DescribeImageAttribute",
-                                "ec2:DescribeImages",
-                                "ec2:DescribeInstanceAttribute",
-                                "ec2:DescribeInstanceStatus",
-                                "ec2:DescribeInstances",
-                                "ec2:DescribeInstanceTypes",
-                                "ec2:DescribeInstanceCreditSpecifications",
-                                "ec2:DescribeInstanceTypeOfferings",
-                                "ec2:DescribeTags",
-                                "ec2:DescribeSnapshots",
-                                "ec2:DescribeAvailabilityZones",
-                                "ec2:DescribeSecurityGroups"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeEc2Resources"
+                            "statement": {
+                                "for_each":"${var.is_ebs_enabled ? [1] : []}",
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "ec2:DescribeImageAttribute",
+                                            "ec2:DescribeImages",
+                                            "ec2:DescribeInstanceAttribute",
+                                            "ec2:DescribeInstanceStatus",
+                                            "ec2:DescribeInstances",
+                                            "ec2:DescribeInstanceTypes",
+                                            "ec2:DescribeInstanceCreditSpecifications",
+                                            "ec2:DescribeInstanceTypeOfferings",
+                                            "ec2:DescribeTags",
+                                            "ec2:DescribeSnapshots",
+                                            "ec2:DescribeAvailabilityZones",
+                                            "ec2:DescribeSecurityGroups"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "*"
+                                        ],
+                                        "sid": "DescribeEc2Resources"
+                                    }
+                                ]
+                            }
                         },
                         {
-                            "actions": [
-                                "ec2:DescribeFastSnapshotRestores",
-                                "ec2:DescribeSnapshotAttribute",
-                                "ec2:DescribeSnapshots",
-                                "ec2:DescribeVolumeAttribute",
-                                "ec2:DescribeVolumeStatus",
-                                "ec2:DescribeVolumes",
-                                "ebs:ListChangedBlocks",
-                                "ebs:ListSnapshotBlocks",
-                                "kms:DescribeKey"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeEbsResources"
+                            "statement": {
+                                "for_each":"${var.is_ebs_enabled ? [1] : []}",
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "ec2:DescribeFastSnapshotRestores",
+                                            "ec2:DescribeSnapshotAttribute",
+                                            "ec2:DescribeSnapshots",
+                                            "ec2:DescribeVolumeAttribute",
+                                            "ec2:DescribeVolumeStatus",
+                                            "ec2:DescribeVolumes",
+                                            "ebs:ListChangedBlocks",
+                                            "ebs:ListSnapshotBlocks",
+                                            "kms:DescribeKey"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "*"
+                                        ],
+                                        "sid": "DescribeEbsResources"
+                                    }
+                                ]
+                            }
                         },
                         {
-                            "actions": [
-                                "rds:DescribeDBClusters",
-                                "rds:DescribeDBClusterSnapshotAttributes",
-                                "rds:DescribeDBClusterSnapshots",
-                                "rds:DescribeDBInstanceAutomatedBackups",
-                                "rds:DescribeDBInstances",
-                                "rds:DescribeDBSnapshotAttributes",
-                                "rds:DescribeDBSnapshots",
-                                "rds:DescribeGlobalClusters",
-                                "rds:ListTagsForResource",
-                                "rds:DescribeOptionGroups",
-                                "rds:DescribeOptionGroupOptions",
-                                "cloudwatch:GetMetricStatistics"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeRdsResources"
+                            "statement": {
+                                "for_each":"${var.is_rds_enabled ? [1] : []}",
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "rds:DescribeDBClusters",
+                                            "rds:DescribeDBClusterSnapshotAttributes",
+                                            "rds:DescribeDBClusterSnapshots",
+                                            "rds:DescribeDBInstanceAutomatedBackups",
+                                            "rds:DescribeDBInstances",
+                                            "rds:DescribeDBSnapshotAttributes",
+                                            "rds:DescribeDBSnapshots",
+                                            "rds:DescribeGlobalClusters",
+                                            "rds:ListTagsForResource",
+                                            "rds:DescribeOptionGroups",
+                                            "rds:DescribeOptionGroupOptions",
+                                            "cloudwatch:GetMetricStatistics"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "*"
+                                        ],
+                                        "sid": "DescribeRdsResources"
+                                    }
+                                ]
+                            }
                         },
                         {
-                            "actions": [
-                                "s3:ListAllMyBuckets",
-                                "s3:GetBucketLocation",
-                                "s3:GetEncryptionConfiguration",
-                                "s3:GetBucketVersioning",
-                                "s3:GetBucketPolicy",
-                                "s3:GetBucketTagging",
-                                "s3:GetReplicationConfiguration",
-                                "s3:GetInventoryConfiguration",
-                                "s3:PutInventoryConfiguration",
-                                "s3:ListBucket*",
-                                "s3:GetObject*"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "DescribeS3Resources"
+                            "statement": {
+                                "for_each":"${var.is_s3_enabled ? [1] : []}",
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "s3:ListAllMyBuckets",
+                                            "s3:GetBucketLocation",
+                                            "s3:GetEncryptionConfiguration",
+                                            "s3:GetBucketVersioning",
+                                            "s3:GetBucketPolicy",
+                                            "s3:GetBucketTagging",
+                                            "s3:GetReplicationConfiguration",
+                                            "s3:GetInventoryConfiguration",
+                                            "s3:PutInventoryConfiguration",
+                                            "s3:ListBucket*",
+                                            "s3:GetObject*"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "*"
+                                        ],
+                                        "sid": "DescribeS3Resources"
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -1417,6 +1452,7 @@
                     ],
                     "name": "ClumioSSM-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1430,6 +1466,7 @@
                     ],
                     "name": "ClumioRole-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1444,6 +1481,7 @@
                     ],
                     "name": "ClumioSSMNotifRole-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1458,6 +1496,7 @@
                     ],
                     "name": "ClumioSuppt-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
+		    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
