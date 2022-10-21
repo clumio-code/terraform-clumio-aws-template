@@ -182,7 +182,8 @@
                                             "s3:GetInventoryConfiguration",
                                             "s3:PutInventoryConfiguration",
                                             "s3:ListBucket*",
-                                            "s3:GetObject*"
+                                            "s3:GetObject*",
+                                            "s3:PutBucketNotification"
                                         ],
                                         "effect": "Allow",
                                         "resources": [
@@ -878,28 +879,6 @@
                         },
                         {
                             "actions": [
-                                "cloudtrail:AddTags",
-                                "cloudtrail:CreateTrail",
-                                "cloudtrail:DeleteTrail",
-                                "cloudtrail:GetEventSelectors",
-                                "cloudtrail:GetInsightSelectors",
-                                "cloudtrail:GetTrail",
-                                "cloudtrail:GetTrailStatus",
-                                "cloudtrail:PutEventSelectors",
-                                "cloudtrail:PutInsightSelectors",
-                                "cloudtrail:RemoveTags",
-                                "cloudtrail:StartLogging",
-                                "cloudtrail:StopLogging",
-                                "cloudtrail:UpdateTrail"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:cloudtrail:*:${var.aws_account_id}:trail/clumio-s3-trail"
-                            ],
-                            "sid": "ManageS3Trail"
-                        },
-                        {
-                            "actions": [
                                 "s3:ListBucket",
                                 "s3:PutObject*"
                             ],
@@ -930,6 +909,31 @@
                                 "*"
                             ],
                             "sid": "AllowDescribeOrganization"
+                        },
+                        {
+                            "actions": [
+                                "events:DescribeRule",
+                                "events:PutRule",
+                                "events:DeleteRule",
+                                "events:PutTargets",
+                                "events:RemoveTargets",
+                                "events:ListTargetsByRule"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:events:*:${data.aws_caller_identity.current.account_id}:rule/clumio-s3-event-rule-*"
+                            ],
+                            "sid": "AllowS3EventRuleUpdate"
+                        },
+                        {
+                            "actions": [
+                                "events:PutEvents"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:events:*:*:event-bus/clumio-s3-event-bus-*"
+                            ],
+                            "sid": "AllowS3EventFwdToClumio"
                         }
                     ]
                 }
@@ -1686,7 +1690,7 @@
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.1\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.2\" : \"\"}",
-                    "protect_s3_version": "${var.is_s3_enabled ? \"2.1\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"4.1\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.1\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
