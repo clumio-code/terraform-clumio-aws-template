@@ -50,14 +50,14 @@ module clumio_aws_connection_module {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=0.14.0 |
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | ~>0.2.3 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | ~>0.4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | ~>0.2.3 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | ~>0.4.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | n/a |
 
 ## Modules
@@ -115,7 +115,7 @@ No modules.
 | [aws_iam_role_policy_attachment.clumio_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_sns_topic.clumio_event_pub](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic_policy.clumio_event_pub_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
-| [clumio_post_process_aws_connection.clumio_callback](https://registry.terraform.io/providers/clumio-code/clumio/latest/docs/resources/clumio_post_process_aws_connection) | resource |
+| [clumio_post_process_aws_connection.clumio_callback](https://registry.terraform.io/providers/clumio-code/clumio/latest/docs/resources/post_process_aws_connection) | resource |
 | [time_sleep.wait_10_seconds_before_creating_clumio_s3_cloudtrail_event_rule](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_30_seconds_for_iam_propagation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_5_seconds_for_clumio_s3_protect_policy](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
@@ -148,10 +148,10 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | Client AWS Account Id | `string` | n/a | yes |
-| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS Region | `string` | n/a | yes |
-| <a name="input_clumio_aws_account_id"></a> [clumio\_aws\_account\_id](#input\_clumio\_aws\_account\_id) | Clumio Control Plane Account Id | `string` | n/a | yes |
-| <a name="input_clumio_iam_role_tags"></a> [clumio\_iam\_role\_tags](#input\_clumio\_iam\_role\_tags) | Additional tags for Clumio IAM Roles | `map(string)` | <pre>{<br>  "Vendor": "Clumio"<br>}</pre> | no |
+| <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | Client AWS Account Id. | `string` | n/a | yes |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS Region. | `string` | n/a | yes |
+| <a name="input_clumio_aws_account_id"></a> [clumio\_aws\_account\_id](#input\_clumio\_aws\_account\_id) | Clumio Control Plane Account Id. | `string` | n/a | yes |
+| <a name="input_clumio_iam_role_tags"></a> [clumio\_iam\_role\_tags](#input\_clumio\_iam\_role\_tags) | Additional tags for Clumio IAM Roles. | `map(string)` | <pre>{<br>  "Vendor": "Clumio"<br>}</pre> | no |
 | <a name="input_clumio_token"></a> [clumio\_token](#input\_clumio\_token) | The AWS integration ID token. | `string` | n/a | yes |
 | <a name="input_is_dynamodb_enabled"></a> [is\_dynamodb\_enabled](#input\_is\_dynamodb\_enabled) | Flag to indicate if Clumio Protect and Discover for dynamodb are enabled | `bool` | `false` | no |
 | <a name="input_is_ebs_enabled"></a> [is\_ebs\_enabled](#input\_is\_ebs\_enabled) | Flag to indicate if Clumio Protect and Discover for ebs are enabled | `bool` | `false` | no |
@@ -159,6 +159,7 @@ No modules.
 | <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect and Discover for rds are enabled | `bool` | `false` | no |
 | <a name="input_is_s3_enabled"></a> [is\_s3\_enabled](#input\_is\_s3\_enabled) | Flag to indicate if Clumio Protect and Discover for S3 are enabled | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | Value of path set on the AWS IAM roles, policies and instance\_profile resources of the module. If not specified the default value is /clumio/. | `string` | `"/clumio/"` | no |
+| <a name="input_permissions_boundary_arn"></a> [permissions\_boundary\_arn](#input\_permissions\_boundary\_arn) | ARN of the permissions boundary to be set on Clumio Roles. | `string` | `""` | no |
 | <a name="input_role_external_id"></a> [role\_external\_id](#input\_role\_external\_id) | A key that must be used by Clumio to assume the service role in your account. This should be a secure string, like a password, but it does not need to be remembered (random characters are best). | `string` | n/a | yes |
 | <a name="input_wait_time_before_create"></a> [wait\_time\_before\_create](#input\_wait\_time\_before\_create) | Time in seconds to wait before creation of resources. This will be required to be set to a value above 45s in the case of shifting from old terraform template to the module based template. | `string` | `"60s"` | no |
 

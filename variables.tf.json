@@ -76,6 +76,13 @@
             }
         },
         {
+            "permissions_boundary_arn": {
+                "default": "",
+                "description": "ARN of the permissions boundary to be set on Clumio Roles.",
+                "type": "string"
+            }
+        },
+        {
             "role_external_id": {
                 "description": "A key that must be used by Clumio to assume the service role in your account. This should be a secure string, like a password, but it does not need to be remembered (random characters are best).",
                 "type": "string"
@@ -85,13 +92,6 @@
             "wait_time_before_create": {
                 "default": "60s",
                 "description": "Time in seconds to wait before creation of resources. This will be required to be set to a value above 45s in the case of shifting from old terraform template to the module based template.",
-                "type": "string"
-            }
-        },
-        {
-            "permissions_boundary_arn": {
-                "default": "",
-                "description": "ARN of the permissions boundary to be set on Clumio Roles.",
                 "type": "string"
             }
         }

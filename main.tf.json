@@ -1098,6 +1098,23 @@
                                 "arn:aws:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
                             ],
                             "sid": "ClumioWarmProtectDynamoDbAutoScalingRole"
+                        },
+                        {
+                            "actions": [
+                                "iam:CreateServiceLinkedRole"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "dynamodb.application-autoscaling.amazonaws.com"
+                                ],
+                                "variable": "iam:AWSServiceName"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+                            ],
+                            "sid": "ClumioWarmProtectCreateDynamoDbAutoScalingRole"
                         }
                     ]
                 }
@@ -1456,7 +1473,7 @@
                     ],
                     "name": "ClumioSSM-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-		    "permissions_boundary": "${var.permissions_boundary_arn}",
+                    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1470,7 +1487,7 @@
                     ],
                     "name": "ClumioRole-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-		    "permissions_boundary": "${var.permissions_boundary_arn}",
+                    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1485,7 +1502,7 @@
                     ],
                     "name": "ClumioSSMNotifRole-${var.clumio_token}",
                     "path": "${var.path}",
-		    "permissions_boundary": "${var.permissions_boundary_arn}",
+                    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1500,7 +1517,7 @@
                     ],
                     "name": "ClumioSuppt-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-		    "permissions_boundary": "${var.permissions_boundary_arn}",
+                    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
@@ -1652,7 +1669,7 @@
                 "clumio_callback": {
                     "account_id": "${var.aws_account_id}",
                     "clumio_event_pub_id": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "config_version": "2.3",
+                    "config_version": "2.4",
                     "depends_on": [
                         "aws_iam_role.clumio_iam_role",
                         "time_sleep.wait_30_seconds_for_iam_propagation",
@@ -1685,13 +1702,13 @@
                         "DynamoDbWarmProtectPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
                         "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
                     },
-                    "protect_config_version": "20.1",
+                    "protect_config_version": "20.2",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"4.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
-                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.1\" : \"\"}",
+                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.2\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.2\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"4.1\" : \"\"}",
-                    "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.1\" : \"\"}",
+                    "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.2\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
                     "role_arn": "${aws_iam_role.clumio_iam_role.arn}",
