@@ -445,7 +445,7 @@
                         },
                         {
                             "actions": [
-                                "3:PutObject",
+                                "s3:PutObject",
                                 "s3:GetObject"
                             ],
                             "effect": "Allow",
