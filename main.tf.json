@@ -6,11 +6,6 @@
             }
         },
         {
-            "aws_canonical_user_id": {
-                "canonical_user": {}
-            }
-        },
-        {
             "aws_iam_policy_document": {
                 "aws_iam_role_document": {
                     "statement": [
