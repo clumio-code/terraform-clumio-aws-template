@@ -178,7 +178,11 @@
                                             "s3:PutInventoryConfiguration",
                                             "s3:ListBucket*",
                                             "s3:GetObject*",
-                                            "s3:PutBucketNotification"
+                                            "s3:PutBucketNotification",
+                                            "s3:GetBucketLogging",
+                                            "backup:ListProtectedResources",
+                                            "s3:GetLifecycleConfiguration",
+                                            "s3:GetBucketLogging"
                                         ],
                                         "effect": "Allow",
                                         "resources": [
@@ -1127,6 +1131,31 @@
             }
         }
     ],
+    "locals": [
+        {
+            "region_map": {
+                "ap-east-1": "ae-1",
+                "ap-northeast-1": "ane-1",
+                "ap-northeast-2": "ane-2",
+                "ap-northeast-3": "ane-3",
+                "ap-south-1": "as-1",
+                "ap-southeast-1": "ase-1",
+                "ap-southeast-2": "ase-2",
+                "ca-central-1": "cc-1",
+                "eu-central-1": "ec-1",
+                "eu-north-1": "en-1",
+                "eu-west-1": "ew-1",
+                "eu-west-2": "ew-2",
+                "eu-west-3": "ew-3",
+                "me-south-1": "ms-1",
+                "sa-east-1": "se-1",
+                "us-east-1": "ue-1",
+                "us-east-2": "ue-2",
+                "us-west-1": "uw-1",
+                "us-west-2": "uw-2"
+            }
+        }
+    ],
     "resource": [
         {
             "aws_cloudwatch_event_rule": {
@@ -1496,7 +1525,7 @@
                     "depends_on": [
                         "time_sleep.wait_before_create"
                     ],
-                    "name": "ClumioSSMNotifRole-${var.clumio_token}",
+                    "name": "ClumioSSMNotifRole-${lookup(local.region_map, var.aws_region, \"\")}-${var.clumio_token}",
                     "path": "${var.path}",
                     "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
@@ -1702,6 +1731,7 @@
                     ],
                     "discover_version": "4.2",
                     "properties": {
+                        "ClumioSSMNotificationRoleArn": "${var.is_ec2_mssql_enabled ? aws_iam_role.clumio_ssm_notification_role[0].arn : \"\"}",
                         "DynamoDbSecureVaultPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
                         "DynamoDbWarmProtectPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
                         "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
@@ -1709,9 +1739,9 @@
                     "protect_config_version": "20.2",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"4.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
-                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.1\" : \"\"}",
+                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.2\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
-                    "protect_s3_version": "${var.is_s3_enabled ? \"4.1\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"4.2\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.2\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
