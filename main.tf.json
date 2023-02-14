@@ -345,8 +345,7 @@
                         },
                         {
                             "actions": [
-                                "ssm:SendCommand",
-                                "ssm:CancelCommand"
+                                "ssm:SendCommand"
                             ],
                             "condition": {
                                 "test": "StringEquals",
@@ -360,6 +359,16 @@
                                 "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
                             ],
                             "sid": "ClumioDataProtectionSSMCmd"
+                        },
+                        {
+                            "actions": [
+                                "ssm:CancelCommand"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:*"
+                            ],
+                            "sid": "ClumioDataProtectionSSMCancelCmd"
                         },
                         {
                             "actions": [
@@ -1739,7 +1748,7 @@
                     "protect_config_version": "20.2",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"4.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
-                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.2\" : \"\"}",
+                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"4.2\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.2\" : \"\"}",
