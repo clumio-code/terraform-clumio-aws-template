@@ -237,10 +237,7 @@
                                 "dynamodb:CreateTable",
                                 "dynamodb:CreateTableReplica",
                                 "dynamodb:ExportTableToPointInTime",
-                                "dynamodb:UpdateTableReplicaAutoScaling",
-                                "dynamodb:ImportTable",
-                                "dynamodb:DescribeImport",
-                                "dynamodb:ListImports"
+                                "dynamodb:UpdateTableReplicaAutoScaling"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -285,8 +282,7 @@
                         {
                             "actions": [
                                 "dynamodb:ImportTable",
-                                "dynamodb:DescribeImport",
-                                "dynamodb:ListImports"
+                                "dynamodb:DescribeImport"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -682,17 +678,22 @@
                     "statement": [
                         {
                             "actions": [
-                                "dynamodb:*"
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:DescribeTable"
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:*"
+                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
                             ],
                             "sid": "AllowClumioDynamoDbSecureVaultAccess"
                         },
                         {
                             "actions": [
-                                "kms:*"
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey*",
+                                "kms:ReEncrypt*"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -1029,7 +1030,7 @@
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "*"
+                                "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
                             ],
                             "sid": "ClumioWarmProtectDynamoDbKmsActions"
                         },
@@ -1087,8 +1088,6 @@
                             "actions": [
                                 "application-autoscaling:DescribeScalableTargets",
                                 "application-autoscaling:DescribeScalingPolicies",
-                                "application-autoscaling:DeleteScalingPolicy",
-                                "application-autoscaling:DeregisterScalableTarget",
                                 "application-autoscaling:PutScalingPolicy",
                                 "application-autoscaling:RegisterScalableTarget"
                             ],
@@ -1746,12 +1745,12 @@
                         "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
                     },
                     "protect_config_version": "20.2",
-                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"4.0\" : \"\"}",
+                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"5.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"4.2\" : \"\"}",
-                    "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.2\" : \"\"}",
+                    "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.3\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
                     "role_arn": "${aws_iam_role.clumio_iam_role.arn}",
