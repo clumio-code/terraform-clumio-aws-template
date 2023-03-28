@@ -942,6 +942,7 @@
         {
             "aws_iam_policy_document": {
                 "clumio_s3_protect_policy_document": {
+		    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "statement": [
                         {
                             "actions": [
@@ -1578,7 +1579,7 @@
                     "description": "Grants access to Clumio for S3 protection",
                     "name": "ClumioS3ProtectPolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-                    "policy": "${data.aws_iam_policy_document.clumio_s3_protect_policy_document.json}"
+                    "policy": "${data.aws_iam_policy_document.clumio_s3_protect_policy_document[0].json}"
                 }
             }
         },
