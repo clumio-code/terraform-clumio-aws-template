@@ -1,6 +1,13 @@
 {
     "variable": [
         {
+            "access_via_role_chaining": {
+                "type": "bool",
+                "description": "Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account.",
+                "default": false
+            }
+        },
+        {
             "aws_account_id": {
                 "description": "Client AWS Account Id.",
                 "type": "string"

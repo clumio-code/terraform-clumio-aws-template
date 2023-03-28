@@ -23,9 +23,36 @@
                             "effect": "Allow",
                             "principals": {
                                 "identifiers": [
-                                    "arn:aws:iam::${var.clumio_aws_account_id}:root"
+                                    "${lookup(local.clumio_iam_role_principal, var.access_via_role_chaining ? \"intermediate_role\" : \"root\", \"\")}"
                                 ],
                                 "type": "AWS"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "aws_support_role_document": {
+                    "statement": [
+                        {
+                            "actions": [
+                                "sts:AssumeRole"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "variable": "sts:ExternalId",
+                                "values": [
+                                    "${var.role_external_id}"
+                                ]
+                            },
+                            "effect": "Allow",
+                            "principals": {
+                                "type": "AWS",
+                                "identifiers": [
+                                    "${lookup(local.clumio_support_role_principal, var.access_via_role_chaining ? \"intermediate_role\" : \"root\", \"\")}"
+                                ]
                             }
                         }
                     ]
@@ -875,6 +902,45 @@
         },
         {
             "aws_iam_policy_document": {
+                "clumio_s3_continuous_backup_event_bridge_policy_document": {
+                    "statement": [
+                        {
+                            "actions": [
+                                "events:PutEvents"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:events:*:*:event-bus/clumio-s3-event-bus-*"
+                            ],
+                            "sid": "AllowPutEvents"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "clumio_s3_continuous_backup_event_bridge_role_document": {
+                    "statement": [
+                        {
+                            "actions": [
+                                "sts:AssumeRole"
+                            ],
+                            "effect": "Allow",
+                            "principals": {
+                                "identifiers": [
+                                    "events.amazonaws.com"
+                                ],
+                                "type": "Service"
+                            },
+                            "sid": "AllowEventBridgeAssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
                 "clumio_s3_protect_policy_document": {
                     "statement": [
                         {
@@ -944,6 +1010,23 @@
                                 "arn:aws:events:*:*:event-bus/clumio-s3-event-bus-*"
                             ],
                             "sid": "AllowS3EventFwdToClumio"
+                        },
+                        {
+                            "actions": [
+                                "iam:PassRole"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "events.amazonaws.com"
+                                ],
+                                "variable": "iam:PassedToService"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "${aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].arn}"
+                            ],
+                            "sid": "AllowS3ContinuousBackupRolePassToEventBridge"
                         }
                     ]
                 }
@@ -1161,6 +1244,14 @@
                 "us-east-2": "ue-2",
                 "us-west-1": "uw-1",
                 "us-west-2": "uw-2"
+            },
+            "clumio_iam_role_principal": {
+                "root": "arn:aws:iam::${var.clumio_aws_account_id}:root",
+                "intermediate_role": "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
+            },
+            "clumio_support_role_principal": {
+                "root": "arn:aws:iam::${var.clumio_aws_account_id}:root",
+                "intermediate_role": "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"
             }
         }
     ],
@@ -1470,6 +1561,15 @@
         },
         {
             "aws_iam_policy": {
+                "clumio_s3_continuous_backup_event_bridge_policy": {
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
+                    "name": "ClumioS3EbPolicy-${var.aws_account_id}-${var.aws_region}-${var.clumio_token}",
+                    "policy": "${data.aws_iam_policy_document.clumio_s3_continuous_backup_event_bridge_policy_document.json}"
+                }
+            }
+        },
+        {
+            "aws_iam_policy": {
                 "clumio_s3_protect_policy": {
                     "count": "${var.is_s3_enabled ? 1 : 0}",
                     "depends_on": [
@@ -1527,6 +1627,20 @@
         },
         {
             "aws_iam_role": {
+                "clumio_s3_continuous_backup_event_bridge_role": {
+                    "assume_role_policy": "${data.aws_iam_policy_document.clumio_s3_continuous_backup_event_bridge_role_document.json}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
+                    "depends_on": [
+                        "time_sleep.wait_before_create"
+                    ],
+                    "name": "ClumioS3EbRole-${lookup(local.region_map, var.aws_region, \"\")}-${var.clumio_token}",
+                    "path": "${var.path}",
+                    "tags": "${var.clumio_iam_role_tags}"
+                }
+            }
+        },
+        {
+            "aws_iam_role": {
                 "clumio_ssm_notification_role": {
                     "assume_role_policy": "${data.aws_iam_policy_document.clumio_ssm_notification_role_document.json}",
                     "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
@@ -1543,7 +1657,7 @@
         {
             "aws_iam_role": {
                 "clumio_support_role": {
-                    "assume_role_policy": "${data.aws_iam_policy_document.aws_iam_role_document.json}",
+                    "assume_role_policy": "${data.aws_iam_policy_document.aws_support_role_document.json}",
                     "count": "1",
                     "depends_on": [
                         "time_sleep.wait_before_create"
@@ -1629,6 +1743,15 @@
             }
         },
         {
+            "aws_iam_role_policy_attachment": {
+                "clumio_s3_continuous_backup_event_bridge_role_policy_attachment": {
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
+                    "policy_arn": "${aws_iam_policy.clumio_s3_continuous_backup_event_bridge_policy[0].arn}",
+                    "role": "${aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].name}"
+                }
+            }
+        },
+        {
             "aws_iam_role_policy": {
                 "clumio_base_policy": {
                     "name": "ClumioBasePolicy-${var.aws_region}-${var.clumio_token}",
@@ -1710,7 +1833,7 @@
                 "clumio_callback": {
                     "account_id": "${var.aws_account_id}",
                     "clumio_event_pub_id": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "config_version": "2.4",
+                    "config_version": "${var.access_via_role_chaining ? \"2.5\" : \"2.4\"}",
                     "depends_on": [
                         "aws_iam_role.clumio_iam_role",
                         "time_sleep.wait_30_seconds_for_iam_propagation",
@@ -1735,21 +1858,25 @@
                         "aws_iam_role.clumio_ssm_notification_role",
                         "aws_iam_role_policy.clumio_ssm_notification_policy",
                         "aws_iam_policy.clumio_s3_protect_policy",
-                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target"
+                        "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target",
+                        "aws_iam_role.clumio_s3_continuous_backup_event_bridge_role",
+                        "aws_iam_policy.clumio_s3_continuous_backup_event_bridge_policy"
                     ],
                     "discover_version": "4.2",
+                    "intermediate_role_arn": "${var.access_via_role_chaining ? lookup(local.clumio_iam_role_principal, \"intermediate_role\", \"\") : \"\"}",
                     "properties": {
                         "ClumioSSMNotificationRoleArn": "${var.is_ec2_mssql_enabled ? aws_iam_role.clumio_ssm_notification_role[0].arn : \"\"}",
                         "DynamoDbSecureVaultPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
                         "DynamoDbWarmProtectPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
-                        "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
+                        "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}",
+                        "ClumioS3ContinuousBackupEventBridgeRoleArn": "${var.is_s3_enabled ? aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].arn : \"\"}"
                     },
-                    "protect_config_version": "20.2",
+                    "protect_config_version": "${var.access_via_role_chaining ? \"20.3\" : \"20.2\"}",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"5.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
-                    "protect_s3_version": "${var.is_s3_enabled ? \"4.2\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"4.3\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.3\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
