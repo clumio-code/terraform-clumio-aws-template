@@ -1,3 +1,6 @@
+## 0.12.2
+Added permissions boundary to the clumio_s3_continuous_backup_event_bridge_role resource.
+
 ## 0.12.1
 Updated required provider version for clumio to ~>0.5.0 and documentation updates.
 

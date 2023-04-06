@@ -1636,6 +1636,7 @@
                     ],
                     "name": "ClumioS3EbRole-${lookup(local.region_map, var.aws_region, \"\")}-${var.clumio_token}",
                     "path": "${var.path}",
+                    "permissions_boundary": "${var.permissions_boundary_arn}",
                     "tags": "${var.clumio_iam_role_tags}"
                 }
             }
