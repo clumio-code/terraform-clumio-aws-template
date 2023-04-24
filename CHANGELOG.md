@@ -1,3 +1,6 @@
+## 0.13.0
+Updates to s3 policy document permissions.
+
 ## 0.12.2
 Added permissions boundary to the clumio_s3_continuous_backup_event_bridge_role resource.
 
