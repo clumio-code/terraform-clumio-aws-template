@@ -1004,16 +1004,6 @@
                         },
                         {
                             "actions": [
-                                "events:PutEvents"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:events:*:*:event-bus/clumio-s3-event-bus-*"
-                            ],
-                            "sid": "AllowS3EventFwdToClumio"
-                        },
-                        {
-                            "actions": [
                                 "iam:PassRole"
                             ],
                             "condition": {
@@ -1878,7 +1868,7 @@
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
-                    "protect_s3_version": "${var.is_s3_enabled ? \"4.3\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"4.4\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.3\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
