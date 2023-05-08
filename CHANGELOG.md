@@ -1,3 +1,6 @@
+## 0.14.0
+Role chaining enabled by default and s3 permissions change.
+
 ## 0.13.0
 Updates to s3 policy document permissions.
 

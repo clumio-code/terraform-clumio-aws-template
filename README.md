@@ -4,7 +4,7 @@
 
 Terraform module to install the Clumio required AWS resources in the customer AWS account.
 
-## Usage:
+## Usage
 This module is to be used along with the resource clumio_aws_connection as some of the inputs for the module are obtained from the output of clumio_aws_connection resource.
 Below is an example of using the module:
 
@@ -42,6 +42,57 @@ module "clumio_aws_connection_module" {
   is_ec2_mssql_enabled  = true
   is_s3_enabled         = true
   is_dynamodb_enabled   = true
+}
+```
+## Upgrading module
+Run the following terraform commands to upgrade from a older version of the module.
+```terraform
+terraform init -upgrade
+terraform plan
+terraform apply
+```
+Note: If the module block has explicit version specified, then the version must be changed before running the above commands.
+
+For example, in the below config the module has version 0.10.0 as shown below:
+```hcl
+module "clumio_aws_connection_module" {
+providers = {
+aws    = aws
+clumio = clumio
+}
+source                = "../../"
+version               = "0.10.0"
+clumio_token          = clumio_aws_connection.test_conn.token
+role_external_id      = "RoleExternalId_${clumio_aws_connection.test_conn.token}"
+aws_region            = clumio_aws_connection.test_conn.aws_region
+aws_account_id        = data.aws_caller_identity.current.account_id
+clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
+is_ebs_enabled        = true
+is_rds_enabled        = true
+is_ec2_mssql_enabled  = true
+is_s3_enabled         = true
+is_dynamodb_enabled   = true
+}
+```
+To upgrade the module version to 0.13.0, the version number should be updated in the config as shown below.
+```hcl
+module "clumio_aws_connection_module" {
+providers = {
+aws    = aws
+clumio = clumio
+}
+source                = "../../"
+version               = "0.13.0"
+clumio_token          = clumio_aws_connection.test_conn.token
+role_external_id      = "RoleExternalId_${clumio_aws_connection.test_conn.token}"
+aws_region            = clumio_aws_connection.test_conn.aws_region
+aws_account_id        = data.aws_caller_identity.current.account_id
+clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
+is_ebs_enabled        = true
+is_rds_enabled        = true
+is_ec2_mssql_enabled  = true
+is_s3_enabled         = true
+is_dynamodb_enabled   = true
 }
 ```
 
@@ -119,7 +170,7 @@ No modules.
 | [aws_iam_role_policy_attachment.clumio_s3_continuous_backup_event_bridge_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_sns_topic.clumio_event_pub](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic_policy.clumio_event_pub_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
-| [clumio_post_process_aws_connection.clumio_callback](https://registry.terraform.io/providers/clumio-code/clumio/latest/docs/resources/post_process_aws_connection) | resource |
+| clumio_post_process_aws_connection.clumio_callback | resource |
 | [time_sleep.wait_10_seconds_before_creating_clumio_s3_cloudtrail_event_rule](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_30_seconds_for_iam_propagation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_5_seconds_for_clumio_s3_protect_policy](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
@@ -154,7 +205,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_access_via_role_chaining"></a> [access\_via\_role\_chaining](#input\_access\_via\_role\_chaining) | Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account. | `bool` | `false` | no |
+| <a name="input_access_via_role_chaining"></a> [access\_via\_role\_chaining](#input\_access\_via\_role\_chaining) | DEPRECATED-Will be removed in next release. Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account. | `bool` | `true` | no |
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | Client AWS Account Id. | `string` | n/a | yes |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS Region. | `string` | n/a | yes |
 | <a name="input_clumio_aws_account_id"></a> [clumio\_aws\_account\_id](#input\_clumio\_aws\_account\_id) | Clumio Control Plane Account Id. | `string` | n/a | yes |

@@ -2,9 +2,9 @@
     "variable": [
         {
             "access_via_role_chaining": {
-                "type": "bool",
-                "description": "Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account.",
-                "default": false
+                "default": true,
+                "description": "DEPRECATED-Will be removed in next release. Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account.",
+                "type": "bool"
             }
         },
         {
