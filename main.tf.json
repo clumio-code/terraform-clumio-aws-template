@@ -23,7 +23,7 @@
                             "effect": "Allow",
                             "principals": {
                                 "identifiers": [
-                                    "${lookup(local.clumio_iam_role_principal, var.access_via_role_chaining ? \"intermediate_role\" : \"root\", \"\")}"
+                                    "${lookup(local.clumio_iam_role_principal,\"intermediate_role\", \"\")}"
                                 ],
                                 "type": "AWS"
                             }
@@ -51,7 +51,7 @@
                             "principals": {
                                 "type": "AWS",
                                 "identifiers": [
-                                    "${lookup(local.clumio_support_role_principal, var.access_via_role_chaining ? \"intermediate_role\" : \"root\", \"\")}"
+                                    "${lookup(local.clumio_support_role_principal, \"intermediate_role\", \"\")}"
                                 ]
                             }
                         }
@@ -205,6 +205,7 @@
                                             "s3:PutInventoryConfiguration",
                                             "s3:ListBucket*",
                                             "s3:GetObject*",
+                                            "s3:GetBucketNotification",
                                             "s3:PutBucketNotification",
                                             "s3:GetBucketLogging",
                                             "backup:ListProtectedResources",
@@ -1215,6 +1216,14 @@
     ],
     "locals": [
         {
+            "clumio_iam_role_principal": {
+                "intermediate_role": "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole",
+                "root": "arn:aws:iam::${var.clumio_aws_account_id}:root"
+            },
+            "clumio_support_role_principal": {
+                "intermediate_role": "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole",
+                "root": "arn:aws:iam::${var.clumio_aws_account_id}:root"
+            },
             "region_map": {
                 "ap-east-1": "ae-1",
                 "ap-northeast-1": "ane-1",
@@ -1235,14 +1244,6 @@
                 "us-east-2": "ue-2",
                 "us-west-1": "uw-1",
                 "us-west-2": "uw-2"
-            },
-            "clumio_iam_role_principal": {
-                "root": "arn:aws:iam::${var.clumio_aws_account_id}:root",
-                "intermediate_role": "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
-            },
-            "clumio_support_role_principal": {
-                "root": "arn:aws:iam::${var.clumio_aws_account_id}:root",
-                "intermediate_role": "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"
             }
         }
     ],
@@ -1825,7 +1826,7 @@
                 "clumio_callback": {
                     "account_id": "${var.aws_account_id}",
                     "clumio_event_pub_id": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "config_version": "${var.access_via_role_chaining ? \"2.5\" : \"2.4\"}",
+                    "config_version": "2.5",
                     "depends_on": [
                         "aws_iam_role.clumio_iam_role",
                         "time_sleep.wait_30_seconds_for_iam_propagation",
@@ -1855,20 +1856,20 @@
                         "aws_iam_policy.clumio_s3_continuous_backup_event_bridge_policy"
                     ],
                     "discover_version": "4.2",
-                    "intermediate_role_arn": "${var.access_via_role_chaining ? lookup(local.clumio_iam_role_principal, \"intermediate_role\", \"\") : \"\"}",
+                    "intermediate_role_arn": "${lookup(local.clumio_iam_role_principal, \"intermediate_role\", \"\")}",
                     "properties": {
+                        "ClumioS3ContinuousBackupEventBridgeRoleArn": "${var.is_s3_enabled ? aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].arn : \"\"}",
                         "ClumioSSMNotificationRoleArn": "${var.is_ec2_mssql_enabled ? aws_iam_role.clumio_ssm_notification_role[0].arn : \"\"}",
                         "DynamoDbSecureVaultPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
                         "DynamoDbWarmProtectPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
-                        "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}",
-                        "ClumioS3ContinuousBackupEventBridgeRoleArn": "${var.is_s3_enabled ? aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].arn : \"\"}"
+                        "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
                     },
-                    "protect_config_version": "${var.access_via_role_chaining ? \"20.3\" : \"20.2\"}",
+                    "protect_config_version": "20.3",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"5.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
-                    "protect_s3_version": "${var.is_s3_enabled ? \"4.4\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"4.5\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.3\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
