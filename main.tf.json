@@ -42,17 +42,17 @@
                             ],
                             "condition": {
                                 "test": "StringEquals",
-                                "variable": "sts:ExternalId",
                                 "values": [
                                     "${var.role_external_id}"
-                                ]
+                                ],
+                                "variable": "sts:ExternalId"
                             },
                             "effect": "Allow",
                             "principals": {
-                                "type": "AWS",
                                 "identifiers": [
                                     "${lookup(local.clumio_support_role_principal, \"intermediate_role\", \"\")}"
-                                ]
+                                ],
+                                "type": "AWS"
                             }
                         }
                     ]
@@ -83,7 +83,6 @@
                     "dynamic": [
                         {
                             "statement": {
-                                "for_each":"${var.is_dynamodb_enabled ? [1] : []}",
                                 "content": [
                                     {
                                         "actions": [
@@ -104,7 +103,8 @@
                                         ],
                                         "sid": "DescribeDynamoResources"
                                     }
-                                ]
+                                ],
+                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
                             }
                         },
                         {
@@ -537,52 +537,471 @@
                     "statement": [
                         {
                             "actions": [
-                                "ec2:CreateSnapshots",
-                                "ec2:CreateSnapshot",
-                                "ec2:CreateTags",
-                                "ec2:DeleteTags",
-                                "ec2:DeleteSnapshot",
-                                "ec2:CreateVolume",
-                                "ec2:DeleteVolume",
-                                "ec2:AttachVolume",
-                                "ec2:DetachVolume",
-                                "ec2:StartInstances",
-                                "ec2:StopInstances",
-                                "ec2:DeleteNetworkInterface",
-                                "ec2:AssociateAddress",
-                                "ec2:DisassociateAddress",
-                                "ec2:DescribeVpcs",
-                                "ec2:DescribeAddresses",
-                                "ec2:DescribeNetworkInterfaces",
-                                "ec2:DescribeKeyPairs",
-                                "ec2:DescribeElasticGpus",
-                                "ec2:DescribeSubnets",
-                                "iam:GetRole",
-                                "iam:ListRoles",
-                                "iam:GetInstanceProfile",
-                                "iam:ListInstanceProfiles",
-                                "elastic-inference:DescribeAccelerators",
-                                "elastic-inference:DescribeAcceleratorOfferings",
-                                "ec2:DescribeCapacityReservations",
-                                "ec2:RegisterImage",
-                                "ec2:DeregisterImage"
+                                "ebs:StartSnapshot"
                             ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:RequestTag/Vendor"
+                            },
                             "effect": "Allow",
                             "resources": [
                                 "*"
                             ],
-                            "sid": "GeneralDataProtectionEC2"
+                            "sid": "StartSnapshotWithVendorTag"
                         },
                         {
                             "actions": [
-                                "ec2:TerminateInstances",
+                                "ebs:StartSnapshot"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:RequestTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "StartSnapshotWithRestoreTag"
+                        },
+                        {
+                            "actions": [
+                                "ebs:CompleteSnapshot",
+                                "ebs:PutSnapshotBlock"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "ModifySnapshotWithResourceTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateSnapshots",
+                                "ec2:CreateSnapshot"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:RequestTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*::snapshot/*"
+                            ],
+                            "sid": "CreateSnapshotWithVendorTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateSnapshots",
+                                "ec2:CreateSnapshot"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:RequestTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*::snapshot/*"
+                            ],
+                            "sid": "CreateSnapshotWithRestoreTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateSnapshots",
+                                "ec2:CreateSnapshot"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:instance/*",
+                                "arn:aws:ec2:*:*:volume/*"
+                            ],
+                            "sid": "CreateSnapshotOnResources"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeleteSnapshot"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:snapshot/*"
+                            ],
+                            "sid": "OnlyDeleteSnapshotHavingClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateVolume"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:RequestTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:volume/*"
+                            ],
+                            "sid": "CreateVolumeWithClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateVolume"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:RequestTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:volume/*"
+                            ],
+                            "sid": "CreateVolumeWithClumioRestoreTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeleteVolume"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "DeleteVolumeWithResourceTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:AttachVolume"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:instance/*"
+                            ],
+                            "sid": "AttachVolumeToInstanceWithRestoreTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DetachVolume"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:instance/*"
+                            ],
+                            "sid": "DetachVolumeFromInstanceWithRestoreTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DetachVolume",
+                                "ec2:AttachVolume"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:volume/*"
+                            ],
+                            "sid": "AllowAttachDetachVolume"
+                        },
+                        {
+                            "actions": [
+                                "ec2:RegisterImage"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringLike",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*::snapshot/*"
+                            ],
+                            "sid": "RegisterClumioTaggedSnapshot"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeregisterImage"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*::image/*"
+                            ],
+                            "sid": "DeRegisterClumioTaggedImage"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeregisterImage"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*::image/*"
+                            ],
+                            "sid": "DeRegisterClumioRestoredImage"
+                        },
+                        {
+                            "actions": [
+                                "ec2:RegisterImage"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*::snapshot/*"
+                            ],
+                            "sid": "RegisterClumioRestoredSnapshot"
+                        },
+                        {
+                            "actions": [
+                                "ec2:RegisterImage"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*::image/*"
+                            ],
+                            "sid": "AllowRegisterImage"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeleteNetworkInterface"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "DeleteClumioRestoredNic"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DisassociateAddress",
+                                "ec2:AssociateAddress"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:instance/*",
+                                "arn:aws:ec2:*:*:network-interface/*"
+                            ],
+                            "sid": "ModifyClumioRestoredNic"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeleteTags"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:image/*",
+                                "arn:aws:ec2:*:*:instance/*",
+                                "arn:aws:ec2:*:*:volume/*",
+                                "arn:aws:ec2:*:*:network-interface/*",
+                                "arn:aws:ec2:*:*:snapshot/*"
+                            ],
+                            "sid": "DeleteTagsOnClumioTaggedResources"
+                        },
+                        {
+                            "actions": [
                                 "ec2:RunInstances"
                             ],
                             "effect": "Allow",
                             "resources": [
                                 "*"
                             ],
-                            "sid": "ClumioDataProtectionVpc"
+                            "sid": "AllowRunInstance"
+                        },
+                        {
+                            "actions": [
+                                "ec2:TerminateInstances",
+                                "ec2:StartInstances",
+                                "ec2:StopInstances"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:instance/*",
+                                "arn:aws:license-manager:*:*:license-configuration:*"
+                            ],
+                            "sid": "AllowOperationsOnRestoredInstances"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateTags"
+                            ],
+                            "condition": {
+                                "test": "StringNotLike",
+                                "values": [
+                                    "CreateTags"
+                                ],
+                                "variable": "ec2:CreateAction"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "CreateTagsForEC2CreateAction"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateTags"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringLike",
+                                "values": [
+                                    "clumio.restore.tag"
+                                ],
+                                "variable": "aws:TagKeys"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:image/*"
+                            ],
+                            "sid": "CreateTagsIfRequestHasRestoreTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateTags"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:RequestTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:image/*"
+                            ],
+                            "sid": "CreateTagsIfRequestHasClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeleteTags"
+                            ],
+                            "condition": {
+                                "test": "ForAnyValue:StringLike",
+                                "values": [
+                                    "*"
+                                ],
+                                "variable": "aws:ResourceTag/clumio.restore.tag"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:*:*:image/*",
+                                "arn:aws:ec2:*:*:instance/*",
+                                "arn:aws:ec2:*:*:volume/*",
+                                "arn:aws:ec2:*:*:network-interface/*",
+                                "arn:aws:ec2:*:*:snapshot/*"
+                            ],
+                            "sid": "DeleteTagsOnClumioRestoredResources"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DescribeCapacityReservations",
+                                "iam:GetRole",
+                                "elastic-inference:DescribeAcceleratorOfferings",
+                                "ec2:DescribeAddresses",
+                                "iam:GetInstanceProfile",
+                                "elastic-inference:DescribeAccelerators",
+                                "iam:ListRoles",
+                                "ebs:ListSnapshotBlocks",
+                                "iam:ListInstanceProfiles",
+                                "ebs:ListChangedBlocks",
+                                "ec2:DescribeNetworkInterfaces",
+                                "ec2:DescribeVpcs",
+                                "ec2:DescribeElasticGpus",
+                                "ec2:DescribeSubnets",
+                                "ec2:DescribeKeyPairs",
+                                "ebs:GetSnapshotBlock"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "*"
+                            ],
+                            "sid": "AllowReadOperations"
                         },
                         {
                             "actions": [
@@ -600,21 +1019,6 @@
                                 "*"
                             ],
                             "sid": "AssignClumioDataProtectionInstanceRole"
-                        },
-                        {
-                            "actions": [
-                                "ebs:ListChangedBlocks",
-                                "ebs:ListSnapshotBlocks",
-                                "ebs:GetSnapshotBlock",
-                                "ebs:PutSnapshotBlock",
-                                "ebs:StartSnapshot",
-                                "ebs:CompleteSnapshot"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:ec2:*::snapshot/*"
-                            ],
-                            "sid": "ClumioDataProtectionEBSDirect"
                         }
                     ]
                 }
@@ -943,7 +1347,7 @@
         {
             "aws_iam_policy_document": {
                 "clumio_s3_protect_policy_document": {
-		    "count": "${var.is_s3_enabled ? 1 : 0}",
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "statement": [
                         {
                             "actions": [
@@ -1866,7 +2270,7 @@
                     },
                     "protect_config_version": "20.3",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"5.0\" : \"\"}",
-                    "protect_ebs_version": "${var.is_ebs_enabled ? \"21.0\" : \"\"}",
+                    "protect_ebs_version": "${var.is_ebs_enabled ? \"22.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"4.5\" : \"\"}",

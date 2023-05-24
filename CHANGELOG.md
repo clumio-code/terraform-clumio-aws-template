@@ -1,3 +1,6 @@
+## 0.15.0
+Updates to EC2 protect policy document permissions.
+
 ## 0.14.0
 Role chaining enabled by default and s3 permissions change.
 
