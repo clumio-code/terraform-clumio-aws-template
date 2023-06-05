@@ -10,20 +10,16 @@
                 "aws_iam_role_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "sts:AssumeRole"
-                            ],
+                            "actions": ["sts:AssumeRole"],
                             "condition": {
                                 "test": "StringEquals",
-                                "values": [
-                                    "${var.role_external_id}"
-                                ],
+                                "values": ["${var.role_external_id}"],
                                 "variable": "sts:ExternalId"
                             },
                             "effect": "Allow",
                             "principals": {
                                 "identifiers": [
-                                    "${lookup(local.clumio_iam_role_principal,\"intermediate_role\", \"\")}"
+                                    "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
                                 ],
                                 "type": "AWS"
                             }
@@ -37,20 +33,16 @@
                 "aws_support_role_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "sts:AssumeRole"
-                            ],
+                            "actions": ["sts:AssumeRole"],
                             "condition": {
                                 "test": "StringEquals",
-                                "values": [
-                                    "${var.role_external_id}"
-                                ],
+                                "values": ["${var.role_external_id}"],
                                 "variable": "sts:ExternalId"
                             },
                             "effect": "Allow",
                             "principals": {
                                 "identifiers": [
-                                    "${lookup(local.clumio_support_role_principal, \"intermediate_role\", \"\")}"
+                                    "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"
                                 ],
                                 "type": "AWS"
                             }
@@ -64,162 +56,10 @@
                 "clumio_base_policy_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "iam:ListAccountAliases"
-                            ],
+                            "actions": ["iam:ListAccountAliases"],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "GetAccountFriendlyName"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "aws_iam_policy_document": {
-                "clumio_discover_policy_document": {
-                    "dynamic": [
-                        {
-                            "statement": {
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "dynamodb:DescribeBackup",
-                                            "dynamodb:DescribeContinuousBackups",
-                                            "dynamodb:DescribeGlobalTable",
-                                            "dynamodb:DescribeGlobalTableSettings",
-                                            "dynamodb:DescribeTable",
-                                            "dynamodb:DescribeTableReplicaAutoScaling",
-                                            "dynamodb:ListBackups",
-                                            "dynamodb:ListGlobalTables",
-                                            "dynamodb:ListTables",
-                                            "dynamodb:ListTagsOfResource"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "*"
-                                        ],
-                                        "sid": "DescribeDynamoResources"
-                                    }
-                                ],
-                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
-                            }
-                        },
-                        {
-                            "statement": {
-                                "for_each":"${var.is_ebs_enabled ? [1] : []}",
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "ec2:DescribeImageAttribute",
-                                            "ec2:DescribeImages",
-                                            "ec2:DescribeInstanceAttribute",
-                                            "ec2:DescribeInstanceStatus",
-                                            "ec2:DescribeInstances",
-                                            "ec2:DescribeInstanceTypes",
-                                            "ec2:DescribeInstanceCreditSpecifications",
-                                            "ec2:DescribeInstanceTypeOfferings",
-                                            "ec2:DescribeTags",
-                                            "ec2:DescribeSnapshots",
-                                            "ec2:DescribeAvailabilityZones",
-                                            "ec2:DescribeSecurityGroups"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "*"
-                                        ],
-                                        "sid": "DescribeEc2Resources"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "statement": {
-                                "for_each":"${var.is_ebs_enabled ? [1] : []}",
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "ec2:DescribeFastSnapshotRestores",
-                                            "ec2:DescribeSnapshotAttribute",
-                                            "ec2:DescribeSnapshots",
-                                            "ec2:DescribeVolumeAttribute",
-                                            "ec2:DescribeVolumeStatus",
-                                            "ec2:DescribeVolumes",
-                                            "ebs:ListChangedBlocks",
-                                            "ebs:ListSnapshotBlocks",
-                                            "kms:DescribeKey"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "*"
-                                        ],
-                                        "sid": "DescribeEbsResources"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "statement": {
-                                "for_each":"${var.is_rds_enabled ? [1] : []}",
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "rds:DescribeDBClusters",
-                                            "rds:DescribeDBClusterSnapshotAttributes",
-                                            "rds:DescribeDBClusterSnapshots",
-                                            "rds:DescribeDBInstanceAutomatedBackups",
-                                            "rds:DescribeDBInstances",
-                                            "rds:DescribeDBSnapshotAttributes",
-                                            "rds:DescribeDBSnapshots",
-                                            "rds:DescribeGlobalClusters",
-                                            "rds:ListTagsForResource",
-                                            "rds:DescribeOptionGroups",
-                                            "rds:DescribeOptionGroupOptions",
-                                            "cloudwatch:GetMetricStatistics"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "*"
-                                        ],
-                                        "sid": "DescribeRdsResources"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "statement": {
-                                "for_each":"${var.is_s3_enabled ? [1] : []}",
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "s3:ListAllMyBuckets",
-                                            "s3:GetBucketLocation",
-                                            "s3:GetEncryptionConfiguration",
-                                            "s3:GetBucketVersioning",
-                                            "s3:GetBucketPolicy",
-                                            "s3:GetBucketTagging",
-                                            "s3:GetReplicationConfiguration",
-                                            "s3:GetInventoryConfiguration",
-                                            "s3:PutInventoryConfiguration",
-                                            "s3:ListBucket*",
-                                            "s3:GetObject*",
-                                            "s3:GetBucketNotification",
-                                            "s3:PutBucketNotification",
-                                            "s3:GetBucketLogging",
-                                            "backup:ListProtectedResources",
-                                            "s3:GetLifecycleConfiguration",
-                                            "s3:GetBucketLogging"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "*"
-                                        ],
-                                        "sid": "DescribeS3Resources"
-                                    }
-                                ]
-                            }
                         }
                     ]
                 }
@@ -249,7 +89,18 @@
                                 "events:ListTargetsByRule"
                             ],
                             "effect": "Allow",
-                            "resources": "${compact([\"${aws_iam_role.clumio_iam_role.arn}\", \"${aws_sns_topic.clumio_event_pub.arn}\", \"${aws_cloudwatch_event_rule.clumio_tag_event_rule.arn}\", \"${var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].arn : \"\"}\", \"${var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule[0].arn : \"\"}\", \"${var.is_dynamodb_enabled ? aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule[0].arn : \"\"}\", \"${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule[0].arn : \"\"}\", \"${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudwatch_event_rule[0].arn : \"\"}\", \"${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule[0].arn : \"\"}\", \"${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule[0].arn : \"\"}\" ])}",
+                            "resources": [
+                                "${aws_iam_role.clumio_iam_role.arn}",
+                                "${aws_sns_topic.clumio_event_pub.arn}",
+                                "${aws_cloudwatch_event_rule.clumio_tag_event_rule.arn}",
+                                "${var.is_dynamodb_enabled ? aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule[0].arn: \"\"}",
+                                "${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule[0].arn: \"\"}",
+                                "${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudwatch_event_rule[0].arn: \"\"}",
+                                "${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule[0].arn: \"\"}",
+                                "${var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule[0].arn: \"\"}",
+                                "${var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].arn: \"\"}",
+                                "${var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule[0].arn: \"\"}"
+                            ],
                             "sid": "ReflectOnClumioCfnStack"
                         }
                     ]
@@ -258,18 +109,76 @@
         },
         {
             "aws_iam_policy_document": {
-                "clumio_dynamodb_policy_document": {
+                "clumio_dynamodb_backup_policy_document": {
                     "statement": [
                         {
                             "actions": [
-                                "dynamodb:CreateTable",
-                                "dynamodb:CreateTableReplica",
-                                "dynamodb:ExportTableToPointInTime",
-                                "dynamodb:UpdateTableReplicaAutoScaling"
+                                "kms:CreateGrant",
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey",
+                                "kms:ReEncryptFrom",
+                                "kms:ReEncryptTo"
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
+                                "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+                            ],
+                            "sid": "ClumioDynamoDbKmsActions"
+                        },
+                        {
+                            "actions": [
+                                "dynamodb:CreateBackup",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:DescribeContinuousBackups",
+                                "dynamodb:DescribeTimeToLive",
+                                "dynamodb:ListTagsOfResource",
+                                "dynamodb:UpdateContinuousBackups"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+                            ],
+                            "sid": "ClumioDynamoDbTableActions"
+                        },
+                        {
+                            "actions": ["dynamodb:DeleteBackup", "dynamodb:DescribeBackup"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/backup/*"
+                            ],
+                            "sid": "ClumioSnapDynamoDbBackupActions"
+                        },
+                        {
+                            "actions": ["dynamodb:ListBackups"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/backup*"
+                            ],
+                            "sid": "ClumioSnapDynamoDbMiscActions"
+                        },
+                        {
+                            "actions": [
+                                "application-autoscaling:DescribeScalableTargets",
+                                "application-autoscaling:DescribeScalingPolicies"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": ["dynamodb"],
+                                "variable": "application-autoscaling:service-namespace"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:application-autoscaling:${var.aws_region}:${var.aws_account_id}:scalable-target/*"
+                            ],
+                            "sid": "ClumioDynamoDbAutoScalingActions"
+                        },
+                        {
+                            "actions": ["dynamodb:ExportTableToPointInTime"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
                             ],
                             "sid": "ClumioDynamoDbSecureVaultTableActions"
                         },
@@ -281,17 +190,15 @@
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*/stream/*"
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/stream/*"
                             ],
                             "sid": "ClumioDynamoDbSecureVaultStreamActions"
                         },
                         {
-                            "actions": [
-                                "dynamodb:DescribeExport"
-                            ],
+                            "actions": ["dynamodb:DescribeExport"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*/export/*"
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/export/*"
                             ],
                             "sid": "ClumioDynamoDbSecureVaultExportActions"
                         },
@@ -302,27 +209,107 @@
                                 "s3:PutObjectAcl"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "arn:aws:s3:::clumio-ddb-export-*/*"
-                            ],
+                            "resources": ["arn:aws:s3:::clumio-ddb-export-*/*"],
                             "sid": "ClumioDynamoDbSecureVaultExportS3Actions"
-                        },
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "clumio_dynamodb_restore_policy_document": {
+                    "statement": [
                         {
                             "actions": [
-                                "dynamodb:ImportTable",
-                                "dynamodb:DescribeImport"
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:GetItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:Query",
+                                "dynamodb:RestoreTableFromBackup",
+                                "dynamodb:RestoreTableToPointInTime",
+                                "dynamodb:Scan",
+                                "dynamodb:TagResource",
+                                "dynamodb:UntagResource",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:UpdateTable",
+                                "dynamodb:UpdateTimeToLive",
+                                "dynamodb:DeleteTable"
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+                            ],
+                            "sid": "ClumioDynamoDbTableActions"
+                        },
+                        {
+                            "actions": [
+                                "application-autoscaling:PutScalingPolicy",
+                                "application-autoscaling:RegisterScalableTarget"
+                            ],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": ["dynamodb"],
+                                "variable": "application-autoscaling:service-namespace"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:application-autoscaling:${var.aws_region}:${var.aws_account_id}:scalable-target/*"
+                            ],
+                            "sid": "ClumioWarmProtectDynamoDbAutoScalingActions"
+                        },
+                        {
+                            "actions": ["iam:CreateServiceLinkedRole"],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": ["dynamodb.application-autoscaling.amazonaws.com"],
+                                "variable": "iam:AWSServiceName"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+                            ],
+                            "sid": "ClumioWarmProtectCreateDynamoDbAutoScalingRole"
+                        },
+                        {
+                            "actions": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey",
+                                "kms:ReEncryptFrom",
+                                "kms:ReEncryptTo"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+                            ],
+                            "sid": "AllowClumioDynamoDbSecureVaultKmsAccess"
+                        },
+                        {
+                            "actions": [
+                                "dynamodb:DescribeTable",
+                                "dynamodb:CreateTable",
+                                "dynamodb:CreateTableReplica",
+                                "dynamodb:UpdateTableReplicaAutoScaling"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+                            ],
+                            "sid": "ClumioDynamoDbSecureVaultTableActions"
+                        },
+                        {
+                            "actions": ["dynamodb:ImportTable", "dynamodb:DescribeImport"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
                             ],
                             "sid": "ClumioDynamoDbSecureVaultImportActions"
                         },
                         {
-                            "actions": [
-                                "s3:GetObject",
-                                "s3:ListBucket"
-                            ],
+                            "actions": ["s3:GetObject", "s3:ListBucket"],
                             "effect": "Allow",
                             "resources": [
                                 "arn:aws:s3:::clumio-ddb-export-*/*",
@@ -341,10 +328,171 @@
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:logs:*:${var.aws_account_id}:log-group:/aws-dynamodb/imports:*",
-                                "arn:${data.aws_partition.current.partition}:logs:*:${var.aws_account_id}:log-group::log-stream:*"
+                                "arn:${data.aws_partition.current.partition}:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws-dynamodb/imports:*",
+                                "arn:${data.aws_partition.current.partition}:logs:${var.aws_region}:${var.aws_account_id}:log-group::log-stream:*"
                             ],
                             "sid": "ClumioDynamoDbSecureVaultCloudWatchActions"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "clumio_ec2_backup_policy_document": {
+                    "statement": [
+                        {
+                            "actions": ["ec2:CreateSnapshots", "ec2:CreateSnapshot"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:RequestTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+                            ],
+                            "sid": "CreateSnapshotWithClumioTag"
+                        },
+                        {
+                            "actions": ["ec2:CreateSnapshots", "ec2:CreateSnapshot"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+                            ],
+                            "sid": "CreateSnapshotOnAnyVolumeOrInstance"
+                        },
+                        {
+                            "actions": ["ec2:DeleteSnapshot"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+                            ],
+                            "sid": "DeleteClumioTaggedSnapshot"
+                        },
+                        {
+                            "actions": ["ec2:RegisterImage"],
+                            "condition": {
+                                "test": "ForAnyValue:StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+                            ],
+                            "sid": "RegisterClumioTaggedSnapshot"
+                        },
+                        {
+                            "actions": ["ec2:DeregisterImage"],
+                            "condition": {
+                                "test": "ForAnyValue:StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+                            ],
+                            "sid": "DeregisterClumioTaggedImage"
+                        },
+                        {
+                            "actions": ["ec2:RegisterImage"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+                            ],
+                            "sid": "RegisterImage"
+                        },
+                        {
+                            "actions": ["ec2:DeleteTags"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+                            ],
+                            "sid": "DeleteTagsOnClumioTaggedResource"
+                        },
+                        {
+                            "actions": ["ec2:CreateTags"],
+                            "condition": {
+                                "test": "StringNotLike",
+                                "values": ["CreateTags"],
+                                "variable": "ec2:CreateAction"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+                            ],
+                            "sid": "CreateTagsOnlyWithCreateActions"
+                        },
+                        {
+                            "actions": ["ec2:CreateTags"],
+                            "condition": {
+                                "test": "ForAnyValue:StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:RequestTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+                            ],
+                            "sid": "CreateTagsIfRequestHasClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ebs:ListSnapshotBlocks",
+                                "ebs:ListChangedBlocks",
+                                "ebs:GetSnapshotBlock"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+                            ],
+                            "sid": "EBSReadOperations"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DescribeCapacityReservations",
+                                "ec2:DescribeAddresses",
+                                "ec2:DescribeNetworkInterfaces",
+                                "ec2:DescribeVpcs",
+                                "ec2:DescribeElasticGpus",
+                                "ec2:DescribeSubnets",
+                                "ec2:DescribeKeyPairs",
+                                "elastic-inference:DescribeAccelerators",
+                                "elastic-inference:DescribeAcceleratorOfferings"
+                            ],
+                            "effect": "Allow",
+                            "resources": ["*"],
+                            "sid": "EC2DescribeOperations"
+                        },
+                        {
+                            "actions": ["iam:GetInstanceProfile"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:instance-profile/*"
+                            ],
+                            "sid": "GetInstanceProfile"
+                        },
+                        {
+                            "actions": ["iam:GetRole"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+                            ],
+                            "sid": "GetRole"
                         }
                     ]
                 }
@@ -362,20 +510,14 @@
                                 "iam:GetInstanceProfile"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "DescribeSSMAndEC2Resources"
                         },
                         {
-                            "actions": [
-                                "ssm:SendCommand"
-                            ],
+                            "actions": ["ssm:SendCommand"],
                             "condition": {
                                 "test": "StringEquals",
-                                "values": [
-                                    "Clumio"
-                                ],
+                                "values": ["Clumio"],
                                 "variable": "aws:ResourceTag/Vendor"
                             },
                             "effect": "Allow",
@@ -385,9 +527,7 @@
                             "sid": "ClumioDataProtectionSSMCmd"
                         },
                         {
-                            "actions": [
-                                "ssm:CancelCommand"
-                            ],
+                            "actions": ["ssm:CancelCommand"],
                             "effect": "Allow",
                             "resources": [
                                 "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:*"
@@ -395,9 +535,7 @@
                             "sid": "ClumioDataProtectionSSMCancelCmd"
                         },
                         {
-                            "actions": [
-                                "ssm:SendCommand"
-                            ],
+                            "actions": ["ssm:SendCommand"],
                             "effect": "Allow",
                             "resources": [
                                 "arn:aws:ssm:${var.aws_region}::document/AWS-RunPowerShellScript"
@@ -405,15 +543,90 @@
                             "sid": "ClumioDataProtectionSSMCmdDoc"
                         },
                         {
-                            "actions": [
-                                "iam:GetRole",
-                                "iam:PassRole"
-                            ],
+                            "actions": ["iam:GetRole", "iam:PassRole"],
                             "effect": "Allow",
                             "resources": [
                                 "${aws_iam_role.clumio_ssm_notification_role[0].arn}"
                             ],
                             "sid": "ClumioSSMPassRole"
+                        },
+                        {
+                            "actions": ["ec2:CreateVolume"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "CreateVolumeWithClumioTag"
+                        },
+                        {
+                            "actions": ["ec2:DetachVolume", "ec2:AttachVolume"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "AttachDetachVolumeWithClumioTag"
+                        },
+                        {
+                            "actions": ["ec2:DetachVolume", "ec2:AttachVolume"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+                            ],
+                            "sid": "AttachDetachVolumeFromInstanceWithClumioTag"
+                        },
+                        {
+                            "actions": ["ec2:DeleteVolume"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "DeleteVolumeWithClumioTag"
+                        },
+                        {
+                            "actions": ["ec2:CreateTags"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "CreateTagsForCreateVolume"
+                        },
+                        {
+                            "actions": ["ec2:DeleteTags"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "DeleteTagsOnClumioVolume"
                         }
                     ]
                 }
@@ -442,9 +655,7 @@
                                 "ssm:UpdateInstanceInformation"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "SSMAccess"
                         },
                         {
@@ -455,9 +666,7 @@
                                 "ssmmessages:OpenDataChannel"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "SSMControlChannels"
                         },
                         {
@@ -470,20 +679,13 @@
                                 "ec2messages:SendReply"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "EC2Messages"
                         },
                         {
-                            "actions": [
-                                "s3:PutObject",
-                                "s3:GetObject"
-                            ],
+                            "actions": ["s3:PutObject", "s3:GetObject"],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "S3Permissions"
                         },
                         {
@@ -495,9 +697,7 @@
                                 "logs:PutLogEvents"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "CloudWatchPermissions"
                         }
                     ]
@@ -509,21 +709,15 @@
                 "clumio_ec2_mssql_ssm_instance_role_v2_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "sts:AssumeRole"
-                            ],
+                            "actions": ["sts:AssumeRole"],
                             "condition": {
                                 "test": "StringEquals",
-                                "values": [
-                                    "${var.role_external_id}"
-                                ],
+                                "values": ["${var.role_external_id}"],
                                 "variable": "sts:ExternalId"
                             },
                             "effect": "Allow",
                             "principals": {
-                                "identifiers": [
-                                    "ec2.amazonaws.com"
-                                ],
+                                "identifiers": ["ec2.amazonaws.com"],
                                 "type": "Service"
                             }
                         }
@@ -533,358 +727,186 @@
         },
         {
             "aws_iam_policy_document": {
-                "clumio_ec2_protect_managed_policy_document": {
+                "clumio_ec2_restore_policy_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "ebs:StartSnapshot"
-                            ],
+                            "actions": ["ebs:StartSnapshot"],
                             "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "Clumio"
-                                ],
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
                                 "variable": "aws:RequestTag/Vendor"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
                             ],
-                            "sid": "StartSnapshotWithVendorTag"
+                            "sid": "StartSnapshotWithClumioTag"
                         },
                         {
-                            "actions": [
-                                "ebs:StartSnapshot"
-                            ],
+                            "actions": ["ebs:CompleteSnapshot", "ebs:PutSnapshotBlock"],
                             "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
-                                "variable": "aws:RequestTag/clumio.restore.tag"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "StartSnapshotWithRestoreTag"
-                        },
-                        {
-                            "actions": [
-                                "ebs:CompleteSnapshot",
-                                "ebs:PutSnapshotBlock"
-                            ],
-                            "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "Clumio"
-                                ],
+                                "test": "StringEquals",
+                                "values": ["Clumio"],
                                 "variable": "aws:ResourceTag/Vendor"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
                             ],
-                            "sid": "ModifySnapshotWithResourceTag"
+                            "sid": "ModifySnapshotOnClumioTaggedResource"
                         },
                         {
-                            "actions": [
-                                "ec2:CreateSnapshots",
-                                "ec2:CreateSnapshot"
-                            ],
+                            "actions": ["ec2:CreateSnapshots", "ec2:CreateSnapshot"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "Clumio"
-                                ],
-                                "variable": "aws:RequestTag/Vendor"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:ec2:*::snapshot/*"
-                            ],
-                            "sid": "CreateSnapshotWithVendorTag"
-                        },
-                        {
-                            "actions": [
-                                "ec2:CreateSnapshots",
-                                "ec2:CreateSnapshot"
-                            ],
-                            "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:RequestTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*::snapshot/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
                             ],
                             "sid": "CreateSnapshotWithRestoreTag"
                         },
                         {
-                            "actions": [
-                                "ec2:CreateSnapshots",
-                                "ec2:CreateSnapshot"
-                            ],
+                            "actions": ["ec2:CreateSnapshots", "ec2:CreateSnapshot"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:instance/*",
-                                "arn:aws:ec2:*:*:volume/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
                             ],
-                            "sid": "CreateSnapshotOnResources"
+                            "sid": "CreateSnapshotOnAnyVolumeOrInstance"
                         },
                         {
-                            "actions": [
-                                "ec2:DeleteSnapshot"
-                            ],
-                            "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "Clumio"
-                                ],
-                                "variable": "aws:ResourceTag/Vendor"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:ec2:*:*:snapshot/*"
-                            ],
-                            "sid": "OnlyDeleteSnapshotHavingClumioTag"
-                        },
-                        {
-                            "actions": [
-                                "ec2:CreateVolume"
-                            ],
-                            "condition": {
-                                "test": "ForAnyValue:StringEquals",
-                                "values": [
-                                    "Clumio"
-                                ],
-                                "variable": "aws:RequestTag/Vendor"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:ec2:*:*:volume/*"
-                            ],
-                            "sid": "CreateVolumeWithClumioTag"
-                        },
-                        {
-                            "actions": [
-                                "ec2:CreateVolume"
-                            ],
+                            "actions": ["ec2:CreateVolume"],
                             "condition": {
                                 "test": "ForAnyValue:StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:RequestTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:volume/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
                             ],
                             "sid": "CreateVolumeWithClumioRestoreTag"
                         },
                         {
-                            "actions": [
-                                "ec2:DeleteVolume"
-                            ],
+                            "actions": ["ec2:DeleteVolume"],
                             "condition": {
                                 "test": "ForAnyValue:StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
                             ],
-                            "sid": "DeleteVolumeWithResourceTag"
+                            "sid": "DeleteClumioRestoredVolume"
                         },
                         {
-                            "actions": [
-                                "ec2:AttachVolume"
-                            ],
+                            "actions": ["ec2:AttachVolume"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:instance/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
                             ],
-                            "sid": "AttachVolumeToInstanceWithRestoreTag"
+                            "sid": "AttachVolumeToAnyInstance"
                         },
                         {
-                            "actions": [
-                                "ec2:DetachVolume"
-                            ],
+                            "actions": ["ec2:DetachVolume"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:instance/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
                             ],
-                            "sid": "DetachVolumeFromInstanceWithRestoreTag"
+                            "sid": "DetachVolumeFromClumioRestoredInstance"
                         },
                         {
-                            "actions": [
-                                "ec2:DetachVolume",
-                                "ec2:AttachVolume"
-                            ],
+                            "actions": ["ec2:DetachVolume", "ec2:AttachVolume"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:volume/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
                             ],
-                            "sid": "AllowAttachDetachVolume"
+                            "sid": "AttachDetachVolume"
                         },
                         {
-                            "actions": [
-                                "ec2:RegisterImage"
-                            ],
+                            "actions": ["ec2:DeregisterImage"],
                             "condition": {
                                 "test": "ForAnyValue:StringLike",
-                                "values": [
-                                    "Clumio"
-                                ],
-                                "variable": "aws:ResourceTag/Vendor"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:ec2:*::snapshot/*"
-                            ],
-                            "sid": "RegisterClumioTaggedSnapshot"
-                        },
-                        {
-                            "actions": [
-                                "ec2:DeregisterImage"
-                            ],
-                            "condition": {
-                                "test": "ForAnyValue:StringEquals",
-                                "values": [
-                                    "Clumio"
-                                ],
-                                "variable": "aws:ResourceTag/Vendor"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:ec2:*::image/*"
-                            ],
-                            "sid": "DeRegisterClumioTaggedImage"
-                        },
-                        {
-                            "actions": [
-                                "ec2:DeregisterImage"
-                            ],
-                            "condition": {
-                                "test": "ForAnyValue:StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*::image/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
                             ],
-                            "sid": "DeRegisterClumioRestoredImage"
+                            "sid": "DeregisterClumioRestoredImage"
                         },
                         {
-                            "actions": [
-                                "ec2:RegisterImage"
-                            ],
+                            "actions": ["ec2:RegisterImage"],
                             "condition": {
                                 "test": "ForAnyValue:StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*::snapshot/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
                             ],
                             "sid": "RegisterClumioRestoredSnapshot"
                         },
                         {
-                            "actions": [
-                                "ec2:RegisterImage"
-                            ],
+                            "actions": ["ec2:RegisterImage"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*::image/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
                             ],
-                            "sid": "AllowRegisterImage"
+                            "sid": "RegisterClumioRestoredImage"
                         },
                         {
-                            "actions": [
-                                "ec2:DeleteNetworkInterface"
-                            ],
+                            "actions": ["ec2:DeleteNetworkInterface"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
                             ],
                             "sid": "DeleteClumioRestoredNic"
                         },
                         {
-                            "actions": [
-                                "ec2:DisassociateAddress",
-                                "ec2:AssociateAddress"
-                            ],
+                            "actions": ["ec2:DisassociateAddress", "ec2:AssociateAddress"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:instance/*",
-                                "arn:aws:ec2:*:*:network-interface/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
                             ],
                             "sid": "ModifyClumioRestoredNic"
                         },
                         {
-                            "actions": [
-                                "ec2:DeleteTags"
-                            ],
-                            "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "Clumio"
-                                ],
-                                "variable": "aws:ResourceTag/Vendor"
-                            },
+                            "actions": ["ec2:RunInstances"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:image/*",
-                                "arn:aws:ec2:*:*:instance/*",
-                                "arn:aws:ec2:*:*:volume/*",
-                                "arn:aws:ec2:*:*:network-interface/*",
-                                "arn:aws:ec2:*:*:snapshot/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:subnet/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:key-pair/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:security-group/*"
                             ],
-                            "sid": "DeleteTagsOnClumioTaggedResources"
-                        },
-                        {
-                            "actions": [
-                                "ec2:RunInstances"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "AllowRunInstance"
+                            "sid": "RunInstance"
                         },
                         {
                             "actions": [
@@ -894,131 +916,119 @@
                             ],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:instance/*",
-                                "arn:aws:license-manager:*:*:license-configuration:*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
                             ],
-                            "sid": "AllowOperationsOnRestoredInstances"
+                            "sid": "OperationsOnClumioRestoredInstances"
                         },
                         {
-                            "actions": [
-                                "ec2:CreateTags"
-                            ],
+                            "actions": ["ec2:CreateTags"],
                             "condition": {
                                 "test": "StringNotLike",
-                                "values": [
-                                    "CreateTags"
-                                ],
+                                "values": ["CreateTags"],
                                 "variable": "ec2:CreateAction"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:elastic-ip/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
                             ],
-                            "sid": "CreateTagsForEC2CreateAction"
+                            "sid": "CreateTagsOnlyWithCreateActions"
                         },
                         {
-                            "actions": [
-                                "ec2:CreateTags"
-                            ],
+                            "actions": ["ec2:CreateTags"],
                             "condition": {
                                 "test": "ForAnyValue:StringLike",
-                                "values": [
-                                    "clumio.restore.tag"
-                                ],
+                                "values": ["clumio.restore.tag"],
                                 "variable": "aws:TagKeys"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:image/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
                             ],
                             "sid": "CreateTagsIfRequestHasRestoreTag"
                         },
                         {
-                            "actions": [
-                                "ec2:CreateTags"
-                            ],
-                            "condition": {
-                                "test": "ForAnyValue:StringEquals",
-                                "values": [
-                                    "Clumio"
-                                ],
-                                "variable": "aws:RequestTag/Vendor"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:ec2:*:*:image/*"
-                            ],
-                            "sid": "CreateTagsIfRequestHasClumioTag"
-                        },
-                        {
-                            "actions": [
-                                "ec2:DeleteTags"
-                            ],
+                            "actions": ["ec2:DeleteTags"],
                             "condition": {
                                 "test": "ForAnyValue:StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "aws:ResourceTag/clumio.restore.tag"
                             },
                             "effect": "Allow",
                             "resources": [
-                                "arn:aws:ec2:*:*:image/*",
-                                "arn:aws:ec2:*:*:instance/*",
-                                "arn:aws:ec2:*:*:volume/*",
-                                "arn:aws:ec2:*:*:network-interface/*",
-                                "arn:aws:ec2:*:*:snapshot/*"
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:elastic-ip/*",
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
                             ],
-                            "sid": "DeleteTagsOnClumioRestoredResources"
+                            "sid": "DeleteTagsOnClumioRestoredResource"
+                        },
+                        {
+                            "actions": ["iam:PassRole"],
+                            "condition": {
+                                "test": "StringLike",
+                                "values": ["ec2.amazonaws.com*"],
+                                "variable": "iam:PassedToService"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+                            ],
+                            "sid": "AssignClumioDataProtectionInstanceRole"
+                        },
+                        {
+                            "actions": [
+                                "ebs:ListSnapshotBlocks",
+                                "ebs:ListChangedBlocks",
+                                "ebs:GetSnapshotBlock"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+                            ],
+                            "sid": "EBSReadOperations"
+                        },
+                        {
+                            "actions": ["iam:GetInstanceProfile"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:instance-profile/*"
+                            ],
+                            "sid": "GetInstanceProfile"
+                        },
+                        {
+                            "actions": ["iam:GetRole"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+                            ],
+                            "sid": "GetRole"
                         },
                         {
                             "actions": [
                                 "ec2:DescribeCapacityReservations",
-                                "iam:GetRole",
-                                "elastic-inference:DescribeAcceleratorOfferings",
                                 "ec2:DescribeAddresses",
-                                "iam:GetInstanceProfile",
-                                "elastic-inference:DescribeAccelerators",
-                                "iam:ListRoles",
-                                "ebs:ListSnapshotBlocks",
-                                "iam:ListInstanceProfiles",
-                                "ebs:ListChangedBlocks",
                                 "ec2:DescribeNetworkInterfaces",
                                 "ec2:DescribeVpcs",
                                 "ec2:DescribeElasticGpus",
                                 "ec2:DescribeSubnets",
                                 "ec2:DescribeKeyPairs",
-                                "ebs:GetSnapshotBlock"
+                                "elastic-inference:DescribeAccelerators",
+                                "elastic-inference:DescribeAcceleratorOfferings"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "AllowReadOperations"
-                        },
-                        {
-                            "actions": [
-                                "iam:PassRole"
-                            ],
-                            "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "ec2.amazonaws.com*"
-                                ],
-                                "variable": "iam:PassedToService"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "AssignClumioDataProtectionInstanceRole"
+                            "resources": ["*"],
+                            "sid": "EC2DescribeOperations"
                         }
                     ]
                 }
@@ -1029,32 +1039,22 @@
                 "clumio_event_pub_policy_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "SNS:Publish"
-                            ],
+                            "actions": ["SNS:Publish"],
                             "condition": {
                                 "test": "StringEquals",
-                                "values": [
-                                    "${var.aws_account_id}"
-                                ],
+                                "values": ["${var.aws_account_id}"],
                                 "variable": "AWS:SourceOwner"
                             },
                             "effect": "Allow",
                             "principals": {
-                                "identifiers": [
-                                    "*"
-                                ],
+                                "identifiers": ["*"],
                                 "type": "AWS"
                             },
-                            "resources": [
-                                "${aws_sns_topic.clumio_event_pub.arn}"
-                            ],
+                            "resources": ["${aws_sns_topic.clumio_event_pub.arn}"],
                             "sid": "__pub_statement"
                         },
                         {
-                            "actions": [
-                                "SNS:Subscribe"
-                            ],
+                            "actions": ["SNS:Subscribe"],
                             "effect": "Allow",
                             "principals": {
                                 "identifiers": [
@@ -1062,15 +1062,11 @@
                                 ],
                                 "type": "AWS"
                             },
-                            "resources": [
-                                "${aws_sns_topic.clumio_event_pub.arn}"
-                            ],
+                            "resources": ["${aws_sns_topic.clumio_event_pub.arn}"],
                             "sid": "__sub_statement"
                         },
                         {
-                            "actions": [
-                                "SNS:ListSubscriptionsByTopic"
-                            ],
+                            "actions": ["SNS:ListSubscriptionsByTopic"],
                             "effect": "Allow",
                             "principals": {
                                 "identifiers": [
@@ -1078,25 +1074,17 @@
                                 ],
                                 "type": "AWS"
                             },
-                            "resources": [
-                                "${aws_sns_topic.clumio_event_pub.arn}"
-                            ],
+                            "resources": ["${aws_sns_topic.clumio_event_pub.arn}"],
                             "sid": "__desc_sub_statement"
                         },
                         {
-                            "actions": [
-                                "SNS:Publish"
-                            ],
+                            "actions": ["SNS:Publish"],
                             "effect": "Allow",
                             "principals": {
-                                "identifiers": [
-                                    "events.amazonaws.com"
-                                ],
+                                "identifiers": ["events.amazonaws.com"],
                                 "type": "Service"
                             },
-                            "resources": [
-                                "${aws_sns_topic.clumio_event_pub.arn}"
-                            ],
+                            "resources": ["${aws_sns_topic.clumio_event_pub.arn}"],
                             "sid": "AWSEvents_ClumioInventoryRule_${var.clumio_token}_clumio-publish"
                         }
                     ]
@@ -1109,13 +1097,10 @@
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "statement": [
                         {
-                            "actions": [
-                                "dynamodb:BatchWriteItem",
-                                "dynamodb:DescribeTable"
-                            ],
+                            "actions": ["dynamodb:BatchWriteItem", "dynamodb:DescribeTable"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
+                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
                             ],
                             "sid": "AllowClumioDynamoDbSecureVaultAccess"
                         },
@@ -1124,8 +1109,9 @@
                                 "kms:Decrypt",
                                 "kms:DescribeKey",
                                 "kms:Encrypt",
-                                "kms:GenerateDataKey*",
-                                "kms:ReEncrypt*"
+                                "kms:GenerateDataKey",
+                                "kms:ReEncryptFrom",
+                                "kms:ReEncryptTo"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -1143,10 +1129,7 @@
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
                     "statement": [
                         {
-                            "actions": [
-                                "iam:CreateRole",
-                                "iam:AttachRolePolicy"
-                            ],
+                            "actions": ["iam:CreateRole", "iam:AttachRolePolicy"],
                             "condition": {
                                 "test": "StringEquals",
                                 "values": [
@@ -1156,20 +1139,209 @@
                             },
                             "effect": "Allow",
                             "resources": [
-                                "*"
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
                             ],
                             "sid": "AllowCreateRole"
                         },
                         {
-                            "actions": [
-                                "iam:DetachRolePolicy",
-                                "iam:DeleteRole"
-                            ],
+                            "actions": ["iam:DetachRolePolicy", "iam:DeleteRole"],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/clumio/*"
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
                             ],
                             "sid": "AllowDeleteRole"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "clumio_inventory_policy_document": {
+                    "dynamic": [
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": ["backup:ListProtectedResources"],
+                                        "condition": {
+                                            "test": "StringEquals",
+                                            "values": [
+                                                "AWS::DynamoDB::Table",
+                                                "AWS::EC2::Instance",
+                                                "AWS::EC2::Volume",
+                                                "AWS::RDS::DBInstance",
+                                                "AWS::S3::Bucket"
+                                            ],
+                                            "variable": "backup:ResourceType"
+                                        },
+                                        "effect": "Allow",
+                                        "resources": ["*"],
+                                        "sid": "GetBackedUpResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_s3_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "dynamodb:DescribeBackup",
+                                            "dynamodb:DescribeContinuousBackups",
+                                            "dynamodb:DescribeTable",
+                                            "dynamodb:DescribeTableReplicaAutoScaling",
+                                            "dynamodb:ListBackups",
+                                            "dynamodb:ListTables",
+                                            "dynamodb:ListTagsOfResource"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*",
+                                            "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table*"
+                                        ],
+                                        "sid": "DescribeDynamoResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "dynamodb:DescribeGlobalTable",
+                                            "dynamodb:DescribeGlobalTableSettings",
+                                            "dynamodb:ListGlobalTables"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "arn:${data.aws_partition.current.partition}:dynamodb::${var.aws_account_id}:global-table/*",
+                                            "arn:${data.aws_partition.current.partition}:dynamodb::${var.aws_account_id}:global-table*"
+                                        ],
+                                        "sid": "DescribeDynamoGlobalTableResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "ec2:DescribeImageAttribute",
+                                            "ec2:DescribeImages",
+                                            "ec2:DescribeInstanceAttribute",
+                                            "ec2:DescribeInstanceStatus",
+                                            "ec2:DescribeInstances",
+                                            "ec2:DescribeInstanceTypes",
+                                            "ec2:DescribeInstanceCreditSpecifications",
+                                            "ec2:DescribeInstanceTypeOfferings",
+                                            "ec2:DescribeTags",
+                                            "ec2:DescribeSnapshots",
+                                            "ec2:DescribeAvailabilityZones",
+                                            "ec2:DescribeSecurityGroups"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": ["*"],
+                                        "sid": "DescribeEc2Resources"
+                                    }
+                                ],
+                                "for_each": "${var.is_ebs_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "ec2:DescribeFastSnapshotRestores",
+                                            "ec2:DescribeSnapshotAttribute",
+                                            "ec2:DescribeSnapshots",
+                                            "ec2:DescribeVolumeAttribute",
+                                            "ec2:DescribeVolumeStatus",
+                                            "ec2:DescribeVolumes",
+                                            "ebs:ListChangedBlocks",
+                                            "ebs:ListSnapshotBlocks",
+                                            "kms:DescribeKey"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": ["*"],
+                                        "sid": "DescribeEbsResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_ebs_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "rds:DescribeDBClusters",
+                                            "rds:DescribeDBClusterSnapshotAttributes",
+                                            "rds:DescribeDBClusterSnapshots",
+                                            "rds:DescribeDBInstanceAutomatedBackups",
+                                            "rds:DescribeDBInstances",
+                                            "rds:DescribeDBSnapshotAttributes",
+                                            "rds:DescribeDBSnapshots",
+                                            "rds:DescribeGlobalClusters",
+                                            "rds:ListTagsForResource",
+                                            "rds:DescribeOptionGroups",
+                                            "rds:DescribeOptionGroupOptions",
+                                            "cloudwatch:GetMetricStatistics"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": ["*"],
+                                        "sid": "DescribeRdsResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_rds_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "s3:ListAllMyBuckets",
+                                            "s3:GetBucketLocation",
+                                            "s3:GetEncryptionConfiguration",
+                                            "s3:GetBucketVersioning",
+                                            "s3:GetBucketPolicy",
+                                            "s3:GetBucketTagging",
+                                            "s3:GetReplicationConfiguration",
+                                            "s3:GetLifecycleConfiguration",
+                                            "s3:GetBucketLogging"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": ["arn:aws:s3:::*"],
+                                        "sid": "DescribeS3Resources"
+                                    }
+                                ],
+                                "for_each": "${var.is_s3_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": ["cloudwatch:GetMetricStatistics"],
+                                        "condition": {
+                                            "test": "StringEquals",
+                                            "values": ["AWS/S3"],
+                                            "variable": "cloudwatch:namespace"
+                                        },
+                                        "effect": "Allow",
+                                        "resources": ["*"],
+                                        "sid": "GetS3CloudwatchMetrics"
+                                    }
+                                ],
+                                "for_each": "${var.is_s3_enabled ? [1] : []}"
+                            }
                         }
                     ]
                 }
@@ -1190,9 +1362,7 @@
                                 "kms:CreateGrant"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "RequiredKmsActions"
                         }
                     ]
@@ -1228,77 +1398,51 @@
                                 "ec2:DescribeSecurityGroups"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "GeneralDataProtectionRDS"
                         },
                         {
-                            "actions": [
-                                "rds:DeleteDBCluster"
-                            ],
+                            "actions": ["rds:DeleteDBCluster"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "rds:cluster-tag/clumio.restore.tag"
                             },
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "RDSClusterCleanup"
                         },
                         {
-                            "actions": [
-                                "rds:DeleteDBInstance"
-                            ],
+                            "actions": ["rds:DeleteDBInstance"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "rds:db-tag/clumio.restore.tag"
                             },
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "RDSInstanceCleanup"
                         },
                         {
-                            "actions": [
-                                "rds:DeleteDBClusterSnapshot"
-                            ],
+                            "actions": ["rds:DeleteDBClusterSnapshot"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "rds:cluster-snapshot-tag/clumio.rds.snapshot.tag"
                             },
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "RDSClusterSnapshotCleanup"
                         },
                         {
-                            "actions": [
-                                "rds:DeleteDBSnapshot"
-                            ],
+                            "actions": ["rds:DeleteDBSnapshot"],
                             "condition": {
                                 "test": "StringLike",
-                                "values": [
-                                    "*"
-                                ],
+                                "values": ["*"],
                                 "variable": "rds:snapshot-tag/clumio.rds.snapshot.tag"
                             },
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "RDSInstanceSnapshotCleanup"
                         }
                     ]
@@ -1307,62 +1451,26 @@
         },
         {
             "aws_iam_policy_document": {
-                "clumio_s3_continuous_backup_event_bridge_policy_document": {
-                    "statement": [
-                        {
-                            "actions": [
-                                "events:PutEvents"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:events:*:*:event-bus/clumio-s3-event-bus-*"
-                            ],
-                            "sid": "AllowPutEvents"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "aws_iam_policy_document": {
-                "clumio_s3_continuous_backup_event_bridge_role_document": {
-                    "statement": [
-                        {
-                            "actions": [
-                                "sts:AssumeRole"
-                            ],
-                            "effect": "Allow",
-                            "principals": {
-                                "identifiers": [
-                                    "events.amazonaws.com"
-                                ],
-                                "type": "Service"
-                            },
-                            "sid": "AllowEventBridgeAssumeRole"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "aws_iam_policy_document": {
-                "clumio_s3_protect_policy_document": {
+                "clumio_s3_backup_policy_document": {
                     "count": "${var.is_s3_enabled ? 1 : 0}",
                     "statement": [
                         {
-                            "actions": [
-                                "cloudwatch:GetMetricStatistics"
-                            ],
+                            "actions": ["cloudwatch:GetMetricStatistics"],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": ["AWS/S3"],
+                                "variable": "cloudwatch:namespace"
+                            },
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "GetS3CloudwatchMetrics"
                         },
                         {
                             "actions": [
                                 "s3:ListBucket",
-                                "s3:PutObject*"
+                                "s3:PutObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObjectTagging"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -1372,25 +1480,35 @@
                             "sid": "AllowS3CopyToClumio"
                         },
                         {
-                            "actions": [
-                                "s3:PutObject*",
-                                "s3:DeleteObject"
-                            ],
+                            "actions": ["organizations:DescribeOrganization"],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "AllowS3PutForRestores"
+                            "resources": ["*"],
+                            "sid": "AllowDescribeOrganization"
                         },
                         {
                             "actions": [
-                                "organizations:DescribeOrganization"
+                                "s3:GetInventoryConfiguration",
+                                "s3:PutInventoryConfiguration",
+                                "s3:ListBucket",
+                                "s3:ListBucketVersions",
+                                "s3:ListBucketMultipartUploads",
+                                "s3:GetObject",
+                                "s3:GetObjectTagging",
+                                "s3:GetObjectVersionTagging",
+                                "s3:GetObjectVersion"
                             ],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
+                            "resources": ["arn:aws:s3:::*"],
+                            "sid": "AllowS3Backup"
+                        },
+                        {
+                            "actions": [
+                                "s3:GetBucketNotification",
+                                "s3:PutBucketNotification"
                             ],
-                            "sid": "AllowDescribeOrganization"
+                            "effect": "Allow",
+                            "resources": ["arn:aws:s3:::*"],
+                            "sid": "AllowS3ContinuousBackup"
                         },
                         {
                             "actions": [
@@ -1408,14 +1526,10 @@
                             "sid": "AllowS3EventRuleUpdate"
                         },
                         {
-                            "actions": [
-                                "iam:PassRole"
-                            ],
+                            "actions": ["iam:PassRole"],
                             "condition": {
                                 "test": "StringEquals",
-                                "values": [
-                                    "events.amazonaws.com"
-                                ],
+                                "values": ["events.amazonaws.com"],
                                 "variable": "iam:PassedToService"
                             },
                             "effect": "Allow",
@@ -1430,12 +1544,63 @@
         },
         {
             "aws_iam_policy_document": {
-                "clumio_ssm_notification_policy_document": {
+                "clumio_s3_continuous_backup_event_bridge_policy_document": {
+                    "statement": [
+                        {
+                            "actions": ["events:PutEvents"],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:events:*:*:event-bus/clumio-s3-event-bus-*"
+                            ],
+                            "sid": "AllowPutEvents"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "clumio_s3_continuous_backup_event_bridge_role_document": {
+                    "statement": [
+                        {
+                            "actions": ["sts:AssumeRole"],
+                            "effect": "Allow",
+                            "principals": {
+                                "identifiers": ["events.amazonaws.com"],
+                                "type": "Service"
+                            },
+                            "sid": "AllowEventBridgeAssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "clumio_s3_restore_policy_document": {
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
                     "statement": [
                         {
                             "actions": [
-                                "sns:Publish"
+                                "s3:PutObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObjectTagging",
+                                "s3:DeleteObject"
                             ],
+                            "effect": "Allow",
+                            "resources": ["arn:aws:s3:::*"],
+                            "sid": "AllowS3PutForRestores"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "aws_iam_policy_document": {
+                "clumio_ssm_notification_policy_document": {
+                    "statement": [
+                        {
+                            "actions": ["sns:Publish"],
                             "effect": "Allow",
                             "resources": [
                                 "arn:aws:sns:${var.aws_region}:${var.clumio_aws_account_id}:ClumioSSMTopic_${var.aws_account_id}_${var.aws_region}_*"
@@ -1451,14 +1616,10 @@
                 "clumio_ssm_notification_role_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "sts:AssumeRole"
-                            ],
+                            "actions": ["sts:AssumeRole"],
                             "effect": "Allow",
                             "principals": {
-                                "identifiers": [
-                                    "ssm.amazonaws.com"
-                                ],
+                                "identifiers": ["ssm.amazonaws.com"],
                                 "type": "Service"
                             }
                         }
@@ -1471,137 +1632,16 @@
                 "clumio_support_policy_document": {
                     "statement": [
                         {
-                            "actions": [
-                                "support:*"
-                            ],
+                            "actions": ["support:*"],
                             "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "AllowClumioSupportAccess"
                         },
                         {
-                            "actions": [
-                                "support:ResolveCase"
-                            ],
+                            "actions": ["support:ResolveCase"],
                             "effect": "Deny",
-                            "resources": [
-                                "*"
-                            ],
+                            "resources": ["*"],
                             "sid": "DenyClumioSupportResolution"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "aws_iam_policy_document": {
-                "clumio_warm_protect_dynamodb_policy_document": {
-                    "statement": [
-                        {
-                            "actions": [
-                                "kms:CreateGrant",
-                                "kms:Decrypt",
-                                "kms:DescribeKey",
-                                "kms:Encrypt",
-                                "kms:GenerateDataKey",
-                                "kms:ReEncrypt*"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
-                            ],
-                            "sid": "ClumioWarmProtectDynamoDbKmsActions"
-                        },
-                        {
-                            "actions": [
-                                "dynamodb:BatchWriteItem",
-                                "dynamodb:CreateBackup",
-                                "dynamodb:DeleteItem",
-                                "dynamodb:DeleteTable",
-                                "dynamodb:DescribeTable",
-                                "dynamodb:DescribeContinuousBackups",
-                                "dynamodb:DescribeTimeToLive",
-                                "dynamodb:GetItem",
-                                "dynamodb:ListTagsOfResource",
-                                "dynamodb:PutItem",
-                                "dynamodb:Query",
-                                "dynamodb:RestoreTableFromBackup",
-                                "dynamodb:RestoreTableToPointInTime",
-                                "dynamodb:Scan",
-                                "dynamodb:TagResource",
-                                "dynamodb:UntagResource",
-                                "dynamodb:UpdateContinuousBackups",
-                                "dynamodb:UpdateItem",
-                                "dynamodb:UpdateTable",
-                                "dynamodb:UpdateTimeToLive"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
-                            ],
-                            "sid": "ClumioWarmProtectDynamoDbTableActions"
-                        },
-                        {
-                            "actions": [
-                                "dynamodb:DeleteBackup",
-                                "dynamodb:DescribeBackup"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*/backup/*"
-                            ],
-                            "sid": "ClumioWarmProtectDynamoDbBackupActions"
-                        },
-                        {
-                            "actions": [
-                                "dynamodb:ListBackups"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "ClumioWarmProtectDynamoDbMiscActions"
-                        },
-                        {
-                            "actions": [
-                                "application-autoscaling:DescribeScalableTargets",
-                                "application-autoscaling:DescribeScalingPolicies",
-                                "application-autoscaling:PutScalingPolicy",
-                                "application-autoscaling:RegisterScalableTarget"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "*"
-                            ],
-                            "sid": "ClumioWarmProtectDynamoDbAutoScalingActions"
-                        },
-                        {
-                            "actions": [
-                                "iam:PassRole"
-                            ],
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
-                            ],
-                            "sid": "ClumioWarmProtectDynamoDbAutoScalingRole"
-                        },
-                        {
-                            "actions": [
-                                "iam:CreateServiceLinkedRole"
-                            ],
-                            "condition": {
-                                "test": "StringLike",
-                                "values": [
-                                    "dynamodb.application-autoscaling.amazonaws.com"
-                                ],
-                                "variable": "iam:AWSServiceName"
-                            },
-                            "effect": "Allow",
-                            "resources": [
-                                "arn:aws:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
-                            ],
-                            "sid": "ClumioWarmProtectCreateDynamoDbAutoScalingRole"
                         }
                     ]
                 }
@@ -1656,9 +1696,7 @@
             "aws_cloudwatch_event_rule": {
                 "clumio_dynamo_cloudtrail_event_rule": {
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for resource changes in DynamoDB (CloudTrail).",
                     "event_pattern": "{\"source\": [\"aws.dynamodb\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"CreateTable\",\"DeleteTable\",\"RestoreTableFromBackup\",\"RestoreTableToPointInTime\",\"UpdateTable\",\"UpdateContinuousBackups\",\"CreateBackup\",\"DeleteBackup\",\"CreateGlobalTable\",\"UpdateGlobalTable\",\"UpdateGlobalTableSettings\"],\"errorCode\": [{\"exists\": false}]}}",
                     "name": "ClumioDynamoCloudtrailRule_${var.clumio_token}"
@@ -1669,9 +1707,7 @@
             "aws_cloudwatch_event_rule": {
                 "clumio_ebs_cloudtrail_event_rule": {
                     "count": "${var.is_ebs_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for resource changes in EBS (CloudTrail).",
                     "event_pattern": "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteSnapshot\"],\"errorCode\": [{\"exists\": false}]}}",
                     "name": "ClumioEBSCloudtrailRule_${var.clumio_token}"
@@ -1682,9 +1718,7 @@
             "aws_cloudwatch_event_rule": {
                 "clumio_ebs_cloudwatch_event_rule": {
                     "count": "${var.is_ebs_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for resource changes in EBS (CloudWatch).",
                     "event_pattern": "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"EBS Volume Notification\", \"EBS Snapshot Notification\"],\"detail\": {\"event\": [\"createVolume\",\"modifyVolume\",\"deleteVolume\",\"createSnapshot\",\"createSnapshots\",\"copySnapshot\",\"shareSnapshot\"]}}",
                     "name": "ClumioEBSCloudwatchRule_${var.clumio_token}"
@@ -1695,9 +1729,7 @@
             "aws_cloudwatch_event_rule": {
                 "clumio_ec2_cloudtrail_event_rule": {
                     "count": "${var.is_ebs_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for resource changes in EC2 (CloudTrail).",
                     "event_pattern": "{ \"source\": [\"aws.ec2\"], \"detail-type\": [\"AWS API Call via CloudTrail\"], \"detail\": { \"eventName\": [ \"CreateImage\", \"DeregisterImage\", \"DeleteImage\", \"RegisterImage\", \"CopyImage\", \"AssociateIamInstanceProfile\", \"DisassociateIamInstanceProfile\", \"ReplaceIamInstanceProfileAssociation\", \"AttachVolume\", \"DetachVolume\" ], \"errorCode\": [{\"exists\": false}] } }",
                     "name": "ClumioEC2CloudtrailRule_${var.clumio_token}"
@@ -1708,9 +1740,7 @@
             "aws_cloudwatch_event_rule": {
                 "clumio_ec2_cloudwatch_event_rule": {
                     "count": "${var.is_ebs_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for resource changes in EC2 (CloudWatch).",
                     "event_pattern": "{\"source\": [\"aws.ec2\"], \"detail-type\": [\"EC2 Instance State-change Notification\"], \"detail\": {\"state\": [\"running\", \"stopped\", \"terminated\"]}}",
                     "name": "ClumioEC2CloudwatchRule_${var.clumio_token}"
@@ -1721,9 +1751,7 @@
             "aws_cloudwatch_event_rule": {
                 "clumio_rds_cloudtrail_event_rule": {
                     "count": "${var.is_rds_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for resource changes in RDS (CloudTrail).",
                     "event_pattern": "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteDBSnapshot\",\"DeleteDBClusterSnapshot\",\"CopyDBClusterSnapshot\",\"CopyDBSnapshot\",\"CreateDBCluster\",\"DeleteDBCluster\"],\"errorCode\": [{\"exists\": false}]}}",
                     "name": "ClumioRDSCloudtrailRule_${var.clumio_token}"
@@ -1734,9 +1762,7 @@
             "aws_cloudwatch_event_rule": {
                 "clumio_rds_cloudwatch_event_rule": {
                     "count": "${var.is_rds_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for resource changes in RDS (CloudWatch).",
                     "event_pattern": "{\"source\": [\"aws.rds\"], \"detail-type\": [\"RDS DB Instance Event\",\"RDS DB Snapshot Event\",\"RDS DB Cluster Event\",\"RDS DB Cluster Snapshot Event\" ], \"detail\": {\"SourceType\": [\"DB_INSTANCE\", \"SNAPSHOT\", \"CLUSTER\", \"CLUSTER_SNAPSHOT\"] } }",
                     "name": "ClumioRDSCloudwatchRule_${var.clumio_token}"
@@ -1760,9 +1786,7 @@
         {
             "aws_cloudwatch_event_rule": {
                 "clumio_tag_event_rule": {
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Watches for tag changes",
                     "event_pattern": "{\"detail\":{\"service\":[\"dynamodb\",\"ec2\",\"ebs\"]},\"source\":[\"aws.tag\"]}",
                     "name": "ClumioTagCloudwatchRule_${var.clumio_token}"
@@ -1822,8 +1846,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_rds_cloudtrail_event_rule_target": {
-                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule[0].name}",
                     "target_id": "clumio-rds-ctrail-publish"
                 }
@@ -1832,8 +1856,8 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_rds_cloudwatch_event_rule_target": {
-                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
+                    "count": "${var.is_rds_enabled ? 1 : 0}",
                     "rule": "${aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].name}",
                     "target_id": "clumio-rds-cwatch-publish"
                 }
@@ -1870,27 +1894,36 @@
         },
         {
             "aws_iam_policy": {
-                "clumio_discover_policy": {
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
-                    "name": "ClumioDiscoverPolicy-${var.aws_region}-${var.clumio_token}",
+                "clumio_dynamodb_backup_policy": {
+                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "description": "Grants access to Clumio for DynamoDB Backups.",
+                    "name": "ClumioDynamoDbBackupPolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-                    "policy": "${data.aws_iam_policy_document.clumio_discover_policy_document.json}"
+                    "policy": "${data.aws_iam_policy_document.clumio_dynamodb_backup_policy_document.json}"
                 }
             }
         },
         {
             "aws_iam_policy": {
-                "clumio_dynamodb_policy": {
+                "clumio_dynamodb_restore_policy": {
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
-                    "description": "Grants access to Clumio for DynamoDB SecureVault.",
-                    "name": "ClumioDynamoDbPolicy-${var.aws_region}-${var.clumio_token}",
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "description": "Grants access to Clumio for DynamoDB Restores.",
+                    "name": "ClumioDynamoDbRestorePolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-                    "policy": "${data.aws_iam_policy_document.clumio_dynamodb_policy_document.json}"
+                    "policy": "${data.aws_iam_policy_document.clumio_dynamodb_restore_policy_document.json}"
+                }
+            }
+        },
+        {
+            "aws_iam_policy": {
+                "clumio_ec2_backup_policy": {
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "name": "ClumioEC2BackupPolicy-${var.aws_region}-${var.clumio_token}",
+                    "path": "${var.path}",
+                    "policy": "${data.aws_iam_policy_document.clumio_ec2_backup_policy_document.json}"
                 }
             }
         },
@@ -1906,14 +1939,12 @@
         },
         {
             "aws_iam_policy": {
-                "clumio_ec2_protect_managed_policy": {
+                "clumio_ec2_restore_policy": {
                     "count": "${var.is_ebs_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
-                    "name": "ClumioEC2ProtectManagedPolicy-${var.aws_region}-${var.clumio_token}",
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "name": "ClumioEC2RestorePolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-                    "policy": "${data.aws_iam_policy_document.clumio_ec2_protect_managed_policy_document.json}"
+                    "policy": "${data.aws_iam_policy_document.clumio_ec2_restore_policy_document.json}"
                 }
             }
         },
@@ -1921,9 +1952,7 @@
             "aws_iam_policy": {
                 "clumio_iam_permissions_boundary": {
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "description": "Enforces a permissions boundary for roles created by Clumio.",
                     "name": "ClumioIAMPermissionsBoundary-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
@@ -1935,9 +1964,7 @@
             "aws_iam_policy": {
                 "clumio_iam_role_policy": {
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "name": "ClumioIAMRolePolicy-${var.aws_region}-${var.clumio_token}",
                     "policy": "${data.aws_iam_policy_document.clumio_iam_role_policy_document[0].json}"
                 }
@@ -1945,13 +1972,33 @@
         },
         {
             "aws_iam_policy": {
+                "clumio_inventory_policy": {
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "name": "ClumioInventoryPolicy-${var.aws_region}-${var.clumio_token}",
+                    "path": "${var.path}",
+                    "policy": "${data.aws_iam_policy_document.clumio_inventory_policy_document.json}"
+                }
+            }
+        },
+        {
+            "aws_iam_policy": {
                 "clumio_kms_managed_policy": {
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "name": "ClumioKMSManagedPolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
                     "policy": "${data.aws_iam_policy_document.clumio_kms_managed_policy_document.json}"
+                }
+            }
+        },
+        {
+            "aws_iam_policy": {
+                "clumio_s3_backup_policy": {
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "description": "Grants access to Clumio for S3 backup",
+                    "name": "ClumioS3BackupPolicy-${var.aws_region}-${var.clumio_token}",
+                    "path": "${var.path}",
+                    "policy": "${data.aws_iam_policy_document.clumio_s3_backup_policy_document[0].json}"
                 }
             }
         },
@@ -1966,29 +2013,13 @@
         },
         {
             "aws_iam_policy": {
-                "clumio_s3_protect_policy": {
+                "clumio_s3_restore_policy": {
                     "count": "${var.is_s3_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
-                    "description": "Grants access to Clumio for S3 protection",
-                    "name": "ClumioS3ProtectPolicy-${var.aws_region}-${var.clumio_token}",
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "description": "Grants access to Clumio for S3 restore",
+                    "name": "ClumioS3RestorePolicy-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
-                    "policy": "${data.aws_iam_policy_document.clumio_s3_protect_policy_document[0].json}"
-                }
-            }
-        },
-        {
-            "aws_iam_policy": {
-                "clumio_warm_protect_dynamodb_policy": {
-                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
-                    "description": "Grants access to Clumio for DynamoDB warm-tier protection.",
-                    "name": "ClumioWarmProtectDynamoDbPolicy-${var.aws_region}-${var.clumio_token}",
-                    "path": "${var.path}",
-                    "policy": "${data.aws_iam_policy_document.clumio_warm_protect_dynamodb_policy_document.json}"
+                    "policy": "${data.aws_iam_policy_document.clumio_s3_restore_policy_document[0].json}"
                 }
             }
         },
@@ -1997,9 +2028,7 @@
                 "clumio_ec2_mssql_ssm_instance_role_v2": {
                     "assume_role_policy": "${data.aws_iam_policy_document.clumio_ec2_mssql_ssm_instance_role_v2_document.json}",
                     "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "name": "ClumioSSM-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
                     "permissions_boundary": "${var.permissions_boundary_arn}",
@@ -2011,9 +2040,7 @@
             "aws_iam_role": {
                 "clumio_iam_role": {
                     "assume_role_policy": "${data.aws_iam_policy_document.aws_iam_role_document.json}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "name": "ClumioRole-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
                     "permissions_boundary": "${var.permissions_boundary_arn}",
@@ -2026,9 +2053,7 @@
                 "clumio_s3_continuous_backup_event_bridge_role": {
                     "assume_role_policy": "${data.aws_iam_policy_document.clumio_s3_continuous_backup_event_bridge_role_document.json}",
                     "count": "${var.is_s3_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "name": "ClumioS3EbRole-${lookup(local.region_map, var.aws_region, \"\")}-${var.clumio_token}",
                     "path": "${var.path}",
                     "permissions_boundary": "${var.permissions_boundary_arn}",
@@ -2041,9 +2066,7 @@
                 "clumio_ssm_notification_role": {
                     "assume_role_policy": "${data.aws_iam_policy_document.clumio_ssm_notification_role_document.json}",
                     "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "name": "ClumioSSMNotifRole-${lookup(local.region_map, var.aws_region, \"\")}-${var.clumio_token}",
                     "path": "${var.path}",
                     "permissions_boundary": "${var.permissions_boundary_arn}",
@@ -2056,9 +2079,7 @@
                 "clumio_support_role": {
                     "assume_role_policy": "${data.aws_iam_policy_document.aws_support_role_document.json}",
                     "count": "1",
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "name": "ClumioSuppt-${var.aws_region}-${var.clumio_token}",
                     "path": "${var.path}",
                     "permissions_boundary": "${var.permissions_boundary_arn}",
@@ -2077,26 +2098,44 @@
         },
         {
             "aws_iam_role_policy_attachment": {
-                "clumio_iam_role_clumio_discover_policy_attachment": {
-                    "policy_arn": "${aws_iam_policy.clumio_discover_policy.arn}",
-                    "role": "${aws_iam_role.clumio_iam_role.name}"
-                }
-            }
-        },
-        {
-            "aws_iam_role_policy_attachment": {
-                "clumio_iam_role_clumio_dynamodb_policy_attachment": {
+                "clumio_iam_role_clumio_dynamodb_backup_policy_attachment": {
                     "count": "${var.is_dynamodb_enabled ? 1 : 0}",
-                    "policy_arn": "${aws_iam_policy.clumio_dynamodb_policy[0].arn}",
+                    "policy_arn": "${aws_iam_policy.clumio_dynamodb_backup_policy[0].arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
             }
         },
         {
             "aws_iam_role_policy_attachment": {
-                "clumio_iam_role_clumio_ec2_protect_managed_policy_attachment": {
+                "clumio_iam_role_clumio_dynamodb_restore_policy_attachment": {
+                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
+                    "policy_arn": "${aws_iam_policy.clumio_dynamodb_restore_policy[0].arn}",
+                    "role": "${aws_iam_role.clumio_iam_role.name}"
+                }
+            }
+        },
+        {
+            "aws_iam_role_policy_attachment": {
+                "clumio_iam_role_clumio_ec2_backup_policy_attachment": {
                     "count": "${var.is_ebs_enabled ? 1 : 0}",
-                    "policy_arn": "${aws_iam_policy.clumio_ec2_protect_managed_policy[0].arn}",
+                    "policy_arn": "${aws_iam_policy.clumio_ec2_backup_policy[0].arn}",
+                    "role": "${aws_iam_role.clumio_iam_role.name}"
+                }
+            }
+        },
+        {
+            "aws_iam_role_policy_attachment": {
+                "clumio_iam_role_clumio_ec2_restore_policy_attachment": {
+                    "count": "${var.is_ebs_enabled ? 1 : 0}",
+                    "policy_arn": "${aws_iam_policy.clumio_ec2_restore_policy[0].arn}",
+                    "role": "${aws_iam_role.clumio_iam_role.name}"
+                }
+            }
+        },
+        {
+            "aws_iam_role_policy_attachment": {
+                "clumio_iam_role_clumio_inventory_policy_attachment": {
+                    "policy_arn": "${aws_iam_policy.clumio_inventory_policy.arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
             }
@@ -2111,21 +2150,24 @@
         },
         {
             "aws_iam_role_policy_attachment": {
-                "clumio_iam_role_clumio_s3_protect_policy_attachment": {
+                "clumio_iam_role_clumio_s3_backup_policy_attachment": {
                     "count": "${var.is_s3_enabled ? 1 : 0}",
                     "depends_on": [
-                        "time_sleep.wait_5_seconds_for_clumio_s3_protect_policy"
+                        "time_sleep.wait_5_seconds_for_clumio_s3_backup_policy"
                     ],
-                    "policy_arn": "${aws_iam_policy.clumio_s3_protect_policy[0].arn}",
+                    "policy_arn": "${aws_iam_policy.clumio_s3_backup_policy[0].arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
             }
         },
         {
             "aws_iam_role_policy_attachment": {
-                "clumio_iam_role_clumio_warm_protect_dynamodb_policy_attachment": {
-                    "count": "${var.is_dynamodb_enabled ? 1 : 0}",
-                    "policy_arn": "${aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn}",
+                "clumio_iam_role_clumio_s3_restore_policy_attachment": {
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
+                    "depends_on": [
+                        "time_sleep.wait_5_seconds_for_clumio_s3_restore_policy"
+                    ],
+                    "policy_arn": "${aws_iam_policy.clumio_s3_restore_policy[0].arn}",
                     "role": "${aws_iam_role.clumio_iam_role.name}"
                 }
             }
@@ -2209,9 +2251,7 @@
         {
             "aws_sns_topic": {
                 "clumio_event_pub": {
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "depends_on": ["time_sleep.wait_before_create"],
                     "display_name": "Clumio Inventory Topic",
                     "name": "ClumioInventoryTopic_${var.clumio_token}"
                 }
@@ -2230,17 +2270,15 @@
                 "clumio_callback": {
                     "account_id": "${var.aws_account_id}",
                     "clumio_event_pub_id": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "config_version": "2.5",
+                    "config_version": "2.6",
                     "depends_on": [
                         "aws_iam_role.clumio_iam_role",
                         "time_sleep.wait_30_seconds_for_iam_propagation",
                         "aws_iam_role_policy.clumio_base_policy",
                         "aws_iam_role_policy.clumio_drift_detect_policy",
-                        "aws_iam_policy.clumio_discover_policy",
+                        "aws_iam_policy.clumio_inventory_policy",
                         "aws_iam_policy.clumio_kms_managed_policy",
                         "aws_cloudwatch_event_target.clumio_tag_event_rule_target",
-                        "aws_iam_policy.clumio_dynamodb_policy",
-                        "aws_iam_policy.clumio_warm_protect_dynamodb_policy",
                         "aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target",
                         "aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target",
                         "aws_cloudwatch_event_target.clumio_ebs_cloudtrail_event_rule_target",
@@ -2254,27 +2292,30 @@
                         "aws_iam_role_policy.clumio_ec2_mssql_ssm_instance_policy",
                         "aws_iam_role.clumio_ssm_notification_role",
                         "aws_iam_role_policy.clumio_ssm_notification_policy",
-                        "aws_iam_policy.clumio_s3_protect_policy",
+                        "aws_iam_policy.clumio_s3_backup_policy",
+                        "aws_iam_policy.clumio_s3_restore_policy",
                         "aws_cloudwatch_event_target.clumio_s3_cloudtrail_event_rule_target",
                         "aws_iam_role.clumio_s3_continuous_backup_event_bridge_role",
-                        "aws_iam_policy.clumio_s3_continuous_backup_event_bridge_policy"
+                        "aws_iam_policy.clumio_s3_continuous_backup_event_bridge_policy",
+                        "aws_iam_policy.clumio_dynamodb_backup_policy",
+                        "aws_iam_policy.clumio_dynamodb_restore_policy"
                     ],
-                    "discover_version": "4.2",
-                    "intermediate_role_arn": "${lookup(local.clumio_iam_role_principal, \"intermediate_role\", \"\")}",
+                    "discover_version": "4.6",
+                    "intermediate_role_arn": "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole",
                     "properties": {
                         "ClumioS3ContinuousBackupEventBridgeRoleArn": "${var.is_s3_enabled ? aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].arn : \"\"}",
                         "ClumioSSMNotificationRoleArn": "${var.is_ec2_mssql_enabled ? aws_iam_role.clumio_ssm_notification_role[0].arn : \"\"}",
-                        "DynamoDbSecureVaultPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_policy[0].arn : \"\"}",
-                        "DynamoDbWarmProtectPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_warm_protect_dynamodb_policy[0].arn : \"\"}",
+                        "DynamoDbBackupPolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_backup_policy[0].arn : \"\"}",
+                        "DynamoDbRestorePolicyArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_restore_policy[0].arn : \"\"}",
                         "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
                     },
-                    "protect_config_version": "20.3",
-                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"5.0\" : \"\"}",
-                    "protect_ebs_version": "${var.is_ebs_enabled ? \"22.0\" : \"\"}",
-                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
-                    "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
-                    "protect_s3_version": "${var.is_s3_enabled ? \"4.5\" : \"\"}",
-                    "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.3\" : \"\"}",
+                    "protect_config_version": "20.4",
+                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"6.0\" : \"\"}",
+                    "protect_ebs_version": "${var.is_ebs_enabled ? \"23.0\" : \"\"}",
+                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.4\" : \"\"}",
+                    "protect_rds_version": "${var.is_rds_enabled ? \"18.4\" : \"\"}",
+                    "protect_s3_version": "${var.is_s3_enabled ? \"4.6\" : \"\"}",
+                    "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"4.0\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
                     "region": "${var.aws_region}",
                     "role_arn": "${aws_iam_role.clumio_iam_role.arn}",
@@ -2295,20 +2336,25 @@
             "time_sleep": {
                 "wait_30_seconds_for_iam_propagation": {
                     "create_duration": "30s",
-                    "depends_on": [
-                        "aws_iam_role.clumio_iam_role"
-                    ]
+                    "depends_on": ["aws_iam_role.clumio_iam_role"]
                 }
             }
         },
         {
             "time_sleep": {
-                "wait_5_seconds_for_clumio_s3_protect_policy": {
+                "wait_5_seconds_for_clumio_s3_backup_policy": {
                     "count": "${var.is_s3_enabled ? 1 : 0}",
                     "create_duration": "5s",
-                    "depends_on": [
-                        "aws_iam_policy.clumio_s3_protect_policy"
-                    ]
+                    "depends_on": ["aws_iam_policy.clumio_s3_backup_policy"]
+                }
+            }
+        },
+        {
+            "time_sleep": {
+                "wait_5_seconds_for_clumio_s3_restore_policy": {
+                    "count": "${var.is_s3_enabled ? 1 : 0}",
+                    "create_duration": "5s",
+                    "depends_on": ["aws_iam_policy.clumio_s3_restore_policy"]
                 }
             }
         },
