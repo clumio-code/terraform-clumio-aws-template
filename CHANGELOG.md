@@ -1,3 +1,6 @@
+## 0.16.0
+Updates to EC2 Mssql protect policy document permissions.
+
 ## 0.15.0
 Updates to EC2 protect policy document permissions.
 

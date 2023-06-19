@@ -414,6 +414,110 @@
                                 "${aws_iam_role.clumio_ssm_notification_role[0].arn}"
                             ],
                             "sid": "ClumioSSMPassRole"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateVolume"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "CreateVolumeWithClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DetachVolume",
+                                "ec2:AttachVolume"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "AttachDetachVolumeWithClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DetachVolume",
+                                "ec2:AttachVolume"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+                            ],
+                            "sid": "AttachDetachVolumeFromInstanceWithClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeleteVolume"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "DeleteVolumeWithClumioTag"
+                        },
+                        {
+                            "actions": [
+                                "ec2:CreateTags"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "CreateTagsForCreateVolume"
+                        },
+                        {
+                            "actions": [
+                                "ec2:DeleteTags"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "Clumio"
+                                ],
+                                "variable": "aws:ResourceTag/Vendor"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+                            ],
+                            "sid": "DeleteTagsOnClumioVolume"
                         }
                     ]
                 }
@@ -2271,7 +2375,7 @@
                     "protect_config_version": "20.3",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"5.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"22.0\" : \"\"}",
-                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.3\" : \"\"}",
+                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.4\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"4.5\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.3\" : \"\"}",
