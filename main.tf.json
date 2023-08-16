@@ -1753,6 +1753,11 @@
                 "us-west-1": "uw-1",
                 "us-west-2": "uw-2"
             }
+        },
+        {
+            "should_create_tag_event_rule": "${var.is_ebs_enabled || var.is_s3_enabled || var.is_dynamodb_enabled || var.is_rds_enabled}",
+            "tag_event_rule_data_sources": "${jsonencode(compact(concat(var.is_ebs_enabled ? [\"ebs\", \"ec2\"] : [\"\"], var.is_rds_enabled ? [\"rds\"] : [\"\"], var.is_s3_enabled ? [\"s3\"] : [\"\"], var.is_dynamodb_enabled ? [\"dynamodb\"] : [\"\"])))}",
+            "tag_event_rule_event_pattern": "${format(\"{\\\"detail\\\":{\\\"service\\\":%s},\\\"source\\\":[\\\"aws.tag\\\"]}\", local.tag_event_rule_data_sources)}"
         }
     ],
     "resource": [
@@ -1864,12 +1869,11 @@
         {
             "aws_cloudwatch_event_rule": {
                 "clumio_tag_event_rule": {
-                    "depends_on": [
-                        "time_sleep.wait_before_create"
-                    ],
+                    "count": "${local.should_create_tag_event_rule ? 1 : 0}",
+                    "depends_on": ["time_sleep.wait_before_create"],
+                    "name": "ClumioTagCloudwatchRule_${var.clumio_token}",
                     "description": "Watches for tag changes",
-                    "event_pattern": "{\"detail\":{\"service\":[\"dynamodb\",\"ec2\",\"ebs\"]},\"source\":[\"aws.tag\"]}",
-                    "name": "ClumioTagCloudwatchRule_${var.clumio_token}"
+                    "event_pattern": "${local.tag_event_rule_event_pattern}"
                 }
             }
         },
@@ -1956,8 +1960,9 @@
         {
             "aws_cloudwatch_event_target": {
                 "clumio_tag_event_rule_target": {
+                    "count": "${local.should_create_tag_event_rule ? 1 : 0}",
                     "arn": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "rule": "${aws_cloudwatch_event_rule.clumio_tag_event_rule.name}",
+                    "rule": "${aws_cloudwatch_event_rule.clumio_tag_event_rule[0].name}",
                     "target_id": "clumio-publish"
                 }
             }
@@ -2375,7 +2380,7 @@
                     "protect_config_version": "20.3",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"5.0\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"22.0\" : \"\"}",
-                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"2.4\" : \"\"}",
+                    "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"3.5\" : \"\"}",
                     "protect_rds_version": "${var.is_rds_enabled ? \"18.3\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"4.5\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"3.3\" : \"\"}",
