@@ -18,14 +18,14 @@ $ terraform apply
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | ~>0.2.2 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | ~>0.5.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | ~>0.2.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a     |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | ~>0.5.1 |
 
 ## Modules
 
