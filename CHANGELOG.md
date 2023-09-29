@@ -1,3 +1,6 @@
+## 0.18.0
+Changes to permissions in most policies to make it more specific statements and also split the protect policies into policies for backup and restore.
+
 ## 0.17.0
 Updates to EC2 Mssql permissios.
 

@@ -41,6 +41,13 @@
             }
         },
         {
+            "data_plane_account_id": {
+                "default": "*",
+                "description": "Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account.",
+                "type": "string"
+            }
+        },
+        {
             "is_dynamodb_enabled": {
                 "default": false,
                 "description": "Flag to indicate if Clumio Protect and Discover for dynamodb are enabled",
