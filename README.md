@@ -33,7 +33,7 @@ module "clumio_aws_connection_module" {
   }
   source                = "../../"
   clumio_token          = clumio_aws_connection.test_conn.token
-  role_external_id      = "RoleExternalId_${clumio_aws_connection.test_conn.token}"
+  role_external_id      = clumio_aws_connection.test_conn.role_external_id
   aws_region            = clumio_aws_connection.test_conn.aws_region
   aws_account_id        = data.aws_caller_identity.current.account_id
   clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
@@ -53,7 +53,7 @@ terraform apply
 ```
 Note: If the module block has explicit version specified, then the version must be changed before running the above commands.
 
-For example, in the below config the module has version 0.17.0 as shown below:
+For example, in the below config the module has version 0.10.0 as shown below:
 ```hcl
 module "clumio_aws_connection_module" {
 providers = {
@@ -63,7 +63,7 @@ clumio = clumio
 source                = "../../"
 version               = "0.17.0"
 clumio_token          = clumio_aws_connection.test_conn.token
-role_external_id      = "RoleExternalId_${clumio_aws_connection.test_conn.token}"
+role_external_id      = clumio_aws_connection.test_conn.role_external_id
 aws_region            = clumio_aws_connection.test_conn.aws_region
 aws_account_id        = data.aws_caller_identity.current.account_id
 clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
@@ -84,7 +84,7 @@ clumio = clumio
 source                = "../../"
 version               = "0.18.0"
 clumio_token          = clumio_aws_connection.test_conn.token
-role_external_id      = "RoleExternalId_${clumio_aws_connection.test_conn.token}"
+role_external_id      = clumio_aws_connection.test_conn.role_external_id
 aws_region            = clumio_aws_connection.test_conn.aws_region
 aws_account_id        = data.aws_caller_identity.current.account_id
 clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
@@ -191,7 +191,7 @@ No modules.
 | [aws_ssm_document.ssm_document_ssm_check_heartbeat](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_document) | resource |
 | [aws_ssm_document.ssm_document_system_heartbeat](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_document) | resource |
 | [aws_ssm_document.ssm_document_upgrade_mssql_binaries](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_document) | resource |
-| clumio_post_process_aws_connection.clumio_callback | resource |
+| [clumio_post_process_aws_connection.clumio_callback](https://registry.terraform.io/providers/clumio-code/clumio/latest/docs/resources/post_process_aws_connection) | resource |
 | [time_sleep.wait_10_seconds_before_creating_clumio_s3_cloudtrail_event_rule](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_30_seconds_for_iam_propagation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_5_seconds_for_clumio_base_managed_policy](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
