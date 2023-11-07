@@ -22,7 +22,7 @@ module "clumio_aws_connection_module" {
   }
   source                = "../../"
   clumio_token          = clumio_aws_connection.test_conn.token
-  role_external_id      = "RoleExternalId_${clumio_aws_connection.test_conn.token}"
+  role_external_id      = clumio_aws_connection.test_conn.role_external_id
   aws_region            = clumio_aws_connection.test_conn.aws_region
   aws_account_id        = data.aws_caller_identity.current.account_id
   clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id

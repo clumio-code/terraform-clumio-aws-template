@@ -1952,7 +1952,7 @@
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*"
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*"
                             ],
                             "sid": "BackingUpOptionGroups"
                         },
@@ -2076,7 +2076,7 @@
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*"
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:pg:*"
                             ],
                             "sid": "RestoreParameterGroups"
                         },
@@ -2156,9 +2156,20 @@
                             "effect": "Allow",
                             "resources": [
                                 "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*"
                             ],
                             "sid": "AddingClumioTagToRestoredRDSResource"
+                        },
+                        {
+                            "actions": [
+                                "rds:CreateOptionGroup"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*"
+                            ],
+                            "sid": "RestoreOptionGroups"
                         },
                         {
                             "actions": [
@@ -2471,6 +2482,7 @@
                 "ap-southeast-2": "ase-2",
                 "ca-central-1": "cc-1",
                 "eu-central-1": "ec-1",
+                "eu-central-2": "ec-2",
                 "eu-north-1": "en-1",
                 "eu-west-1": "ew-1",
                 "eu-west-2": "ew-2",
@@ -3377,7 +3389,7 @@
                 "clumio_callback": {
                     "account_id": "${var.aws_account_id}",
                     "clumio_event_pub_id": "${aws_sns_topic.clumio_event_pub.arn}",
-                    "config_version": "4.1",
+                    "config_version": "4.2",
                     "depends_on": [
                         "aws_iam_role.clumio_iam_role",
                         "time_sleep.wait_30_seconds_for_iam_propagation",
@@ -3436,7 +3448,7 @@
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"7.1\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"24.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"4.1\" : \"\"}",
-                    "protect_rds_version": "${var.is_rds_enabled ? \"20.0\" : \"\"}",
+                    "protect_rds_version": "${var.is_rds_enabled ? \"20.1\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"6.0\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"5.0\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
