@@ -1,3 +1,7 @@
+## 0.20.0
+Changes to permissions for clumio_ec2_mssql_ssm_instance_policy_document policy.
+Minor bug fixes.
+
 ## 0.19.0
 Changes to permissions for RDS restore policy permissions.
 
