@@ -1,3 +1,6 @@
+## 0.21.0
+EC2 Mssql changes for inventory sync ssm document.
+
 ## 0.20.0
 Changes to permissions for clumio_ec2_mssql_ssm_instance_policy_document policy.
 Minor bug fixes.
