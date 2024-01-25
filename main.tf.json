@@ -1547,6 +1547,103 @@
                                 "content": [
                                     {
                                         "actions": [
+                                            "dynamodb:DescribeBackup",
+                                            "dynamodb:DescribeContinuousBackups",
+                                            "dynamodb:DescribeTable",
+                                            "dynamodb:DescribeTableReplicaAutoScaling",
+                                            "dynamodb:ListBackups",
+                                            "dynamodb:ListTables",
+                                            "dynamodb:ListTagsOfResource"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*",
+                                            "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table*"
+                                        ],
+                                        "sid": "DescribeDynamoResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "dynamodb:DescribeGlobalTable",
+                                            "dynamodb:DescribeGlobalTableSettings",
+                                            "dynamodb:ListGlobalTables"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "arn:${data.aws_partition.current.partition}:dynamodb::${var.aws_account_id}:global-table/*",
+                                            "arn:${data.aws_partition.current.partition}:dynamodb::${var.aws_account_id}:global-table*"
+                                        ],
+                                        "sid": "DescribeDynamoGlobalTableResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "ec2:DescribeImageAttribute",
+                                            "ec2:DescribeImages",
+                                            "ec2:DescribeInstanceAttribute",
+                                            "ec2:DescribeInstanceStatus",
+                                            "ec2:DescribeInstances",
+                                            "ec2:DescribeInstanceTypes",
+                                            "ec2:DescribeInstanceCreditSpecifications",
+                                            "ec2:DescribeInstanceTypeOfferings",
+                                            "ec2:DescribeTags",
+                                            "ec2:DescribeSnapshots",
+                                            "ec2:DescribeAvailabilityZones",
+                                            "ec2:DescribeSecurityGroups"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "*"
+                                        ],
+                                        "sid": "DescribeEc2Resources"
+                                    }
+                                ],
+                                "for_each": "${var.is_ebs_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
+                                            "ec2:DescribeFastSnapshotRestores",
+                                            "ec2:DescribeSnapshotAttribute",
+                                            "ec2:DescribeSnapshots",
+                                            "ec2:DescribeVolumeAttribute",
+                                            "ec2:DescribeVolumeStatus",
+                                            "ec2:DescribeVolumes",
+                                            "ebs:ListChangedBlocks",
+                                            "ebs:ListSnapshotBlocks",
+                                            "kms:DescribeKey"
+                                        ],
+                                        "effect": "Allow",
+                                        "resources": [
+                                            "*"
+                                        ],
+                                        "sid": "DescribeEbsResources"
+                                    }
+                                ],
+                                "for_each": "${var.is_ebs_enabled ? [1] : []}"
+                            }
+                        },
+                        {
+                            "statement": {
+                                "content": [
+                                    {
+                                        "actions": [
                                             "rds:DescribeDBClusters"
                                         ],
                                         "effect": "Allow",
@@ -1761,103 +1858,6 @@
                                     }
                                 ],
                                 "for_each": "${var.is_s3_enabled ? [1] : []}"
-                            }
-                        },
-                        {
-                            "statement": {
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "dynamodb:DescribeBackup",
-                                            "dynamodb:DescribeContinuousBackups",
-                                            "dynamodb:DescribeTable",
-                                            "dynamodb:DescribeTableReplicaAutoScaling",
-                                            "dynamodb:ListBackups",
-                                            "dynamodb:ListTables",
-                                            "dynamodb:ListTagsOfResource"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*",
-                                            "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table*"
-                                        ],
-                                        "sid": "DescribeDynamoResources"
-                                    }
-                                ],
-                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
-                            }
-                        },
-                        {
-                            "statement": {
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "dynamodb:DescribeGlobalTable",
-                                            "dynamodb:DescribeGlobalTableSettings",
-                                            "dynamodb:ListGlobalTables"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "arn:${data.aws_partition.current.partition}:dynamodb::${var.aws_account_id}:global-table/*",
-                                            "arn:${data.aws_partition.current.partition}:dynamodb::${var.aws_account_id}:global-table*"
-                                        ],
-                                        "sid": "DescribeDynamoGlobalTableResources"
-                                    }
-                                ],
-                                "for_each": "${var.is_dynamodb_enabled ? [1] : []}"
-                            }
-                        },
-                        {
-                            "statement": {
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "ec2:DescribeImageAttribute",
-                                            "ec2:DescribeImages",
-                                            "ec2:DescribeInstanceAttribute",
-                                            "ec2:DescribeInstanceStatus",
-                                            "ec2:DescribeInstances",
-                                            "ec2:DescribeInstanceTypes",
-                                            "ec2:DescribeInstanceCreditSpecifications",
-                                            "ec2:DescribeInstanceTypeOfferings",
-                                            "ec2:DescribeTags",
-                                            "ec2:DescribeSnapshots",
-                                            "ec2:DescribeAvailabilityZones",
-                                            "ec2:DescribeSecurityGroups"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "*"
-                                        ],
-                                        "sid": "DescribeEc2Resources"
-                                    }
-                                ],
-                                "for_each": "${var.is_ebs_enabled ? [1] : []}"
-                            }
-                        },
-                        {
-                            "statement": {
-                                "content": [
-                                    {
-                                        "actions": [
-                                            "ec2:DescribeFastSnapshotRestores",
-                                            "ec2:DescribeSnapshotAttribute",
-                                            "ec2:DescribeSnapshots",
-                                            "ec2:DescribeVolumeAttribute",
-                                            "ec2:DescribeVolumeStatus",
-                                            "ec2:DescribeVolumes",
-                                            "ebs:ListChangedBlocks",
-                                            "ebs:ListSnapshotBlocks",
-                                            "kms:DescribeKey"
-                                        ],
-                                        "effect": "Allow",
-                                        "resources": [
-                                            "*"
-                                        ],
-                                        "sid": "DescribeEbsResources"
-                                    }
-                                ],
-                                "for_each": "${var.is_ebs_enabled ? [1] : []}"
                             }
                         }
                     ]
