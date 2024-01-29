@@ -275,8 +275,7 @@
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:kms:*:${var.aws_account_id}:key/*",
-                                "arn:${data.aws_partition.current.partition}:kms:*:${var.data_plane_account_id}:key/*"
+                                "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
                             ],
                             "sid": "AllowClumioDynamoDbSecureVaultKmsAccess"
                         },
@@ -284,13 +283,20 @@
                             "actions": [
                                 "dynamodb:CreateTable",
                                 "dynamodb:CreateTableReplica",
-                                "dynamodb:UpdateTableReplicaAutoScaling"
+                                "dynamodb:UpdateTableReplicaAutoScaling",
+                                "dynamodb:Scan",
+                                "dynamodb:Query",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:GetItem",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:BatchWriteItem"
                             ],
                             "effect": "Allow",
                             "resources": [
-                                "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+                                "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
                             ],
-                            "sid": "ClumioDynamoDbSecureVaultTableActions"
+                            "sid": "ClumioDynamoDBSecureVaultGlobalTableActions"
                         },
                         {
                             "actions": [
@@ -1925,6 +1931,17 @@
                         },
                         {
                             "actions": [
+                                "rds:DescribeDBClusterSnapshots"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
+                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
+                            ],
+                            "sid": "DescribeClusterSnapshots"
+                        },
+                        {
+                            "actions": [
                                 "rds:CreateDBSnapshot"
                             ],
                             "effect": "Allow",
@@ -2182,6 +2199,22 @@
                         },
                         {
                             "actions": [
+                                "rds:CreateDBInstanceReadReplica"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster:*",
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:db:*",
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*",
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:pg:*",
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster-pg:*",
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:secgrp:*",
+                                "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:subgrp:*"
+                            ],
+                            "sid": "RestoreReadReplicas"
+                        },
+                        {
+                            "actions": [
                                 "rds:DeleteDBCluster"
                             ],
                             "condition": {
@@ -2213,6 +2246,43 @@
                                 "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
                             ],
                             "sid": "InstanceCleanupPermissions"
+                        },
+                        {
+                            "actions": [
+                                "rds:AddRoleToDBCluster"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
+                            ],
+                            "sid": "RestoreAssociatedRolesInCluster"
+                        },
+                        {
+                            "actions": [
+                                "rds:AddRoleToDBInstance"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+                            ],
+                            "sid": "RestoreAssociatedRolesInInstance"
+                        },
+                        {
+                            "actions": [
+                                "iam:PassRole"
+                            ],
+                            "condition": {
+                                "test": "StringEquals",
+                                "values": [
+                                    "rds.amazonaws.com"
+                                ],
+                                "variable": "iam:PassedToService"
+                            },
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+                            ],
+                            "sid": "PassAssociatedRoles"
                         }
                     ]
                 }
@@ -3348,7 +3418,7 @@
         {
             "aws_ssm_document": {
                 "ssm_document_remove_old_inventory_files": {
-                    "content": "  schemaVersion: \"2.2\"\n  description: \"Copy host key from arena\"\n  parameters:\n    executionTimeout:\n      type: \"String\"\n      description: \"Timeout for the SSM custom documents commands, default is set to 3600\"\n      default: \"3600\"\n      allowedPattern: \"[0-9]+\"\n  mainSteps:\n    - action: aws:runPowerShellScript\n      precondition:\n        StringEquals:\n          - platformType\n          - Windows\n      name: runCommands\n      inputs:\n        timeoutSeconds: \"{{executionTimeout}}\"\n        runCommand:\n          - \"$temp_path = (Get-ItemProperty -Path 'HKLM:SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment' -name CLUMIO_TEMP_DIR).CLUMIO_TEMP_DIR\"\n          - \"$temp_path = $temp_path + '\\\\mssql\\\\inv\\\\'\"\n          - \"Get-ChildItem \u2013Path $temp_path -Recurse | Where-Object {($_.LastWriteTime -lt (Get-Date).AddDays(-2))} | Remove-Item\"",
+                    "content": "  schemaVersion: \"2.2\"\n  description: \"Copy host key from arena\"\n  parameters:\n    executionTimeout:\n      type: \"String\"\n      description: \"Timeout for the SSM custom documents commands, default is set to 3600\"\n      default: \"3600\"\n      allowedPattern: \"[0-9]+\"\n  mainSteps:\n    - action: aws:runPowerShellScript\n      precondition:\n        StringEquals:\n          - platformType\n          - Windows\n      name: runCommands\n      inputs:\n        timeoutSeconds: \"{{executionTimeout}}\"\n        runCommand:\n          - \"$temp_path = (Get-ItemProperty -Path 'HKLM:SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment' -name CLUMIO_TEMP_DIR).CLUMIO_TEMP_DIR\"\n          - \"$temp_path = $temp_path  + '\\\\mssql\\\\inv\\\\'\"\n          - \"Get-ChildItem \u2013Path $temp_path -Recurse | Where-Object {($_.LastWriteTime -lt (Get-Date).AddDays(-2))} | Remove-Item\"",
                     "count": "${var.is_ec2_mssql_enabled ? 1 : 0}",
                     "document_format": "YAML",
                     "document_type": "Command",
@@ -3357,7 +3427,7 @@
                         "Vendor": "Clumio"
                     },
                     "target_type": "/AWS::EC2::Instance",
-                    "version_name": "Version-1"
+                    "version_name": "Version-2"
                 }
             }
         },
@@ -3470,10 +3540,10 @@
                         "PermissionsBoundaryArn": "${var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : \"\"}"
                     },
                     "protect_config_version": "23.0",
-                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"7.1\" : \"\"}",
+                    "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"7.2\" : \"\"}",
                     "protect_ebs_version": "${var.is_ebs_enabled ? \"24.0\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"4.3\" : \"\"}",
-                    "protect_rds_version": "${var.is_rds_enabled ? \"20.1\" : \"\"}",
+                    "protect_rds_version": "${var.is_rds_enabled ? \"20.2\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"6.0\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"5.0\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",
