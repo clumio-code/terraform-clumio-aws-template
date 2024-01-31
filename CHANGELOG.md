@@ -1,5 +1,6 @@
 ## 0.21.0
-EC2 Mssql changes for inventory sync ssm document.
+Changes to permissions for RDS Restore Policy and DynamoDB Restore Policy.
+EC2 Mssql SSM document bug fixes.
 
 ## 0.20.0
 Changes to permissions for clumio_ec2_mssql_ssm_instance_policy_document policy.
