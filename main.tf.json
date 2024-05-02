@@ -1874,9 +1874,7 @@
                                 "kms:Encrypt",
                                 "kms:Decrypt",
                                 "kms:ReEncrypt*",
-                                "kms:GenerateDataKey*",
-                                "kms:DescribeKey",
-                                "kms:CreateGrant"
+                                "kms:GenerateDataKey*"
                             ],
                             "effect": "Allow",
                             "resources": [
@@ -2283,6 +2281,16 @@
                                 "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
                             ],
                             "sid": "PassAssociatedRoles"
+                        },
+                        {
+                            "actions": [
+                                "kms:CreateGrant"
+                            ],
+                            "effect": "Allow",
+                            "resources": [
+                                "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+                            ],
+                            "sid": "RestoreKMSPermissions"
                         }
                     ]
                 }
@@ -3541,9 +3549,9 @@
                     },
                     "protect_config_version": "23.0",
                     "protect_dynamodb_version": "${var.is_dynamodb_enabled ? \"7.2\" : \"\"}",
-                    "protect_ebs_version": "${var.is_ebs_enabled ? \"24.0\" : \"\"}",
+                    "protect_ebs_version": "${var.is_ebs_enabled ? \"24.1\" : \"\"}",
                     "protect_ec2_mssql_version": "${var.is_ec2_mssql_enabled ? \"4.3\" : \"\"}",
-                    "protect_rds_version": "${var.is_rds_enabled ? \"20.2\" : \"\"}",
+                    "protect_rds_version": "${var.is_rds_enabled ? \"20.3\" : \"\"}",
                     "protect_s3_version": "${var.is_s3_enabled ? \"6.0\" : \"\"}",
                     "protect_warm_tier_dynamodb_version": "${var.is_dynamodb_enabled? \"5.0\" : \"\"}",
                     "protect_warm_tier_version": "${var.is_dynamodb_enabled ? \"1.1\" : \"\"}",

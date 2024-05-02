@@ -1,3 +1,6 @@
+## 0.23.0
+Changes to permissions for RDS Restore Policy.
+
 ## 0.22.0
 Changed the Clumio provider version required to >=0.5.1, <0.7.0
 
