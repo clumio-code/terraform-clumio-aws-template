@@ -107,9 +107,9 @@ is_dynamodb_enabled   = true
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.38.0 |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | 0.6.1 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.10.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.6.0, <0.8.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.11.1 |
 
 ## Modules
 
