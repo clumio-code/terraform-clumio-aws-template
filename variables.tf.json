@@ -96,6 +96,20 @@
             }
         },
         {
+            "wait_for_data_plane_resources": {
+                "default": false,
+                "description": "Flag to indicate if we need to wait for data plane resources to be created.",
+                "type": "bool"
+            }
+        },
+        {
+            "wait_for_ingestion": {
+                "default": false,
+                "description": "Flag to indicate if we need to wait for ingestion to complete.",
+                "type": "bool"
+            }
+        },
+        {
             "wait_time_before_create": {
                 "default": "60s",
                 "description": "Time in seconds to wait before creation of resources. This will be required to be set to a value above 45s in the case of shifting from old terraform template to the module based template.",

@@ -101,14 +101,14 @@ is_dynamodb_enabled   = true
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0.0 |
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.5.1, <0.7.0 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.6.0, <0.8.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 5.38.0 |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | 0.5.9 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | 0.6.1 |
 | <a name="provider_time"></a> [time](#provider\_time) | 0.10.0 |
 
 ## Modules
@@ -245,6 +245,8 @@ No modules.
 | <a name="input_path"></a> [path](#input\_path) | Value of path set on the AWS IAM roles, policies and instance\_profile resources of the module. If not specified the default value is /clumio/. | `string` | `"/clumio/"` | no |
 | <a name="input_permissions_boundary_arn"></a> [permissions\_boundary\_arn](#input\_permissions\_boundary\_arn) | ARN of the permissions boundary to be set on Clumio Roles. | `string` | `""` | no |
 | <a name="input_role_external_id"></a> [role\_external\_id](#input\_role\_external\_id) | A key that must be used by Clumio to assume the service role in your account. This should be a secure string, like a password, but it does not need to be remembered (random characters are best). | `string` | n/a | yes |
+| <a name="input_wait_for_data_plane_resources"></a> [wait\_for\_data\_plane\_resources](#input\_wait\_for\_data\_plane\_resources) | Flag to indicate if we need to wait for data plane resources to be created. | `bool` | `false` | no |
+| <a name="input_wait_for_ingestion"></a> [wait\_for\_ingestion](#input\_wait\_for\_ingestion) | Flag to indicate if we need to wait for ingestion to complete. | `bool` | `false` | no |
 | <a name="input_wait_time_before_create"></a> [wait\_time\_before\_create](#input\_wait\_time\_before\_create) | Time in seconds to wait before creation of resources. This will be required to be set to a value above 45s in the case of shifting from old terraform template to the module based template. | `string` | `"60s"` | no |
 
 ## Outputs

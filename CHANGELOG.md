@@ -1,5 +1,6 @@
 ## 0.23.0
 Changes to permissions for RDS Restore Policy.
+New module variables wait_for_ingestion and wait_for_data_plane_resources added.
 
 ## 0.22.0
 Changed the Clumio provider version required to >=0.5.1, <0.7.0
