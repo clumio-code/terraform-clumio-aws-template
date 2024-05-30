@@ -98,18 +98,18 @@ is_dynamodb_enabled   = true
 
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0.0 |
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.6.0, <0.8.0 |
+| Name | Version         |
+|------|-----------------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0.0         |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.7.2, <0.9.0 |
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0 |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.6.0, <0.8.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.11.1 |
+| Name | Version         |
+|------|-----------------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0          |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.7.2, <0.9.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.11.1          |
 
 ## Modules
 
