@@ -1,3 +1,8 @@
+## 0.24.0
+Updated inventory policy with addtional S3 permissions.
+EC2 Mssql SSM documents updated.
+Changed the Clumio provider version required to >=0.7.2, <0.9.0
+
 ## 0.23.0
 Changes to permissions for RDS Restore Policy.
 New module variables wait_for_ingestion and wait_for_data_plane_resources added.
