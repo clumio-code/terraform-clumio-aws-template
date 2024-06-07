@@ -96,3 +96,15 @@ variable "wait_time_before_create" {
   type = string
   default = "60s"
 }
+
+variable create_clumio_inventory_sns_topic_encryption_key {
+  description = "Indicates that a KMS Key must be created and associated with the Clumio Inventory SNS topic."
+  type = bool
+  default = false
+}
+
+variable "clumio_inventory_sns_topic_encryption_key" {
+  description = "Encryption Key for the Clumio Inventory SNS topic."
+  type = string
+  default = null
+}

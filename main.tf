@@ -2977,12 +2977,19 @@ resource "aws_iam_role_policy" "clumio_support_policy"{
   role = aws_iam_role.clumio_support_role[0].id
 }
 
+resource "aws_kms_key" "clumio_event_pub_key"{
+  count = var.create_clumio_inventory_sns_topic_encryption_key && var.clumio_inventory_sns_topic_encryption_key == null ? 1 : 0
+  description = "KMS key for Clumio Inventory Topic."
+  enable_key_rotation = true
+}
+
 resource "aws_sns_topic" "clumio_event_pub"{
   depends_on = [
     time_sleep.wait_before_create
   ]
   display_name = "Clumio Inventory Topic"
   name = "ClumioInventoryTopic_${var.clumio_token}"
+  kms_master_key_id = var.clumio_inventory_sns_topic_encryption_key != null ? var.clumio_inventory_sns_topic_encryption_key : var.create_clumio_inventory_sns_topic_encryption_key ? aws_kms_key.clumio_event_pub_key[0].arn : var.clumio_inventory_sns_topic_encryption_key
 }
 
 resource "aws_sns_topic_policy" "clumio_event_pub_policy"{
