@@ -1,3 +1,7 @@
+## 0.25.0
+Changed the module config files from JSON to HCL2.
+Changed the Clumio provider version required to >=0.8.0, <0.10.0
+
 ## 0.24.0
 Updated inventory policy with addtional S3 permissions.
 EC2 Mssql SSM documents updated.
