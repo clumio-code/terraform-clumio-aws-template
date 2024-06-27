@@ -3277,7 +3277,6 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
   region                             = var.aws_region
   role_arn                           = aws_iam_role.clumio_iam_role.arn
   role_external_id                   = var.role_external_id
-  template_permission_set            = "all"
   token                              = var.clumio_token
   wait_for_data_plane_resources      = var.wait_for_data_plane_resources
   wait_for_ingestion                 = var.wait_for_ingestion
