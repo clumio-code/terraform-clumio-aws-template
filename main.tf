@@ -2069,6 +2069,17 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     sid = "InstanceSnapshotCleanupPermissions"
   }
+
+  statement {
+    actions = [
+      "kms:CreateGrant"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+    ]
+    sid = "BackupKMSPermissions"
+  }
 }
 
 data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
@@ -2300,17 +2311,6 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
       "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
     ]
     sid = "PassAssociatedRoles"
-  }
-
-  statement {
-    actions = [
-      "kms:CreateGrant"
-    ]
-    effect = "Allow"
-    resources = [
-      "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
-    ]
-    sid = "RestoreKMSPermissions"
   }
 }
 
@@ -3277,6 +3277,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
   region                             = var.aws_region
   role_arn                           = aws_iam_role.clumio_iam_role.arn
   role_external_id                   = var.role_external_id
+  template_permission_set            = "all"
   token                              = var.clumio_token
   wait_for_data_plane_resources      = var.wait_for_data_plane_resources
   wait_for_ingestion                 = var.wait_for_ingestion
