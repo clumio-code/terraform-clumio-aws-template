@@ -1,3 +1,8 @@
+## 0.26.0
+Tightened the permissions for inventory and s3 backup and restore policies.
+Split the main.tf to common.tf and data source specific terraform config files.
+Changed the Clumio provider version required to >=0.9.0, <0.11.0
+
 ## 0.25.0
 Changed the module config files from JSON to HCL2.
 Changed the Clumio provider version required to >=0.8.0, <0.10.0
