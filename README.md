@@ -98,9 +98,8 @@ is_dynamodb_enabled   = true
 
 ## Requirements
 
-| Name | Version         |
-|------|-----------------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0.0         |
+| Name | Version |
+|------|---------|
 | <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.9.0, <0.11.0 |
 
 ## Providers
@@ -173,6 +172,7 @@ No modules.
 | [aws_iam_role_policy_attachment.clumio_iam_role_clumio_s3_backup_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.clumio_iam_role_clumio_s3_restore_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.clumio_s3_continuous_backup_event_bridge_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_kms_key.clumio_event_pub_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_sns_topic.clumio_event_pub](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic_policy.clumio_event_pub_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
 | [aws_ssm_document.ssm_document_ag_database_details](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_document) | resource |
@@ -210,6 +210,7 @@ No modules.
 | [aws_iam_policy_document.clumio_ec2_mssql_ssm_instance_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_ec2_mssql_ssm_instance_role_v2_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_ec2_restore_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.clumio_event_pub_key_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_event_pub_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_iam_permissions_boundary_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_iam_role_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -235,12 +236,14 @@ No modules.
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS Region. | `string` | n/a | yes |
 | <a name="input_clumio_aws_account_id"></a> [clumio\_aws\_account\_id](#input\_clumio\_aws\_account\_id) | Clumio Control Plane Account Id. | `string` | n/a | yes |
 | <a name="input_clumio_iam_role_tags"></a> [clumio\_iam\_role\_tags](#input\_clumio\_iam\_role\_tags) | Additional tags for Clumio IAM Roles. | `map(string)` | <pre>{<br>  "Vendor": "Clumio"<br>}</pre> | no |
+| <a name="input_clumio_inventory_sns_topic_encryption_key"></a> [clumio\_inventory\_sns\_topic\_encryption\_key](#input\_clumio\_inventory\_sns\_topic\_encryption\_key) | Optional existing KMS Key for the Clumio Inventory SNS topic. If one is provided, it MUST have a key policy similar to the one denoted in data.aws\_iam\_policy\_document.clumio\_event\_pub\_key\_policy\_document in [common.tf](https://github.com/clumio-code/terraform-clumio-aws-template/blob/main/common.tf). | `string` | `null` | no |
 | <a name="input_clumio_token"></a> [clumio\_token](#input\_clumio\_token) | The AWS integration ID token. | `string` | n/a | yes |
+| <a name="input_create_clumio_inventory_sns_topic_encryption_key"></a> [create\_clumio\_inventory\_sns\_topic\_encryption\_key](#input\_create\_clumio\_inventory\_sns\_topic\_encryption\_key) | Indicates that a KMS Key must be created and associated with the Clumio Inventory SNS topic. | `bool` | `false` | no |
 | <a name="input_data_plane_account_id"></a> [data\_plane\_account\_id](#input\_data\_plane\_account\_id) | Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account. | `string` | `"*"` | no |
-| <a name="input_is_dynamodb_enabled"></a> [is\_dynamodb\_enabled](#input\_is\_dynamodb\_enabled) | Flag to indicate if Clumio Protect and Discover for dynamodb are enabled | `bool` | `false` | no |
-| <a name="input_is_ebs_enabled"></a> [is\_ebs\_enabled](#input\_is\_ebs\_enabled) | Flag to indicate if Clumio Protect and Discover for ebs are enabled | `bool` | `false` | no |
-| <a name="input_is_ec2_mssql_enabled"></a> [is\_ec2\_mssql\_enabled](#input\_is\_ec2\_mssql\_enabled) | Flag to indicate if Clumio Protect and Discover for ec2\_mssql are enabled | `bool` | `false` | no |
-| <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect and Discover for rds are enabled | `bool` | `false` | no |
+| <a name="input_is_dynamodb_enabled"></a> [is\_dynamodb\_enabled](#input\_is\_dynamodb\_enabled) | Flag to indicate if Clumio Protect and Discover for DynamoDB are enabled | `bool` | `false` | no |
+| <a name="input_is_ebs_enabled"></a> [is\_ebs\_enabled](#input\_is\_ebs\_enabled) | Flag to indicate if Clumio Protect and Discover for EBS are enabled | `bool` | `false` | no |
+| <a name="input_is_ec2_mssql_enabled"></a> [is\_ec2\_mssql\_enabled](#input\_is\_ec2\_mssql\_enabled) | Flag to indicate if Clumio Protect and Discover for Mssql on EC2 are enabled | `bool` | `false` | no |
+| <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect and Discover for RDS are enabled | `bool` | `false` | no |
 | <a name="input_is_s3_enabled"></a> [is\_s3\_enabled](#input\_is\_s3\_enabled) | Flag to indicate if Clumio Protect and Discover for S3 are enabled | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | Value of path set on the AWS IAM roles, policies and instance\_profile resources of the module. If not specified the default value is /clumio/. | `string` | `"/clumio/"` | no |
 | <a name="input_permissions_boundary_arn"></a> [permissions\_boundary\_arn](#input\_permissions\_boundary\_arn) | ARN of the permissions boundary to be set on Clumio Roles. | `string` | `""` | no |
