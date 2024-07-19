@@ -622,6 +622,67 @@ data "aws_iam_policy_document" "clumio_support_policy_document" {
   }
 }
 
+data "aws_iam_policy_document" "clumio_event_pub_key_policy_document" {
+  count   = var.create_clumio_inventory_sns_topic_encryption_key && var.clumio_inventory_sns_topic_encryption_key == null ? 1 : 0
+  version = "2012-10-17"
+  policy_id      = "clumio-event-pub-key"
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+    principals {
+      identifiers = [
+        "arn:aws:iam::${var.aws_account_id}:root"
+      ]
+      type = "AWS"
+    }
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    sid    = "Allow EventBridge to use the key"
+    effect = "Allow"
+    principals {
+      identifiers = [
+        "events.amazonaws.com"
+      ]
+      type = "Service"
+    }
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    sid    = "Allow SNS to use the key"
+    effect = "Allow"
+    principals {
+      identifiers = [
+        "sns.amazonaws.com"
+      ]
+      type = "Service"
+    }
+    actions = [
+      "kms:GenerateDataKey*",
+      "kms:Decrypt"
+    ]
+    resources = [
+      "*"
+    ]
+    condition {
+      test     = "StringEquals"
+      values   = ["arn:aws:sns:${var.aws_region}:${var.aws_account_id}:ClumioInventoryTopic_${var.clumio_token}"]
+      variable = "kms:EncryptionContext:aws.sns.topicArn"
+    }
+  }
+}
+
 resource "aws_cloudwatch_event_rule" "clumio_tag_event_rule" {
   count = local.should_create_tag_event_rule ? 1 : 0
   depends_on = [
@@ -708,6 +769,7 @@ resource "aws_iam_role_policy" "clumio_support_policy" {
 resource "aws_kms_key" "clumio_event_pub_key" {
   count               = var.create_clumio_inventory_sns_topic_encryption_key && var.clumio_inventory_sns_topic_encryption_key == null ? 1 : 0
   description         = "KMS key for Clumio Inventory Topic."
+  policy              = data.aws_iam_policy_document.clumio_event_pub_key_policy_document[0].json
   enable_key_rotation = true
   tags = {
     "Vendor" = "Clumio"
@@ -731,7 +793,7 @@ resource "aws_sns_topic_policy" "clumio_event_pub_policy" {
 resource "clumio_post_process_aws_connection" "clumio_callback" {
   account_id          = var.aws_account_id
   clumio_event_pub_id = aws_sns_topic.clumio_event_pub.arn
-  config_version      = "4.4"
+  config_version      = "4.6"
   depends_on = [
     aws_iam_role.clumio_iam_role,
     time_sleep.wait_30_seconds_for_iam_propagation,
@@ -784,15 +846,17 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "ClumioSSMNotificationRoleArn" : var.is_ec2_mssql_enabled ? aws_iam_role.clumio_ssm_notification_role[0].arn : "",
     "DynamoDbBackupPolicyArn" : var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_backup_policy[0].arn : "",
     "DynamoDbRestorePolicyArn" : var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_restore_policy[0].arn : "",
-    "PermissionsBoundaryArn" : var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : ""
+    "PermissionsBoundaryArn" : var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : "",
+    "CreateClumioInventoryTopicEncryptionKey": var.create_clumio_inventory_sns_topic_encryption_key,
+    "ClumioInventoryTopicEncryptionKey": var.clumio_inventory_sns_topic_encryption_key
   }
   protect_config_version             = "23.0"
   protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.2" : ""
   protect_ebs_version                = var.is_ebs_enabled ? "24.2" : ""
   protect_ec2_mssql_version          = var.is_ec2_mssql_enabled ? "4.4" : ""
   protect_rds_version                = var.is_rds_enabled ? "20.3" : ""
-  protect_s3_version                 = var.is_s3_enabled ? "6.1" : ""
-  protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "5.0" : ""
+  protect_s3_version                 = var.is_s3_enabled ? "6.2" : ""
+  protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "5.1" : ""
   protect_warm_tier_version          = var.is_dynamodb_enabled ? "1.1" : ""
   region                             = var.aws_region
   role_arn                           = aws_iam_role.clumio_iam_role.arn

@@ -104,7 +104,7 @@ variable "create_clumio_inventory_sns_topic_encryption_key" {
 }
 
 variable "clumio_inventory_sns_topic_encryption_key" {
-  description = "Encryption Key for the Clumio Inventory SNS topic."
+  description = "Optional existing KMS Key for the Clumio Inventory SNS topic. If one is provided, it MUST have a key policy similar to the one denoted in data.aws_iam_policy_document.clumio_event_pub_key_policy_document in [common.tf](https://github.com/clumio-code/terraform-clumio-aws-template/blob/main/common.tf)."
   type        = string
   default     = null
 }

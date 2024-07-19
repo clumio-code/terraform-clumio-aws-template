@@ -1,3 +1,7 @@
+## 0.26.1
+Updated the KeyPolicy permissions for the KMS Key associated with the ClumioInventory SNS topic.
+Updated configuration version for S3 and DynamoDB in post_process_aws_connection.
+
 ## 0.26.0
 Tightened the permissions for inventory and s3 backup and restore policies.
 Split the main.tf to common.tf and data source specific terraform config files.
