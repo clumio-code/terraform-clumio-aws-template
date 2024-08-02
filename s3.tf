@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "clumio_s3_backup_policy_document" {
     ]
 
     condition {
-      test = "StringEquals"
+      test = "StringLike"
       values = [
         # AWS account that will store the backed up s3 data.
         var.data_plane_account_id

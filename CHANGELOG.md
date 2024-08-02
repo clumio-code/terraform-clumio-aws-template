@@ -1,3 +1,7 @@
+## 0.26.2
+Updated the condition for S3 backup policy statement.
+Updated configuration version for S3 in post_process_aws_connection.
+
 ## 0.26.1
 Updated the KeyPolicy permissions for the KMS Key associated with the ClumioInventory SNS topic.
 Updated configuration version for S3 and DynamoDB in post_process_aws_connection.
