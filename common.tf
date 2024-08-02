@@ -623,9 +623,9 @@ data "aws_iam_policy_document" "clumio_support_policy_document" {
 }
 
 data "aws_iam_policy_document" "clumio_event_pub_key_policy_document" {
-  count   = var.create_clumio_inventory_sns_topic_encryption_key && var.clumio_inventory_sns_topic_encryption_key == null ? 1 : 0
-  version = "2012-10-17"
-  policy_id      = "clumio-event-pub-key"
+  count     = var.create_clumio_inventory_sns_topic_encryption_key && var.clumio_inventory_sns_topic_encryption_key == null ? 1 : 0
+  version   = "2012-10-17"
+  policy_id = "clumio-event-pub-key"
   statement {
     sid    = "Enable IAM User Permissions"
     effect = "Allow"
@@ -847,15 +847,15 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "DynamoDbBackupPolicyArn" : var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_backup_policy[0].arn : "",
     "DynamoDbRestorePolicyArn" : var.is_dynamodb_enabled ? aws_iam_policy.clumio_dynamodb_restore_policy[0].arn : "",
     "PermissionsBoundaryArn" : var.is_dynamodb_enabled ? aws_iam_policy.clumio_iam_permissions_boundary[0].arn : "",
-    "CreateClumioInventoryTopicEncryptionKey": var.create_clumio_inventory_sns_topic_encryption_key,
-    "ClumioInventoryTopicEncryptionKey": var.clumio_inventory_sns_topic_encryption_key
+    "CreateClumioInventoryTopicEncryptionKey" : var.create_clumio_inventory_sns_topic_encryption_key,
+    "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
   protect_config_version             = "23.0"
   protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.2" : ""
   protect_ebs_version                = var.is_ebs_enabled ? "24.2" : ""
   protect_ec2_mssql_version          = var.is_ec2_mssql_enabled ? "4.4" : ""
   protect_rds_version                = var.is_rds_enabled ? "20.3" : ""
-  protect_s3_version                 = var.is_s3_enabled ? "6.2" : ""
+  protect_s3_version                 = var.is_s3_enabled ? "6.3" : ""
   protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "5.1" : ""
   protect_warm_tier_version          = var.is_dynamodb_enabled ? "1.1" : ""
   region                             = var.aws_region
