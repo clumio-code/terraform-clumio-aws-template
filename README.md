@@ -53,46 +53,46 @@ terraform apply
 ```
 Note: If the module block has explicit version specified, then the version must be changed before running the above commands.
 
-For example, in the below config the module has version 0.19.0 as shown below:
+For example, in the below config the module has version 0.26.0 as shown below:
 ```hcl
 module "clumio_aws_connection_module" {
-providers = {
-aws    = aws
-clumio = clumio
-}
-source                = "../../"
-version               = "0.19.0"
-clumio_token          = clumio_aws_connection.test_conn.token
-role_external_id      = clumio_aws_connection.test_conn.role_external_id
-aws_region            = clumio_aws_connection.test_conn.aws_region
-aws_account_id        = data.aws_caller_identity.current.account_id
-clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
-is_ebs_enabled        = true
-is_rds_enabled        = true
-is_ec2_mssql_enabled  = true
-is_s3_enabled         = true
-is_dynamodb_enabled   = true
+  providers = {
+  aws    = aws
+  clumio = clumio
+  }
+  source                = "../../"
+  version               = "0.26.0"
+  clumio_token          = clumio_aws_connection.test_conn.token
+  role_external_id      = clumio_aws_connection.test_conn.role_external_id
+  aws_region            = clumio_aws_connection.test_conn.aws_region
+  aws_account_id        = data.aws_caller_identity.current.account_id
+  clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
+  is_ebs_enabled        = true
+  is_rds_enabled        = true
+  is_ec2_mssql_enabled  = true
+  is_s3_enabled         = true
+  is_dynamodb_enabled   = true
 }
 ```
-To upgrade the module version to 0.20.0, the version number should be updated in the config as shown below.
+To upgrade the module version to 0.27.0, the version number should be updated in the config as shown below.
 ```hcl
 module "clumio_aws_connection_module" {
-providers = {
-aws    = aws
-clumio = clumio
-}
-source                = "../../"
-version               = "0.20.0"
-clumio_token          = clumio_aws_connection.test_conn.token
-role_external_id      = clumio_aws_connection.test_conn.role_external_id
-aws_region            = clumio_aws_connection.test_conn.aws_region
-aws_account_id        = data.aws_caller_identity.current.account_id
-clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
-is_ebs_enabled        = true
-is_rds_enabled        = true
-is_ec2_mssql_enabled  = true
-is_s3_enabled         = true
-is_dynamodb_enabled   = true
+  providers = {
+  aws    = aws
+  clumio = clumio
+  }
+  source                = "../../"
+  version               = "0.27.0"
+  clumio_token          = clumio_aws_connection.test_conn.token
+  role_external_id      = clumio_aws_connection.test_conn.role_external_id
+  aws_region            = clumio_aws_connection.test_conn.aws_region
+  aws_account_id        = data.aws_caller_identity.current.account_id
+  clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
+  is_ebs_enabled        = true
+  is_rds_enabled        = true
+  is_ec2_mssql_enabled  = true
+  is_s3_enabled         = true
+  is_dynamodb_enabled   = true
 }
 ```
 
@@ -104,11 +104,11 @@ is_dynamodb_enabled   = true
 
 ## Providers
 
-| Name | Version         |
-|------|-----------------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0          |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.9.0, <0.11.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.11.1          |
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.63.1 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | 0.10.1 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.12.0 |
 
 ## Modules
 
@@ -118,6 +118,7 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_event_rule.clumio_aws_backup_event_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
@@ -127,6 +128,7 @@ No modules.
 | [aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.clumio_s3_cloudtrail_event_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.clumio_tag_event_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_target.clumio_aws_backup_event_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_event_target.clumio_ebs_cloudtrail_event_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
@@ -255,6 +257,5 @@ No modules.
 ## Outputs
 
 No outputs.
-
 
 <!-- END_TF_DOCS -->

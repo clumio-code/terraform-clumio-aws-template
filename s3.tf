@@ -194,7 +194,7 @@ resource "aws_cloudwatch_event_rule" "clumio_s3_cloudtrail_event_rule" {
     time_sleep.wait_10_seconds_before_creating_clumio_s3_cloudtrail_event_rule
   ]
   description   = "Watches for bucket-level resource changes in S3 (CloudTrail)."
-  event_pattern = "{\"source\": [\"aws.s3\"], \"detail-type\": [\"AWS API Call via CloudTrail\"], \"detail\": {\"eventName\": [\"CreateBucket\", \"DeleteBucket\", \"DeleteBucketLifecycle\", \"DeleteBucketPolicy\", \"DeleteBucketReplication\", \"DeleteBucketTagging\", \"DeleteBucketEncryption\", \"DeleteBucketPublicAccessBlock\", \"PutBucketAcl\", \"PutBucketLifecycle\", \"PutBucketPolicy\", \"PutBucketReplication\", \"PutBucketTagging\", \"PutBucketVersioning\", \"PutBucketEncryption\", \"PutBucketPublicAccessBlock\", \"PutBucketObjectLockConfiguration\"], \"errorCode\": [{\"exists\": false}]}}"
+  event_pattern = "{\"source\": [\"aws.s3\"], \"detail-type\": [\"AWS API Call via CloudTrail\"], \"detail\": {\"eventName\": [\"CreateBucket\", \"CreateMultiRegionAccessPoint\", \"DeleteBucket\", \"DeleteBucketLifecycle\", \"DeleteBucketPolicy\", \"DeleteBucketReplication\", \"DeleteBucketTagging\", \"DeleteBucketEncryption\", \"DeleteBucketPublicAccessBlock\", \"DeleteMultiRegionAccessPoint\", \"PutBucketAcl\", \"PutBucketLifecycle\", \"PutBucketPolicy\", \"PutBucketReplication\", \"PutBucketTagging\", \"PutBucketVersioning\", \"PutBucketEncryption\", \"PutBucketPublicAccessBlock\", \"PutBucketObjectLockConfiguration\", \"PutMultiRegionAccessPointPolicy\"], \"errorCode\": [{\"exists\": false}]}}"
   name          = "ClumioS3CloudtrailEventRule_${var.clumio_token}"
 }
 

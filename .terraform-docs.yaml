@@ -36,7 +36,7 @@ content: |-
   ```
   Note: If the module block has explicit version specified, then the version must be changed before running the above commands.
   
-  For example, in the below config the module has version 0.19.0 as shown below:
+  For example, in the below config the module has version 0.26.0 as shown below:
   ```hcl
   module "clumio_aws_connection_module" {
     providers = {
@@ -44,7 +44,7 @@ content: |-
     clumio = clumio
     }
     source                = "../../"
-    version               = "0.19.0"
+    version               = "0.26.0"
     clumio_token          = clumio_aws_connection.test_conn.token
     role_external_id      = clumio_aws_connection.test_conn.role_external_id
     aws_region            = clumio_aws_connection.test_conn.aws_region
@@ -57,7 +57,7 @@ content: |-
     is_dynamodb_enabled   = true
   }
   ```
-  To upgrade the module version to 0.20.0, the version number should be updated in the config as shown below.
+  To upgrade the module version to 0.27.0, the version number should be updated in the config as shown below.
   ```hcl
   module "clumio_aws_connection_module" {
     providers = {
@@ -65,7 +65,7 @@ content: |-
     clumio = clumio
     }
     source                = "../../"
-    version               = "0.20.0"
+    version               = "0.27.0"
     clumio_token          = clumio_aws_connection.test_conn.token
     role_external_id      = clumio_aws_connection.test_conn.role_external_id
     aws_region            = clumio_aws_connection.test_conn.aws_region

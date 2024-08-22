@@ -1,3 +1,7 @@
+## 0.27.0
+New cloudwatch_event_rule added for aws backups.
+Changes to inventory policy permissions and cloudwatch event rule event pattern changes corresponding to EBS/EC2,S3 and DynamoDB.
+
 ## 0.26.2
 Updated the condition for S3 backup policy statement.
 Updated configuration version for S3 in post_process_aws_connection.

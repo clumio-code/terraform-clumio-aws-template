@@ -122,6 +122,15 @@ data "aws_iam_policy_document" "clumio_base_managed_policy_document" {
     ]
     sid = "PermissionsToIdentifyEnabledRegions"
   }
+
+  statement {
+    actions = ["sts:DecodeAuthorizationMessage"]
+    effect  = "Allow"
+    # sts:DecodeAuthorizationMessage only support the all resources wildcard('*').
+    resources = [
+      "*"
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "clumio_drift_detect_policy_document" {
@@ -146,7 +155,7 @@ data "aws_iam_policy_document" "clumio_drift_detect_policy_document" {
       "events:ListTargetsByRule"
     ]
     effect    = "Allow"
-    resources = compact([aws_iam_role.clumio_iam_role.arn, aws_sns_topic.clumio_event_pub.arn, local.should_create_tag_event_rule ? aws_cloudwatch_event_rule.clumio_tag_event_rule[0].arn : "", var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].arn : "", var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule[0].arn : "", var.is_dynamodb_enabled ? aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudwatch_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule[0].arn : ""])
+    resources = compact([aws_iam_role.clumio_iam_role.arn, aws_sns_topic.clumio_event_pub.arn, local.should_create_tag_event_rule ? aws_cloudwatch_event_rule.clumio_tag_event_rule[0].arn : "", aws_cloudwatch_event_rule.clumio_aws_backup_event_rule[0].arn, var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].arn : "", var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule[0].arn : "", var.is_dynamodb_enabled ? aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudwatch_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule[0].arn : "", var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule[0].arn : ""])
     sid       = "ReflectOnClumioCfnStack"
   }
 }
@@ -253,6 +262,58 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
     }
   }
 
+  # Allow Clumio to retrieve AWS Backup Vaults
+  dynamic "statement" {
+    for_each = [1]
+    content {
+      actions = [
+        "backup:ListBackupVaults"
+      ]
+      effect = "Allow"
+      # backup:ListBackupVaults only support the all resources wildcard('*').
+      # This cannot be further restricted to particular asset types
+      resources = [
+        "*"
+      ]
+      sid = "GetAWSBackupVaults"
+    }
+  }
+
+  # Allow Clumio to list recovery points in backup vaults
+  dynamic "statement" {
+    for_each = [1]
+    content {
+      actions = [
+        "backup:ListRecoveryPointsByBackupVault"
+      ]
+      effect = "Allow"
+      resources = [
+        "arn:${data.aws_partition.current.partition}:backup:${var.aws_region}:${var.aws_account_id}:backup-vault:*"
+      ]
+      sid = "GetAWSRecoveryPoints"
+    }
+  }
+
+  # Allow Clumio to get Recovery Point info
+  dynamic "statement" {
+    for_each = [1]
+    content {
+      actions = [
+        "backup:DescribeRecoveryPoint"
+      ]
+      effect = "Allow"
+      resources = [
+        "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:*:snapshot/*",
+        "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:*:image/*",
+        "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*",
+        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:snapshot:*",
+        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
+        "arn:${data.aws_partition.current.partition}:backup:${var.aws_region}:${var.aws_account_id}:recovery-point:*"
+      ]
+      sid = "GetAWSRecoveryPointInfo"
+    }
+  }
+
   dynamic "statement" {
     for_each = var.is_dynamodb_enabled ? [1] : []
     content {
@@ -290,6 +351,20 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
   }
 
   dynamic "statement" {
+    for_each = var.is_dynamodb_enabled ? [1] : []
+    content {
+      actions = [
+        "cloudwatch:GetMetricStatistics",
+      ]
+      effect = "Allow"
+      resources = [
+        "*"
+      ]
+      sid = "DDBCloudWatchMetricReadPermissions"
+    }
+  }
+
+  dynamic "statement" {
     for_each = var.is_ebs_enabled ? [1] : []
     content {
       actions = [
@@ -321,6 +396,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
         "ec2:DescribeFastSnapshotRestores",
         "ec2:DescribeSnapshotAttribute",
         "ec2:DescribeSnapshots",
+        "ec2:DescribeLockedSnapshots",
         "ec2:DescribeVolumeAttribute",
         "ec2:DescribeVolumeStatus",
         "ec2:DescribeVolumes",
@@ -511,6 +587,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
         "s3:GetEncryptionConfiguration",
         "s3:GetBucketVersioning",
         "s3:GetBucketPolicy",
+        "s3:GetBucketPublicAccessBlock",
         "s3:GetBucketTagging",
         "s3:GetReplicationConfiguration",
         "s3:GetLifecycleConfiguration",
@@ -526,9 +603,54 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       }
       effect = "Allow"
       resources = [
-        "arn:aws:s3:::*"
+        "arn:${data.aws_partition.current.partition}:s3:::*"
       ]
       sid = "DescribeS3Resources"
+    }
+  }
+
+
+  # Get a single S3 Multi-Region Access Point
+  dynamic "statement" {
+    for_each = var.is_s3_enabled ? [1] : []
+    content {
+      actions = [
+        "s3:GetMultiRegionAccessPoint",
+      ]
+      condition {
+        test = "StringEquals"
+        values = [
+          var.aws_account_id
+        ]
+        variable = "s3:ResourceAccount"
+      }
+      effect = "Allow"
+      resources = [
+        "arn:${data.aws_partition.current.partition}:s3::${var.aws_account_id}:accesspoint/*"
+      ]
+      sid = "GetMultiRegionAccessPoint"
+    }
+  }
+
+  # List all S3 Multi-Region Access Points
+  dynamic "statement" {
+    for_each = var.is_s3_enabled ? [1] : []
+    content {
+      actions = [
+        "s3:ListMultiRegionAccessPoints",
+      ]
+      condition {
+        test = "StringEquals"
+        values = [
+          var.aws_account_id
+        ]
+        variable = "s3:ResourceAccount"
+      }
+      effect = "Allow"
+      resources = [
+        "*"
+      ]
+      sid = "ListMultiRegionAccessPoints"
     }
   }
 
@@ -700,6 +822,23 @@ resource "aws_cloudwatch_event_target" "clumio_tag_event_rule_target" {
   target_id = "clumio-publish"
 }
 
+resource "aws_cloudwatch_event_rule" "clumio_aws_backup_event_rule" {
+  count = 1
+  depends_on = [
+    time_sleep.wait_before_create
+  ]
+  description   = "Watches for AWS backup changes"
+  event_pattern = "{\"source\": [\"aws.backup\"], \"detail-type\": [\"Recovery Point State Change\"], \"detail\": {\"resourceType\": [\"Aurora\", \"DynamoDB\", \"DynamoDB.FullyManaged\", \"EBS\", \"EC2\", \"RDS\", \"RDS.Cluster\", \"S3\"], \"status\": [\"COMPLETED\", \"PARTIAL\", \"EXPIRED\", \"FAILED\", \"DELETED\"]}}"
+  name          = "ClumioBackupCloudwatchRule_${var.clumio_token}"
+}
+
+resource "aws_cloudwatch_event_target" "clumio_aws_backup_event_rule_target" {
+  count     = 1
+  arn       = aws_sns_topic.clumio_event_pub.arn
+  rule      = aws_cloudwatch_event_rule.clumio_aws_backup_event_rule[0].name
+  target_id = "clumio-publish"
+}
+
 # The base Clumio policy
 resource "aws_iam_policy" "clumio_base_managed_policy" {
   count  = 1
@@ -802,6 +941,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     aws_iam_role_policy.clumio_inventory_policy,
     aws_iam_role_policy.clumio_kms_policy,
     aws_cloudwatch_event_target.clumio_tag_event_rule_target,
+    aws_cloudwatch_event_target.clumio_aws_backup_event_rule_target,
     aws_iam_policy.clumio_ec2_mssql_backup_restore_policy,
     aws_iam_instance_profile.clumio_ec2_mssql_ssm_instance_profile,
     aws_iam_role.clumio_ec2_mssql_ssm_instance_role_v2,
@@ -850,13 +990,13 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "CreateClumioInventoryTopicEncryptionKey" : var.create_clumio_inventory_sns_topic_encryption_key,
     "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
-  protect_config_version             = "23.0"
+  protect_config_version             = "24.1"
   protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.2" : ""
-  protect_ebs_version                = var.is_ebs_enabled ? "24.2" : ""
+  protect_ebs_version                = var.is_ebs_enabled ? "25.0" : ""
   protect_ec2_mssql_version          = var.is_ec2_mssql_enabled ? "4.4" : ""
   protect_rds_version                = var.is_rds_enabled ? "20.3" : ""
-  protect_s3_version                 = var.is_s3_enabled ? "6.3" : ""
-  protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "5.1" : ""
+  protect_s3_version                 = var.is_s3_enabled ? "7.0" : ""
+  protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "6.0" : ""
   protect_warm_tier_version          = var.is_dynamodb_enabled ? "1.1" : ""
   region                             = var.aws_region
   role_arn                           = aws_iam_role.clumio_iam_role.arn
