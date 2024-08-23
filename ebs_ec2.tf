@@ -744,7 +744,7 @@ resource "aws_cloudwatch_event_rule" "clumio_ebs_cloudtrail_event_rule" {
   count         = var.is_ebs_enabled ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for resource changes in EBS (CloudTrail)."
-  event_pattern = "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteSnapshot\"],\"errorCode\": [{\"exists\": false}]}}"
+  event_pattern = "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteSnapshot\", \"LockSnapshot\", \"UnlockSnapshot\"],\"errorCode\": [{\"exists\": false}]}}"
   name          = "ClumioEBSCloudtrailRule_${var.clumio_token}"
 }
 
@@ -752,7 +752,7 @@ resource "aws_cloudwatch_event_rule" "clumio_ebs_cloudwatch_event_rule" {
   count         = var.is_ebs_enabled ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for resource changes in EBS (CloudWatch)."
-  event_pattern = "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"EBS Volume Notification\", \"EBS Snapshot Notification\"],\"detail\": {\"event\": [\"createVolume\",\"modifyVolume\",\"deleteVolume\",\"createSnapshot\",\"createSnapshots\",\"copySnapshot\",\"shareSnapshot\"]}}"
+  event_pattern = "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"EBS Volume Notification\", \"EBS Snapshot Notification\"],\"detail\": {\"event\": [\"createVolume\",\"modifyVolume\",\"deleteVolume\",\"createSnapshot\",\"createSnapshots\",\"copySnapshot\",\"shareSnapshot\",\"lockDurationExpiry\",\"coolOffPeriodExpiry\"]}}"
   name          = "ClumioEBSCloudwatchRule_${var.clumio_token}"
 }
 
@@ -760,7 +760,7 @@ resource "aws_cloudwatch_event_rule" "clumio_ec2_cloudtrail_event_rule" {
   count         = var.is_ebs_enabled ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for resource changes in EC2 (CloudTrail)."
-  event_pattern = "{ \"source\": [\"aws.ec2\"], \"detail-type\": [\"AWS API Call via CloudTrail\"], \"detail\": { \"eventName\": [ \"CreateImage\", \"DeregisterImage\", \"DeleteImage\", \"RegisterImage\", \"CopyImage\", \"AssociateIamInstanceProfile\", \"DisassociateIamInstanceProfile\", \"ReplaceIamInstanceProfileAssociation\", \"AttachVolume\", \"DetachVolume\" ], \"errorCode\": [{\"exists\": false}] } }"
+  event_pattern = "{ \"source\": [\"aws.ec2\"], \"detail-type\": [\"AWS API Call via CloudTrail\"], \"detail\": { \"eventName\": [ \"CreateImage\", \"DeregisterImage\", \"DeleteImage\", \"RegisterImage\", \"CopyImage\", \"AssociateIamInstanceProfile\", \"DisassociateIamInstanceProfile\", \"ReplaceIamInstanceProfileAssociation\", \"AttachVolume\", \"DetachVolume\"], \"errorCode\": [{\"exists\": false}] } }"
   name          = "ClumioEC2CloudtrailRule_${var.clumio_token}"
 }
 

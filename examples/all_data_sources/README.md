@@ -18,14 +18,14 @@ $ terraform apply
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | ~>0.5.1 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.9.0, <0.11.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a     |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | ~>0.5.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.9.0, <0.11.0 |
 
 ## Modules
 
@@ -37,7 +37,7 @@ $ terraform apply
 
 | Name | Type |
 |------|------|
-| [clumio_aws_connection.test_conn](https://registry.terraform.io/providers/clumio-code/clumio/latest/docs/resources/clumio_aws_connection) | resource |
+| [clumio_aws_connection.test_conn](https://registry.terraform.io/providers/clumio-code/clumio/latest/docs/resources/aws_connection) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
@@ -51,4 +51,5 @@ $ terraform apply
 ## Outputs
 
 No outputs.
+
 <!-- END_TF_DOCS -->
