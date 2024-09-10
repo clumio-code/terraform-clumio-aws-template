@@ -198,11 +198,29 @@ resource "aws_cloudwatch_event_rule" "clumio_s3_cloudtrail_event_rule" {
   name          = "ClumioS3CloudtrailEventRule_${var.clumio_token}"
 }
 
+resource "aws_cloudwatch_event_rule" "clumio_s3_aws_backup_cloudwatch_event_rule" {
+  count = var.is_s3_enabled ? 1 : 0
+  depends_on = [
+    time_sleep.wait_before_create,
+    time_sleep.wait_10_seconds_before_creating_clumio_s3_aws_backup_cloudwatch_event_rule
+  ]
+  description   = "Watches for AWS S3 backup resource changes (Cloudwatch)."
+  event_pattern = "{\"source\": [\"aws.backup\"],\"detail-type\": [\"Recovery Point State Change\"],\"detail\": {\"resourceType\": [\"S3\"], \"status\": [\"COMPLETED\", \"AVAILABLE\", \"PARTIAL\", \"EXPIRED\", \"DELETED\"]}}"
+  name          = "ClumioS3AWSBackupCWRule_${var.clumio_token}"
+}
+
 resource "aws_cloudwatch_event_target" "clumio_s3_cloudtrail_event_rule_target" {
   count     = var.is_s3_enabled ? 1 : 0
   arn       = aws_sns_topic.clumio_event_pub.arn
   rule      = aws_cloudwatch_event_rule.clumio_s3_cloudtrail_event_rule[0].name
   target_id = "clumio-s3-ctrail-publish"
+}
+
+resource "aws_cloudwatch_event_target" "clumio_s3_aws_backup_cloudwatch_event_rule_target" {
+  count     = var.is_s3_enabled ? 1 : 0
+  arn       = aws_sns_topic.clumio_event_pub.arn
+  rule      = aws_cloudwatch_event_rule.clumio_s3_aws_backup_cloudwatch_event_rule[0].name
+  target_id = "clumio-s3-aws-backup-cwatch-publish"
 }
 
 resource "aws_iam_policy" "clumio_s3_backup_policy" {
@@ -270,6 +288,11 @@ resource "aws_iam_role_policy_attachment" "clumio_s3_continuous_backup_event_bri
 }
 
 resource "time_sleep" "wait_10_seconds_before_creating_clumio_s3_cloudtrail_event_rule" {
+  count           = var.is_s3_enabled ? 1 : 0
+  create_duration = "10s"
+}
+
+resource "time_sleep" "wait_10_seconds_before_creating_clumio_s3_aws_backup_cloudwatch_event_rule" {
   count           = var.is_s3_enabled ? 1 : 0
   create_duration = "10s"
 }

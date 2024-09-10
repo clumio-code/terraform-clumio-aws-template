@@ -470,7 +470,7 @@ resource "aws_cloudwatch_event_rule" "clumio_rds_cloudtrail_event_rule" {
   count         = var.is_rds_enabled ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for resource changes in RDS (CloudTrail)."
-  event_pattern = "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteDBSnapshot\",\"DeleteDBClusterSnapshot\",\"CopyDBClusterSnapshot\",\"CopyDBSnapshot\",\"CreateDBCluster\",\"DeleteDBCluster\"],\"errorCode\": [{\"exists\": false}]}}"
+  event_pattern = "{\"source\": [\"aws.rds\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteDBSnapshot\",\"DeleteDBClusterSnapshot\",\"CopyDBClusterSnapshot\",\"CopyDBSnapshot\",\"CreateDBCluster\",\"DeleteDBCluster\"],\"errorCode\": [{\"exists\": false}]}}"
   name          = "ClumioRDSCloudtrailRule_${var.clumio_token}"
 }
 
@@ -478,8 +478,16 @@ resource "aws_cloudwatch_event_rule" "clumio_rds_cloudwatch_event_rule" {
   count         = var.is_rds_enabled ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for resource changes in RDS (CloudWatch)."
-  event_pattern = "{\"source\": [\"aws.rds\"], \"detail-type\": [\"RDS DB Instance Event\",\"RDS DB Snapshot Event\",\"RDS DB Cluster Event\",\"RDS DB Cluster Snapshot Event\" ], \"detail\": {\"SourceType\": [\"DB_INSTANCE\", \"SNAPSHOT\", \"CLUSTER\", \"CLUSTER_SNAPSHOT\"] } }"
+  event_pattern = "{\"source\": [\"aws.rds\"], \"detail-type\": [\"RDS DB Instance Event\",\"RDS DB Snapshot Event\",\"RDS DB Cluster Event\",\"RDS DB Cluster Snapshot Event\"], \"detail\": {\"SourceType\": [\"DB_INSTANCE\", \"SNAPSHOT\", \"CLUSTER\", \"CLUSTER_SNAPSHOT\"]}}"
   name          = "ClumioRDSCloudwatchRule_${var.clumio_token}"
+}
+
+resource "aws_cloudwatch_event_rule" "clumio_rds_aws_backup_cloudwatch_event_rule" {
+  count         = var.is_rds_enabled ? 1 : 0
+  depends_on    = [time_sleep.wait_before_create]
+  description   = "Watches for AWS RDS recovery point resource changes (CloudWatch)."
+  event_pattern = "{\"source\": [\"aws.backup\"],\"detail-type\": [\"Recovery Point State Change\"],\"detail\": {\"resourceType\": [\"Aurora\", \"RDS\", \"RDS.Cluster\"], \"status\": [\"COMPLETED\", \"AVAILABLE\", \"PARTIAL\", \"EXPIRED\", \"DELETED\"]}}"
+  name          = "ClumioRDSAWSBackupCWRule_${var.clumio_token}"
 }
 
 resource "aws_cloudwatch_event_target" "clumio_rds_cloudtrail_event_rule_target" {
@@ -494,6 +502,13 @@ resource "aws_cloudwatch_event_target" "clumio_rds_cloudwatch_event_rule_target"
   arn       = aws_sns_topic.clumio_event_pub.arn
   rule      = aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].name
   target_id = "clumio-rds-cwatch-publish"
+}
+
+resource "aws_cloudwatch_event_target" "clumio_rds_aws_backup_cloudwatch_event_rule_target" {
+  count     = var.is_rds_enabled ? 1 : 0
+  arn       = aws_sns_topic.clumio_event_pub.arn
+  rule      = aws_cloudwatch_event_rule.clumio_rds_aws_backup_cloudwatch_event_rule[0].name
+  target_id = "clumio-rds-aws-backup-cwatch-publish"
 }
 
 resource "aws_iam_policy" "clumio_rds_backup_policy" {
