@@ -1,3 +1,6 @@
+## 0.27.1
+Changed the Clumio provider version required to >=0.10.0, <0.12.0
+
 ## 0.27.0
 New cloudwatch_event_rule added for aws backups.
 Changes to inventory policy permissions and cloudwatch event rule event pattern changes corresponding to EBS/EC2,S3 and DynamoDB.
