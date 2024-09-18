@@ -1,7 +1,10 @@
+## 0.29.0
+Updated permission for inventory policy document statement for S3.
+Added condition for Dynamodb restore policy statement.
+
 ## 0.28.0
 Added data source specific AWS backup cloudwatch event rules. 
 Changed the Clumio provider version required to >=0.10.0, <0.12.0.
-
 
 ## 0.27.0
 New cloudwatch_event_rule added for aws backups.
