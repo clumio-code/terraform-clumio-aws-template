@@ -213,6 +213,13 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
       "arn:aws:s3:::clumio-ddb-export-*/*",
       "arn:aws:s3:::clumio-ddb-export-*"
     ]
+    condition {
+      test = "StringLike"
+      values = [
+        var.data_plane_account_id
+      ]
+      variable = "s3:ResourceAccount"
+    }
     sid = "ClumioDynamoDbSecureVaultImportFromS3Actions"
   }
 

@@ -601,7 +601,8 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
         "s3:GetReplicationConfiguration",
         "s3:GetLifecycleConfiguration",
         "s3:GetBucketLogging",
-        "s3:GetBucketObjectLockConfiguration"
+        "s3:GetBucketObjectLockConfiguration",
+        "s3:GetMetricsConfiguration"
       ]
       condition {
         test = "StringEquals"
@@ -991,7 +992,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
   protect_ebs_version                = var.is_ebs_enabled ? "25.1" : ""
   protect_ec2_mssql_version          = var.is_ec2_mssql_enabled ? "4.4" : ""
   protect_rds_version                = var.is_rds_enabled ? "21.0" : ""
-  protect_s3_version                 = var.is_s3_enabled ? "7.1" : ""
+  protect_s3_version                 = var.is_s3_enabled ? "7.2" : ""
   protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "6.1" : ""
   protect_warm_tier_version          = var.is_dynamodb_enabled ? "1.1" : ""
   region                             = var.aws_region
