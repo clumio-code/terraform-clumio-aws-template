@@ -1,3 +1,6 @@
+## 0.30.0
+Updated AWS policies CreateVolume to have permission to access snapshots
+
 ## 0.29.0
 Updated permission for inventory policy document statement for S3.
 Added condition for Dynamodb restore policy statement.

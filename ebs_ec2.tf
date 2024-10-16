@@ -370,6 +370,26 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     sid = "CreateVolumeWithClumioRestoreTag"
   }
 
+  # Only allow Restore to create a new volume from a snapshot tagged with Clumio as Vendor.
+  # The volume will be tagged with clumio restore tag as per "CreateVolumeWithClumioRestoreTag"
+  statement {
+    actions = [
+      "ec2:CreateVolume"
+    ]
+    condition {
+      test = "ForAnyValue:StringEquals"
+      values = [
+        "Clumio"
+      ]
+      variable = "aws:ResourceTag/Vendor"
+    }
+    effect = "Allow"
+    resources = [
+      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+    ]
+    sid = "CreateVolumeFromSnapshotWithClumioTag"
+  }
+
   # Clumio Restore deletes the restored volume in case restore fails after the volume has been created.
   # Allow DeleteVolume only if the volume is tagged with ClumioRestoreTag.
   statement {
