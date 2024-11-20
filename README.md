@@ -39,11 +39,13 @@ module "clumio_aws_connection_module" {
   clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
   is_ebs_enabled        = true
   is_rds_enabled        = true
-  is_ec2_mssql_enabled  = true
   is_s3_enabled         = true
   is_dynamodb_enabled   = true
 }
 ```
+
+Note: The `is_ec2_mssql_enabled` feature is only supported for legacy connections. Please contact the Support Team if you need assistance with enabling it.
+
 ## Upgrading module
 Run the following terraform commands to upgrade from a older version of the module.
 ```terraform
@@ -69,7 +71,6 @@ module "clumio_aws_connection_module" {
   clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
   is_ebs_enabled        = true
   is_rds_enabled        = true
-  is_ec2_mssql_enabled  = true
   is_s3_enabled         = true
   is_dynamodb_enabled   = true
 }
@@ -90,7 +91,6 @@ module "clumio_aws_connection_module" {
   clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
   is_ebs_enabled        = true
   is_rds_enabled        = true
-  is_ec2_mssql_enabled  = true
   is_s3_enabled         = true
   is_dynamodb_enabled   = true
 }
