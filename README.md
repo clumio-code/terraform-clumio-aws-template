@@ -44,7 +44,7 @@ module "clumio_aws_connection_module" {
 }
 ```
 
-Note: The `is_ec2_mssql_enabled` feature is only supported for legacy connections. Please contact the Support Team if you need assistance with enabling it.
+An additional `is_ec2_mssql_enable` flag is supported for legacy connections. Please contact the Support Team if you need assistance with enabling it.
 
 ## Upgrading module
 Run the following terraform commands to upgrade from a older version of the module.
