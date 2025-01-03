@@ -1,3 +1,6 @@
+## 0.31.0
+Changed the Clumio provider version required to >=0.11.0, <0.13.0.
+
 ## 0.30.0
 Updated AWS policies CreateVolume to have permission to access snapshots
 
