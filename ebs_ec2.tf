@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "CreateSnapshotWithClumioTag"
   }
@@ -43,8 +43,8 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
     ]
     sid = "CreateSnapshotOnAnyVolumeOrInstance"
   }
@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "DeleteClumioTaggedSnapshot"
   }
@@ -89,7 +89,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "RegisterClumioTaggedSnapshot"
   }
@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*"
     ]
     sid = "RegisterImage"
   }
@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*"
     ]
     sid = "DeregisterClumioTaggedImage"
   }
@@ -145,7 +145,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "CreateTagsOnlyWithCreateActions"
   }
@@ -164,7 +164,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*"
     ]
     sid = "CreateTagsIfRequestHasClumioTag"
   }
@@ -183,8 +183,8 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*",
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*"
     ]
     sid = "DeleteTagsOnClumioTaggedResource"
   }
@@ -200,7 +200,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "EBSReadOperations"
   }
@@ -215,8 +215,6 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
       "ec2:DescribeElasticGpus",
       "ec2:DescribeSubnets",
       "ec2:DescribeKeyPairs",
-      "elastic-inference:DescribeAccelerators",
-      "elastic-inference:DescribeAcceleratorOfferings"
     ]
     effect = "Allow"
     resources = [
@@ -232,7 +230,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:instance-profile/*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:instance-profile/*"
     ]
     sid = "GetInstanceProfile"
   }
@@ -244,7 +242,7 @@ data "aws_iam_policy_document" "clumio_ec2_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/*"
     ]
     sid = "GetRole"
   }
@@ -286,7 +284,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "StartSnapshotWithClumioTag"
   }
@@ -307,7 +305,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "ModifySnapshotOnClumioTaggedResource"
   }
@@ -329,7 +327,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "CreateSnapshotWithRestoreTag"
   }
@@ -343,8 +341,8 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "CreateSnapshotOnAnyVolumeOrInstance"
   }
@@ -365,7 +363,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "CreateVolumeWithClumioRestoreTag"
   }
@@ -385,7 +383,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "CreateVolumeFromSnapshotWithClumioTag"
   }
@@ -405,7 +403,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "DeleteClumioRestoredVolume"
   }
@@ -419,7 +417,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
     ]
     sid = "AttachVolumeToAnyInstance"
   }
@@ -440,7 +438,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
     ]
     sid = "DetachVolumeFromClumioRestoredInstance"
   }
@@ -455,7 +453,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "AttachDetachVolume"
   }
@@ -476,7 +474,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "RegisterClumioRestoredSnapshot"
   }
@@ -489,7 +487,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*"
     ]
     sid = "RegisterClumioRestoredImage"
   }
@@ -510,7 +508,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*"
     ]
     sid = "DeregisterClumioRestoredImage"
   }
@@ -522,14 +520,14 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*",
-      "arn:${data.aws_partition.current.partition}:ec2:*:*:subnet/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:key-pair/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:security-group/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*",
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*",
+      "arn:${local.partition}:ec2:*:*:subnet/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:key-pair/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:security-group/*"
     ]
     sid = "RunInstance"
   }
@@ -552,7 +550,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
     ]
     sid = "OperationsOnClumioRestoredInstances"
   }
@@ -574,7 +572,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
     ]
     sid = "DeleteClumioRestoredNic"
   }
@@ -598,8 +596,8 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
     ]
     sid = "ModifyClumioRestoredNic"
   }
@@ -622,11 +620,11 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:elastic-ip/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:elastic-ip/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
     ]
     sid = "CreateTagsOnlyWithCreateActions"
   }
@@ -647,7 +645,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*"
     ]
     sid = "CreateTagsIfRequestHasRestoreTag"
   }
@@ -669,12 +667,12 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::image/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:elastic-ip/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*",
+      "arn:${local.partition}:ec2:${var.aws_region}::image/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:elastic-ip/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"
     ]
     sid = "DeleteTagsOnClumioRestoredResource"
   }
@@ -693,7 +691,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/*"
     ]
     sid = "AssignClumioDataProtectionInstanceRole"
   }
@@ -709,7 +707,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}::snapshot/*"
+      "arn:${local.partition}:ec2:${var.aws_region}::snapshot/*"
     ]
     sid = "EBSReadOperations"
   }
@@ -722,7 +720,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:instance-profile/*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:instance-profile/*"
     ]
     sid = "GetInstanceProfile"
   }
@@ -734,7 +732,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/*"
     ]
     sid = "GetRole"
   }
@@ -749,8 +747,6 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
       "ec2:DescribeElasticGpus",
       "ec2:DescribeSubnets",
       "ec2:DescribeKeyPairs",
-      "elastic-inference:DescribeAccelerators",
-      "elastic-inference:DescribeAcceleratorOfferings"
     ]
     effect = "Allow"
     resources = [

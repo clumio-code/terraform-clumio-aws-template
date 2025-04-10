@@ -10,9 +10,22 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
     ]
     sid = "ClumioDynamoDbSecureVaultBackupTableActions"
+  }
+
+  # Required for backing up the contributor insights.
+  statement {
+    actions = [
+      "dynamodb:DescribeContributorInsights",
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*",
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/index/*"
+    ]
+    sid = "ClumioDynamoDbSecureVaultBackupContributorInsightsActions"
   }
 
   # Required during incremental backups to use streams to capture the incremental data.
@@ -24,7 +37,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/stream/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/stream/*"
     ]
     sid = "ClumioDynamoDbSecureVaultStreamActions"
   }
@@ -36,7 +49,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/export/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/export/*"
     ]
     sid = "ClumioDynamoDbSecureVaultExportActions"
   }
@@ -57,7 +70,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:aws:s3:::clumio-ddb-export-*/*"
+      "arn:${local.partition}:s3:::clumio-ddb-export-*/*"
     ]
     sid = "ClumioDynamoDbSecureVaultExportS3Actions"
   }
@@ -75,7 +88,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+      "arn:${local.partition}:kms:*:*:key/*"
     ]
     sid = "ClumioDynamoDbKmsActions"
   }
@@ -92,7 +105,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
     ]
     sid = "ClumioDynamoDbTableActions"
   }
@@ -105,7 +118,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/backup/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/backup/*"
     ]
     sid = "ClumioSnapDynamoDbBackupActions"
   }
@@ -117,7 +130,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/backup*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/backup*"
     ]
     sid = "ClumioSnapDynamoDbMiscActions"
   }
@@ -139,7 +152,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_backup_policy_document" {
     # Region wildcard is needed because Point-in-time Restore fetches the live Auto-scaling configuration
     # from the source table and uses them to update the target table configuration.
     resources = [
-      "arn:${data.aws_partition.current.partition}:application-autoscaling:*:${var.aws_account_id}:scalable-target/*"
+      "arn:${local.partition}:application-autoscaling:*:${var.aws_account_id}:scalable-target/*"
     ]
     sid = "ClumioDynamoDbAutoScalingActions"
   }
@@ -159,7 +172,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+      "arn:${local.partition}:kms:*:*:key/*"
     ]
     sid = "AllowClumioDynamoDbSecureVaultKmsAccess"
   }
@@ -184,9 +197,36 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     effect = "Allow"
     # Region requires a wild card to support cross region replica restore.
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
+      "arn:${local.partition}:dynamodb:*:${var.aws_account_id}:table/*"
     ]
     sid = "ClumioDynamoDBSecureVaultGlobalTableActions"
+  }
+
+  # Required for restoring the resource policy.
+  statement {
+    actions = [
+      "dynamodb:GetResourcePolicy",
+      "dynamodb:PutResourcePolicy"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*",
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/stream/*"
+    ]
+    sid = "ClumioDynamoDBSecureVaultResourcePolicyActions"
+  }
+
+  # Required for restoring the contributor insights.
+  statement {
+    actions = [
+      "dynamodb:UpdateContributorInsights"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*",
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*/index/*"
+    ]
+    sid = "ClumioDynamoDBSecureVaultContributorInsightsActions"
   }
 
   # Required to restore to a new table from S3 files.
@@ -197,7 +237,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
     ]
     sid = "ClumioDynamoDbSecureVaultImportActions"
   }
@@ -210,8 +250,8 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:s3:::clumio-ddb-export-*/*",
-      "arn:aws:s3:::clumio-ddb-export-*"
+      "arn:${local.partition}:s3:::clumio-ddb-export-*/*",
+      "arn:${local.partition}:s3:::clumio-ddb-export-*"
     ]
     condition {
       test = "StringLike"
@@ -235,8 +275,8 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws-dynamodb/imports:*",
-      "arn:${data.aws_partition.current.partition}:logs:${var.aws_region}:${var.aws_account_id}:log-group::log-stream:*"
+      "arn:${local.partition}:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws-dynamodb/imports:*",
+      "arn:${local.partition}:logs:${var.aws_region}:${var.aws_account_id}:log-group::log-stream:*"
     ]
     sid = "ClumioDynamoDbSecureVaultCloudWatchActions"
   }
@@ -260,7 +300,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
     ]
     sid = "ClumioDynamoDbTableActions"
   }
@@ -275,7 +315,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     effect = "Allow"
     # Region requires a wild card to support cross region restores for snap and PITR.
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:*:${var.aws_account_id}:table/*"
+      "arn:${local.partition}:dynamodb:*:${var.aws_account_id}:table/*"
     ]
     sid = "ClumioDynamoDbRestoreTableActions"
   }
@@ -296,7 +336,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:application-autoscaling:${var.aws_region}:${var.aws_account_id}:scalable-target/*"
+      "arn:${local.partition}:application-autoscaling:${var.aws_region}:${var.aws_account_id}:scalable-target/*"
     ]
     sid = "ClumioWarmProtectDynamoDbAutoScalingActions"
   }
@@ -315,7 +355,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
     ]
     sid = "ClumioWarmProtectCreateDynamoDbAutoScalingRole"
   }
@@ -327,7 +367,7 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
     ]
     sid = "ClumioDynamoDbAutoScalingPassRoleActions"
   }
@@ -343,7 +383,7 @@ data "aws_iam_policy_document" "clumio_iam_permissions_boundary_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+      "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
     ]
     sid = "AllowClumioDynamoDbSecureVaultAccess"
   }
@@ -360,7 +400,7 @@ data "aws_iam_policy_document" "clumio_iam_permissions_boundary_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+      "arn:${local.partition}:kms:*:*:key/*"
     ]
     sid = "AllowClumioDynamoDbSecureVaultKmsAccess"
   }
@@ -383,7 +423,7 @@ data "aws_iam_policy_document" "clumio_iam_role_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
     ]
     sid = "AllowCreateRole"
   }
@@ -396,7 +436,7 @@ data "aws_iam_policy_document" "clumio_iam_role_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
     ]
     sid = "AllowDeleteRole"
   }

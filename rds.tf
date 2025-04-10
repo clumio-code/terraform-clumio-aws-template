@@ -8,9 +8,9 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     effect = "Allow"
     resources = [
       # Allow actions on customer account.
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
       # Allow actions on Clumio account.
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.data_plane_account_id}:cluster-snapshot:*"
+      "arn:${local.partition}:rds:*:${var.data_plane_account_id}:cluster-snapshot:*"
     ]
     sid = "CopyAndSharingClusterSnapshotToClumio"
   }
@@ -24,11 +24,11 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     effect = "Allow"
     resources = [
       # Allow actions on customer account.
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*",
       # Allow actions on Clumio account.
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.data_plane_account_id}:snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.data_plane_account_id}:og:*"
+      "arn:${local.partition}:rds:*:${var.data_plane_account_id}:snapshot:*",
+      "arn:${local.partition}:rds:*:${var.data_plane_account_id}:og:*"
     ]
     sid = "CopyAndSharingInstanceSnapshotToClumio"
   }
@@ -40,8 +40,8 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*"
     ]
     sid = "CreateClusterSnapshotForClumioBackup"
   }
@@ -53,8 +53,8 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
     ]
     sid = "DescribeClusterSnapshots"
   }
@@ -66,8 +66,8 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:snapshot:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:snapshot:*"
     ]
     sid = "CreateInstanceSnapshotForClumioBackup"
   }
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
     ]
     sid = "BackingUpSubnetGroups"
   }
@@ -91,8 +91,8 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:snapshot:*"
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*"
     ]
     sid = "AddingClumioTagToSnapshot"
   }
@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*"
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*"
     ]
     sid = "BackingUpOptionGroups"
   }
@@ -116,9 +116,9 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-pg:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*"
     ]
     sid = "ApplyPITRConfigurationOnCluster"
   }
@@ -130,10 +130,10 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:secgrp:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:secgrp:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*"
     ]
     sid = "ApplyPITRConfigurationOnInstance"
   }
@@ -158,8 +158,8 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:snapshot:*"
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*"
     ]
     sid = "ListClumioTagsForSnapshots"
   }
@@ -209,7 +209,7 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+      "arn:${local.partition}:kms:*:*:key/*"
     ]
     sid = "BackupKMSPermissions"
   }
@@ -223,8 +223,8 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
     ]
     sid = "ListClumioTagsForRestoredTag"
   }
@@ -236,12 +236,12 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:secgrp:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:secgrp:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
     ]
     sid = "RestoreInstancesInACluster"
   }
@@ -253,7 +253,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:pg:*"
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:pg:*"
     ]
     sid = "RestoreParameterGroups"
   }
@@ -265,11 +265,11 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:snapshot:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
     ]
     sid = "RestoreInstanceFromSnapshot"
   }
@@ -281,11 +281,11 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:auto-backup:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:pg:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:auto-backup:*"
     ]
     sid = "RestoreInstanceToPointInTime"
   }
@@ -297,11 +297,11 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-pg:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
     ]
     sid = "RestoreClusterFromSnapshot"
   }
@@ -313,11 +313,11 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:auto-backup:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-pg:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:auto-backup:*"
     ]
     sid = "RestoreClusterToPointInTime"
   }
@@ -329,10 +329,10 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db-snapshot:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db-snapshot:*"
     ]
     sid = "RemoveClumioTagAfterRestore"
   }
@@ -344,9 +344,9 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*"
     ]
     sid = "AddingClumioTagToRestoredRDSResource"
   }
@@ -359,7 +359,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*"
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*"
     ]
     sid = "RestoreOptionGroups"
   }
@@ -373,13 +373,13 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:db:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster-pg:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:secgrp:*",
-      "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:subgrp:*"
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:pg:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-pg:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:secgrp:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:subgrp:*"
     ]
     sid = "RestoreReadReplicas"
   }
@@ -398,7 +398,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
     ]
     sid = "ClusterCleanupPermissions"
   }
@@ -417,7 +417,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
     ]
     sid = "InstanceCleanupPermissions"
   }
@@ -429,7 +429,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
     ]
     sid = "RestoreAssociatedRolesInCluster"
   }
@@ -441,7 +441,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
     ]
     sid = "RestoreAssociatedRolesInInstance"
   }
@@ -460,7 +460,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:role/*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:role/*"
     ]
     sid = "PassAssociatedRoles"
   }
