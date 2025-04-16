@@ -1,11 +1,13 @@
 locals {
+  partition = data.aws_partition.current.partition
+
   clumio_iam_role_principal = {
-    intermediate_role = "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
-    root              = "arn:aws:iam::${var.clumio_aws_account_id}:root"
+    intermediate_role = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
+    root              = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:root"
   }
   clumio_support_role_principal = {
-    intermediate_role = "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"
-    root              = "arn:aws:iam::${var.clumio_aws_account_id}:root"
+    intermediate_role = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"
+    root              = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:root"
   }
 }
 
@@ -22,6 +24,7 @@ locals {
     eu-central-1   = "ec-1"
     eu-central-2   = "ec-2"
     eu-north-1     = "en-1"
+    eu-south-2     = "es-2"
     eu-west-1      = "ew-1"
     eu-west-2      = "ew-2"
     eu-west-3      = "ew-3"
@@ -59,7 +62,7 @@ data "aws_iam_policy_document" "aws_iam_role_document" {
     }
     effect = "Allow"
     principals {
-      identifiers = ["arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"]
+      identifiers = ["arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"]
       type        = "AWS"
     }
   }
@@ -76,7 +79,7 @@ data "aws_iam_policy_document" "aws_support_role_document" {
     }
     effect = "Allow"
     principals {
-      identifiers = ["arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"]
+      identifiers = ["arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"]
       type        = "AWS"
     }
   }
@@ -206,7 +209,7 @@ data "aws_iam_policy_document" "clumio_event_pub_policy_document" {
     effect = "Allow"
     principals {
       identifiers = [
-        "arn:aws:iam::${var.clumio_aws_account_id}:root"
+        "arn:${local.partition}:iam::${var.clumio_aws_account_id}:root"
       ]
       type = "AWS"
     }
@@ -223,7 +226,7 @@ data "aws_iam_policy_document" "clumio_event_pub_policy_document" {
     effect = "Allow"
     principals {
       identifiers = [
-        "arn:aws:iam::${var.clumio_aws_account_id}:root"
+        "arn:${local.partition}:iam::${var.clumio_aws_account_id}:root"
       ]
       type = "AWS"
     }
@@ -302,7 +305,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:backup:${var.aws_region}:${var.aws_account_id}:backup-vault:*"
+        "arn:${local.partition}:backup:${var.aws_region}:${var.aws_account_id}:backup-vault:*"
       ]
       sid = "GetAWSRecoveryPoints"
     }
@@ -337,7 +340,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+        "arn:${local.partition}:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
       ]
       sid = "DescribeDynamoResources"
     }
@@ -353,7 +356,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:dynamodb::${var.aws_account_id}:global-table/*"
+        "arn:${local.partition}:dynamodb::${var.aws_account_id}:global-table/*"
       ]
       sid = "DescribeDynamoGlobalTableResources"
     }
@@ -430,7 +433,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
+        "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*"
       ]
       sid = "DescribeRDSClusters"
     }
@@ -447,9 +450,9 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       effect = "Allow"
       resources = [
         # Allow actions on customer account.
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
+        "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
         # Allow actions on clumio account.
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.data_plane_account_id}:cluster-snapshot:*"
+        "arn:${local.partition}:rds:*:${var.data_plane_account_id}:cluster-snapshot:*"
       ]
       sid = "DescribeRDSClusterSnapshots"
     }
@@ -464,7 +467,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+        "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
       ]
       sid = "DescribeRDSInstances"
     }
@@ -479,8 +482,8 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:auto-backup:*"
+        "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+        "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:auto-backup:*"
       ]
       sid = "DescribeRDSAutomatedBackups"
     }
@@ -496,9 +499,9 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       effect = "Allow"
       resources = [
         # Allow actions on customer account.
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:snapshot:*",
+        "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*",
         # Allow actions on Clumio account.
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.data_plane_account_id}:snapshot:*"
+        "arn:${local.partition}:rds:*:${var.data_plane_account_id}:snapshot:*"
       ]
       sid = "DescribeRDSInstanceSnapshotAttributes"
     }
@@ -514,11 +517,11 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       effect = "Allow"
       resources = [
         # Allow actions on Clumio account.
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:db:*",
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:snapshot:*",
+        "arn:${local.partition}:rds:*:${var.aws_account_id}:db:*",
+        "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*",
         # Allow actions on customer account.
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.data_plane_account_id}:db:*",
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.data_plane_account_id}:snapshot:*"
+        "arn:${local.partition}:rds:*:${var.data_plane_account_id}:db:*",
+        "arn:${local.partition}:rds:*:${var.data_plane_account_id}:snapshot:*"
       ]
       sid = "DescribeRDSInstanceSnapshots"
     }
@@ -533,7 +536,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:global-cluster:*"
+        "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:global-cluster:*"
       ]
       sid = "DescribeRDSGlobalClusters"
     }
@@ -549,7 +552,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:rds:*:${var.aws_account_id}:og:*"
+        "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*"
       ]
       sid = "DescribeRDSOptionGroups"
     }
@@ -564,8 +567,8 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       ]
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-        "arn:${data.aws_partition.current.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+        "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
+        "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
       ]
       sid = "ListingRDSTags"
     }
@@ -613,7 +616,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       }
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:s3:::*"
+        "arn:${local.partition}:s3:::*"
       ]
       sid = "DescribeS3Resources"
     }
@@ -636,7 +639,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       }
       effect = "Allow"
       resources = [
-        "arn:${data.aws_partition.current.partition}:s3::${var.aws_account_id}:accesspoint/*"
+        "arn:${local.partition}:s3::${var.aws_account_id}:accesspoint/*"
       ]
       sid = "GetMultiRegionAccessPoint"
     }
@@ -685,7 +688,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       }
       effect = "Allow"
       resources = [
-        "arn:aws:s3:*:${var.aws_account_id}:storage-lens/clumio-storage-lens-*"
+        "arn:${local.partition}:s3:*:${var.aws_account_id}:storage-lens/clumio-storage-lens-*"
       ]
       sid = "StorageLens"
     }
@@ -720,7 +723,7 @@ data "aws_iam_policy_document" "clumio_kms_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:kms:*:*:key/*"
+      "arn:${local.partition}:kms:*:*:key/*"
     ]
     sid = "RequiredKmsActions"
   }
@@ -763,7 +766,7 @@ data "aws_iam_policy_document" "clumio_event_pub_key_policy_document" {
     effect = "Allow"
     principals {
       identifiers = [
-        "arn:aws:iam::${var.aws_account_id}:root"
+        "arn:${local.partition}:iam::${var.aws_account_id}:root"
       ]
       type = "AWS"
     }
@@ -809,7 +812,7 @@ data "aws_iam_policy_document" "clumio_event_pub_key_policy_document" {
     ]
     condition {
       test     = "StringEquals"
-      values   = ["arn:aws:sns:${var.aws_region}:${var.aws_account_id}:ClumioInventoryTopic_${var.clumio_token}"]
+      values   = ["arn:${local.partition}:sns:${var.aws_region}:${var.aws_account_id}:ClumioInventoryTopic_${var.clumio_token}"]
       variable = "kms:EncryptionContext:aws.sns.topicArn"
     }
   }
@@ -977,7 +980,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     aws_cloudwatch_event_target.clumio_rds_aws_backup_cloudwatch_event_rule_target
   ]
   discover_version      = "4.6"
-  intermediate_role_arn = "arn:aws:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
+  intermediate_role_arn = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
   properties = {
     "ClumioS3ContinuousBackupEventBridgeRoleArn" : var.is_s3_enabled ? aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].arn : "",
     "ClumioSSMNotificationRoleArn" : var.is_ec2_mssql_enabled ? aws_iam_role.clumio_ssm_notification_role[0].arn : "",
@@ -987,12 +990,12 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "CreateClumioInventoryTopicEncryptionKey" : var.create_clumio_inventory_sns_topic_encryption_key,
     "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
-  protect_config_version             = "24.2"
-  protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.2" : ""
-  protect_ebs_version                = var.is_ebs_enabled ? "25.1" : ""
+  protect_config_version             = "24.3"
+  protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.3" : ""
+  protect_ebs_version                = var.is_ebs_enabled ? "25.3" : ""
   protect_ec2_mssql_version          = var.is_ec2_mssql_enabled ? "4.4" : ""
   protect_rds_version                = var.is_rds_enabled ? "21.0" : ""
-  protect_s3_version                 = var.is_s3_enabled ? "7.2" : ""
+  protect_s3_version                 = var.is_s3_enabled ? "7.5" : ""
   protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "6.1" : ""
   protect_warm_tier_version          = var.is_dynamodb_enabled ? "1.1" : ""
   region                             = var.aws_region

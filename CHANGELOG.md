@@ -1,3 +1,6 @@
+## 0.32.0
+Update config versions to latest for each asset.
+
 ## 0.31.0
 Changed the Clumio provider version required to >=0.11.0, <0.13.0.
 

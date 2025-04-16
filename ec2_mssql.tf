@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:iam::${var.aws_account_id}:instance-profile/*"
+      "arn:${local.partition}:iam::${var.aws_account_id}:instance-profile/*"
     ]
     sid = "GetInstanceProfile"
   }
@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
     ]
     sid = "ClumioDataProtectionSSMCmd"
   }
@@ -65,23 +65,23 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDatabaseDetails-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-CopyHostKey-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ExecutablesInvocationScript-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetActiveFCIInstance-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetAllServices-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InstallMssqlBinaries-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InventorySync-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-MSSQLPreREQ-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-NormalHeartbeat-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SSMPreReq-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SystemHeartbeat-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-UpgradeMssqlBinaries-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-RemoveOldInventoryFiles-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDetails-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ChangeInstallPath-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InvokePsScript-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}::document/AWSEC2-CreateVssSnapshot"
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDatabaseDetails-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-CopyHostKey-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ExecutablesInvocationScript-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetActiveFCIInstance-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetAllServices-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InstallMssqlBinaries-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InventorySync-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-MSSQLPreREQ-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-NormalHeartbeat-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SSMPreReq-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SystemHeartbeat-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-UpgradeMssqlBinaries-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-RemoveOldInventoryFiles-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDetails-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ChangeInstallPath-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InvokePsScript-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}::document/AWSEC2-CreateVssSnapshot"
     ]
     sid = "SSMDocumentSendCommandPermission"
   }
@@ -93,7 +93,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ssm:${var.aws_region}:${var.aws_account_id}:*"
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:*"
     ]
     sid = "ClumioDataProtectionSSMCancelCmd"
   }
@@ -143,7 +143,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "CreateVolumeWithClumioTag"
   }
@@ -163,7 +163,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "AttachDetachVolumeWithClumioTag"
   }
@@ -183,7 +183,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
     ]
     sid = "AttachDetachVolumeFromInstanceWithClumioTag"
   }
@@ -202,7 +202,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "DeleteVolumeWithClumioTag"
   }
@@ -221,7 +221,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "CreateTagsForCreateVolume"
   }
@@ -240,7 +240,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_backup_restore_policy_document"
     }
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:volume/*"
     ]
     sid = "DeleteTagsOnClumioVolume"
   }
@@ -279,23 +279,23 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_ssm_instance_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDatabaseDetails-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-CopyHostKey-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ExecutablesInvocationScript-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetActiveFCIInstance-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetAllServices-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InstallMssqlBinaries-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InventorySync-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-MSSQLPreREQ-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-NormalHeartbeat-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SSMPreReq-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SystemHeartbeat-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-UpgradeMssqlBinaries-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-RemoveOldInventoryFiles-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDetails-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ChangeInstallPath-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InvokePsScript-${var.clumio_token}",
-      "arn:aws:ssm:${var.aws_region}::document/AWSEC2-CreateVssSnapshot"
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDatabaseDetails-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-CopyHostKey-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ExecutablesInvocationScript-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetActiveFCIInstance-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-GetAllServices-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InstallMssqlBinaries-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InventorySync-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-MSSQLPreREQ-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-NormalHeartbeat-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SSMPreReq-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-SystemHeartbeat-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-UpgradeMssqlBinaries-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-RemoveOldInventoryFiles-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-AGDetails-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-ChangeInstallPath-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/Clumio-InvokePsScript-${var.clumio_token}",
+      "arn:${local.partition}:ssm:${var.aws_region}::document/AWSEC2-CreateVssSnapshot"
     ]
     sid = "SSMDocumentMaintenancePermissions"
   }
@@ -307,7 +307,7 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_ssm_instance_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/*"
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:document/*"
     ]
     sid = "SSMAccessForDocument"
   }
@@ -319,9 +319,9 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_ssm_instance_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ssm:${var.aws_region}:${var.aws_account_id}:association/*",
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ssm:${var.aws_region}:${var.aws_account_id}:managed-instance/*"
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:association/*",
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:managed-instance/*"
     ]
     sid = "SSMAccessForAssociation"
   }
@@ -334,8 +334,8 @@ data "aws_iam_policy_document" "clumio_ec2_mssql_ssm_instance_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ssm:${var.aws_region}:${var.aws_account_id}:managed-instance/*"
+      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*",
+      "arn:${local.partition}:ssm:${var.aws_region}:${var.aws_account_id}:managed-instance/*"
     ]
     sid = "SSMAccessForInstance"
   }
@@ -397,7 +397,7 @@ data "aws_iam_policy_document" "clumio_ssm_notification_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:${data.aws_partition.current.partition}:sns:${var.aws_region}:${var.clumio_aws_account_id}:ClumioSSMTopic_${var.aws_account_id}_${var.aws_region}_*"
+      "arn:${local.partition}:sns:${var.aws_region}:${var.clumio_aws_account_id}:ClumioSSMTopic_${var.aws_account_id}_${var.aws_region}_*"
     ]
     sid = "SSMAccess"
   }

@@ -33,8 +33,9 @@ data "aws_iam_policy_document" "clumio_s3_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:aws:s3:::clumio-s3-backup*",
-      "arn:aws:s3:::clumio-s3-backup*/*"
+      "arn:${local.partition}:s3:::clumio-s3-backup*",
+      "arn:${local.partition}:s3:::clumio-s3-backup*/*",
+      "arn:${local.partition}:s3:${var.aws_region}:${var.data_plane_account_id}:accesspoint/clumio-data*"
     ]
     sid = "AllowS3CopyToClumio"
   }
@@ -68,7 +69,7 @@ data "aws_iam_policy_document" "clumio_s3_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:s3:::*"
+      "arn:${local.partition}:s3:::*"
     ]
     sid = "AllowS3Backup"
   }
@@ -88,7 +89,7 @@ data "aws_iam_policy_document" "clumio_s3_backup_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:aws:s3:::*"
+      "arn:${local.partition}:s3:::*"
     ]
     sid = "AllowS3ContinuousBackup"
   }
@@ -105,7 +106,7 @@ data "aws_iam_policy_document" "clumio_s3_backup_policy_document" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:events:*:${data.aws_caller_identity.current.account_id}:rule/clumio-s3-event-rule-*"
+      "arn:${local.partition}:events:*:${data.aws_caller_identity.current.account_id}:rule/clumio-s3-event-rule-*"
     ]
     sid = "AllowS3EventRuleUpdate"
   }
@@ -139,8 +140,8 @@ data "aws_iam_policy_document" "clumio_s3_continuous_backup_event_bridge_policy_
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:events:*:${var.aws_account_id}:event-bus/clumio-s3-event-bus-*",
-      "arn:aws:events:*:${var.data_plane_account_id}:event-bus/clumio-s3-event-bus-*"
+      "arn:${local.partition}:events:*:${var.aws_account_id}:event-bus/clumio-s3-event-bus-*",
+      "arn:${local.partition}:events:*:${var.data_plane_account_id}:event-bus/clumio-s3-event-bus-*"
     ]
     sid = "AllowPutEvents"
   }
@@ -170,7 +171,8 @@ data "aws_iam_policy_document" "clumio_s3_restore_policy_document" {
       "s3:PutObject",
       "s3:PutObjectAcl",
       "s3:PutObjectTagging",
-      "s3:DeleteObject"
+      "s3:DeleteObject",
+      "s3:AbortMultipartUpload"
     ]
     condition {
       test = "StringEquals"
@@ -181,9 +183,33 @@ data "aws_iam_policy_document" "clumio_s3_restore_policy_document" {
     }
     effect = "Allow"
     resources = [
-      "arn:aws:s3:::*"
+      "arn:${local.partition}:s3:::*"
     ]
     sid = "AllowS3PutForRestores"
+  }
+
+  # Allow for copy From clumio
+  statement {
+    actions = [
+      "s3:ListBucket",
+      "s3:GetObject",
+    ]
+
+    condition {
+      test = "StringLike"
+      values = [
+        # AWS account that will store the backed up s3 data.
+        var.data_plane_account_id
+      ]
+      variable = "s3:ResourceAccount"
+    }
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::clumio-s3-backup*",
+      "arn:aws:s3:::clumio-s3-backup*/*",
+      "arn:aws:s3:${var.aws_region}:${var.data_plane_account_id}:accesspoint/clumio-data*"
+    ]
+    sid = "AllowS3CopyFromClumio"
   }
 }
 
