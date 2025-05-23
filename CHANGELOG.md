@@ -1,4 +1,4 @@
-## 0.33.0
+## 0.32.1
 Changed the Clumio provider version required to >=0.12.0, <0.14.0.
 
 ## 0.32.0
