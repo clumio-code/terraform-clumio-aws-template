@@ -28,7 +28,6 @@ module "clumio_aws_connection_module" {
   clumio_aws_account_id = clumio_aws_connection.test_conn.clumio_aws_account_id
   is_ebs_enabled        = true
   is_rds_enabled        = true
-  is_ec2_mssql_enabled  = true
   is_s3_enabled         = true
   is_dynamodb_enabled   = true
 }
