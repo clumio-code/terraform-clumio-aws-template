@@ -62,6 +62,12 @@ variable "is_s3_enabled" {
   default     = false
 }
 
+variable "collect_inventory_aws_backup_recovery_points" {
+  description = "Indicates whether AWS Backup (Recovery Point) data is collected for Discover. This data helps assess asset backup status more effectively."
+  type        = bool
+  default     = true
+}
+
 variable "path" {
   description = "Value of path set on the AWS IAM roles, policies and instance_profile resources of the module. If not specified the default value is /clumio/."
   type        = string

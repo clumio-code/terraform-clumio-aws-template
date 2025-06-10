@@ -225,7 +225,7 @@ resource "aws_cloudwatch_event_rule" "clumio_s3_cloudtrail_event_rule" {
 }
 
 resource "aws_cloudwatch_event_rule" "clumio_s3_aws_backup_cloudwatch_event_rule" {
-  count = var.is_s3_enabled ? 1 : 0
+  count = var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   depends_on = [
     time_sleep.wait_before_create,
     time_sleep.wait_10_seconds_before_creating_clumio_s3_aws_backup_cloudwatch_event_rule
@@ -243,7 +243,7 @@ resource "aws_cloudwatch_event_target" "clumio_s3_cloudtrail_event_rule_target" 
 }
 
 resource "aws_cloudwatch_event_target" "clumio_s3_aws_backup_cloudwatch_event_rule_target" {
-  count     = var.is_s3_enabled ? 1 : 0
+  count     = var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   arn       = aws_sns_topic.clumio_event_pub.arn
   rule      = aws_cloudwatch_event_rule.clumio_s3_aws_backup_cloudwatch_event_rule[0].name
   target_id = "clumio-s3-aws-backup-cwatch-publish"
@@ -319,7 +319,7 @@ resource "time_sleep" "wait_10_seconds_before_creating_clumio_s3_cloudtrail_even
 }
 
 resource "time_sleep" "wait_10_seconds_before_creating_clumio_s3_aws_backup_cloudwatch_event_rule" {
-  count           = var.is_s3_enabled ? 1 : 0
+  count           = var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   create_duration = "10s"
 }
 

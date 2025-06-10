@@ -161,18 +161,18 @@ data "aws_iam_policy_document" "clumio_drift_detect_policy_document" {
     resources = compact([aws_iam_role.clumio_iam_role.arn, aws_sns_topic.clumio_event_pub.arn,
       local.should_create_tag_event_rule ? aws_cloudwatch_event_rule.clumio_tag_event_rule[0].arn : "",
       var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudwatch_event_rule[0].arn : "",
-      var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_aws_backup_cloudwatch_event_rule[0].arn : "",
+      var.is_rds_enabled && var.collect_inventory_aws_backup_recovery_points ? aws_cloudwatch_event_rule.clumio_rds_aws_backup_cloudwatch_event_rule[0].arn : "",
       var.is_rds_enabled ? aws_cloudwatch_event_rule.clumio_rds_cloudtrail_event_rule[0].arn : "",
       var.is_dynamodb_enabled ? aws_cloudwatch_event_rule.clumio_dynamo_cloudtrail_event_rule[0].arn : "",
-      var.is_dynamodb_enabled ? aws_cloudwatch_event_rule.clumio_dynamo_aws_backup_cloudwatch_event_rule[0].arn : "",
+      var.is_dynamodb_enabled && var.collect_inventory_aws_backup_recovery_points ? aws_cloudwatch_event_rule.clumio_dynamo_aws_backup_cloudwatch_event_rule[0].arn : "",
       var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudwatch_event_rule[0].arn : "",
       var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudwatch_event_rule[0].arn : "",
-      var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_aws_backup_cloudwatch_event_rule[0].arn : "",
-      var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_aws_backup_cloudwatch_event_rule[0].arn : "",
+      var.is_ebs_enabled && var.collect_inventory_aws_backup_recovery_points ? aws_cloudwatch_event_rule.clumio_ec2_aws_backup_cloudwatch_event_rule[0].arn : "",
+      var.is_ebs_enabled && var.collect_inventory_aws_backup_recovery_points ? aws_cloudwatch_event_rule.clumio_ebs_aws_backup_cloudwatch_event_rule[0].arn : "",
       var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule[0].arn : "",
       var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule[0].arn : "",
       var.is_s3_enabled ? aws_cloudwatch_event_rule.clumio_s3_cloudtrail_event_rule[0].arn : "",
-    var.is_s3_enabled ? aws_cloudwatch_event_rule.clumio_s3_aws_backup_cloudwatch_event_rule[0].arn : "", ])
+    var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? aws_cloudwatch_event_rule.clumio_s3_aws_backup_cloudwatch_event_rule[0].arn : "", ])
     sid = "ReflectOnClumioCfnStack"
   }
 }
@@ -264,7 +264,7 @@ data "aws_iam_policy_document" "clumio_event_pub_policy_document" {
 data "aws_iam_policy_document" "clumio_inventory_policy_document" {
   # Allow Clumio insight into other AWS-backed up resources
   dynamic "statement" {
-    for_each = var.is_s3_enabled ? [1] : []
+    for_each = var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? [1] : []
     content {
       actions = [
         "backup:ListProtectedResources"
@@ -281,7 +281,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
 
   # Allow Clumio to retrieve AWS Backup Vaults
   dynamic "statement" {
-    for_each = [1]
+    for_each = var.collect_inventory_aws_backup_recovery_points ? [1] : []
     content {
       actions = [
         "backup:ListBackupVaults"
@@ -298,7 +298,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
 
   # Allow Clumio to list recovery points in backup vaults
   dynamic "statement" {
-    for_each = [1]
+    for_each = var.collect_inventory_aws_backup_recovery_points ? [1] : []
     content {
       actions = [
         "backup:ListRecoveryPointsByBackupVault"
@@ -313,7 +313,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
 
   # Allow Clumio to get AWS Recovery Point info
   dynamic "statement" {
-    for_each = [1]
+    for_each = var.collect_inventory_aws_backup_recovery_points ? [1] : []
     content {
       actions = [
         "backup:DescribeRecoveryPoint"

@@ -451,7 +451,7 @@ resource "aws_cloudwatch_event_rule" "clumio_dynamo_cloudtrail_event_rule" {
 }
 
 resource "aws_cloudwatch_event_rule" "clumio_dynamo_aws_backup_cloudwatch_event_rule" {
-  count         = var.is_dynamodb_enabled ? 1 : 0
+  count         = var.is_dynamodb_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for AWS recovery point resource changes in DynamoDB (CloudWatch)."
   event_pattern = "{\"source\": [\"aws.backup\"],\"detail-type\": [\"Recovery Point State Change\"],\"detail\": {\"resourceType\": [\"DynamoDB\", \"DynamoDB.FullyManaged\"], \"status\": [\"COMPLETED\", \"AVAILABLE\", \"PARTIAL\", \"EXPIRED\", \"DELETED\"]}}"
@@ -466,7 +466,7 @@ resource "aws_cloudwatch_event_target" "clumio_dynamo_cloudtrail_event_rule_targ
 }
 
 resource "aws_cloudwatch_event_target" "clumio_dynamo_aws_backup_cloudwatch_event_rule_target" {
-  count     = var.is_dynamodb_enabled ? 1 : 0
+  count     = var.is_dynamodb_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   arn       = aws_sns_topic.clumio_event_pub.arn
   rule      = aws_cloudwatch_event_rule.clumio_dynamo_aws_backup_cloudwatch_event_rule[0].name
   target_id = "clumio-dynamo-aws-backup-cwatch-publish"

@@ -483,7 +483,7 @@ resource "aws_cloudwatch_event_rule" "clumio_rds_cloudwatch_event_rule" {
 }
 
 resource "aws_cloudwatch_event_rule" "clumio_rds_aws_backup_cloudwatch_event_rule" {
-  count         = var.is_rds_enabled ? 1 : 0
+  count         = var.is_rds_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for AWS RDS recovery point resource changes (CloudWatch)."
   event_pattern = "{\"source\": [\"aws.backup\"],\"detail-type\": [\"Recovery Point State Change\"],\"detail\": {\"resourceType\": [\"Aurora\", \"RDS\", \"RDS.Cluster\"], \"status\": [\"COMPLETED\", \"AVAILABLE\", \"PARTIAL\", \"EXPIRED\", \"DELETED\"]}}"
@@ -505,7 +505,7 @@ resource "aws_cloudwatch_event_target" "clumio_rds_cloudwatch_event_rule_target"
 }
 
 resource "aws_cloudwatch_event_target" "clumio_rds_aws_backup_cloudwatch_event_rule_target" {
-  count     = var.is_rds_enabled ? 1 : 0
+  count     = var.is_rds_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   arn       = aws_sns_topic.clumio_event_pub.arn
   rule      = aws_cloudwatch_event_rule.clumio_rds_aws_backup_cloudwatch_event_rule[0].name
   target_id = "clumio-rds-aws-backup-cwatch-publish"

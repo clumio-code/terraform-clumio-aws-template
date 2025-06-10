@@ -773,7 +773,7 @@ resource "aws_cloudwatch_event_rule" "clumio_ebs_cloudwatch_event_rule" {
 }
 
 resource "aws_cloudwatch_event_rule" "clumio_ebs_aws_backup_cloudwatch_event_rule" {
-  count         = var.is_ebs_enabled ? 1 : 0
+  count         = var.is_ebs_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for AWS recovery point resource changes in EBS (CloudWatch)."
   event_pattern = "{\"source\": [\"aws.backup\"],\"detail-type\": [\"Recovery Point State Change\"],\"detail\": {\"resourceType\": [\"EBS\"], \"status\": [\"COMPLETED\", \"AVAILABLE\", \"PARTIAL\", \"EXPIRED\", \"DELETED\"]}}"
@@ -797,7 +797,7 @@ resource "aws_cloudwatch_event_rule" "clumio_ec2_cloudwatch_event_rule" {
 }
 
 resource "aws_cloudwatch_event_rule" "clumio_ec2_aws_backup_cloudwatch_event_rule" {
-  count         = var.is_ebs_enabled ? 1 : 0
+  count         = var.is_ebs_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for resource changes in EC2 (CloudWatch)."
   event_pattern = "{\"source\": [\"aws.backup\"],\"detail-type\": [\"Recovery Point State Change\"],\"detail\": {\"resourceType\": [\"EC2\"], \"status\": [\"COMPLETED\", \"AVAILABLE\", \"PARTIAL\", \"EXPIRED\", \"DELETED\"]}}"
@@ -819,7 +819,7 @@ resource "aws_cloudwatch_event_target" "clumio_ebs_cloudwatch_event_rule_target"
 }
 
 resource "aws_cloudwatch_event_target" "clumio_ebs_aws_backup_cloudwatch_event_rule_target" {
-  count     = var.is_ebs_enabled ? 1 : 0
+  count     = var.is_ebs_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   arn       = aws_sns_topic.clumio_event_pub.arn
   rule      = aws_cloudwatch_event_rule.clumio_ebs_aws_backup_cloudwatch_event_rule[0].name
   target_id = "clumio-ebs-aws-backup-cwatch-publish"
@@ -840,7 +840,7 @@ resource "aws_cloudwatch_event_target" "clumio_ec2_cloudwatch_event_rule_target"
 }
 
 resource "aws_cloudwatch_event_target" "clumio_ec2_aws_backup_cloudwatch_event_rule_target" {
-  count     = var.is_ebs_enabled ? 1 : 0
+  count     = var.is_ebs_enabled && var.collect_inventory_aws_backup_recovery_points ? 1 : 0
   arn       = aws_sns_topic.clumio_event_pub.arn
   rule      = aws_cloudwatch_event_rule.clumio_ec2_aws_backup_cloudwatch_event_rule[0].name
   target_id = "clumio-ec2-aws-backup-cwatch-publish"
