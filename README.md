@@ -100,7 +100,7 @@ module "clumio_aws_connection_module" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.13.0, <0.15.0 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.14.0, <0.16.0 |
 
 ## Providers
 
