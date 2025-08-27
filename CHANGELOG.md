@@ -1,3 +1,6 @@
+## 0.33.1
+Changed the Clumio provider version required to >=0.14.0, <0.16.0.
+
 ## 0.33.0
 New module variables collect_inventory_aws_backup_recovery_points added.
 Changed the Clumio provider version required to >=0.13.0, <0.15.0.
