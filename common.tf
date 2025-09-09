@@ -264,7 +264,7 @@ data "aws_iam_policy_document" "clumio_event_pub_policy_document" {
 data "aws_iam_policy_document" "clumio_inventory_policy_document" {
   # Allow Clumio insight into other AWS-backed up resources
   dynamic "statement" {
-    for_each = var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? [1] : []
+    for_each = var.is_s3_enabled || var.collect_inventory_aws_backup_recovery_points ? [1] : []
     content {
       actions = [
         "backup:ListProtectedResources"
