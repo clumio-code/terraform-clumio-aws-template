@@ -1,5 +1,5 @@
 ## 0.33.2
-Fixed a bug on ListProtectedResources permission.
+Fixed an issue on ListProtectedResources permission.
 
 ## 0.33.1
 Changed the Clumio provider version required to >=0.14.0, <0.16.0.
