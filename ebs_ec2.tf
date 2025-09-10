@@ -760,7 +760,7 @@ resource "aws_cloudwatch_event_rule" "clumio_ebs_cloudtrail_event_rule" {
   count         = var.is_ebs_enabled ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
   description   = "Watches for resource changes in EBS (CloudTrail)."
-  event_pattern = "{\"source\": [\"aws.ec2\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteSnapshot\", \"LockSnapshot\", \"UnlockSnapshot\"],\"errorCode\": [{\"exists\": false}]}}"
+  event_pattern = "{\"source\": [\"aws.ec2\", \"aws.rbin\"],\"detail-type\": [\"AWS API Call via CloudTrail\"],\"detail\": {\"eventName\": [\"DeleteSnapshot\", \"LockSnapshot\", \"UnlockSnapshot\", \"CreateRule\", \"UpdateRule\", \"DeleteRule\"],\"errorCode\": [{\"exists\": false}]}}"
   name          = "ClumioEBSCloudtrailRule_${var.clumio_token}"
 }
 

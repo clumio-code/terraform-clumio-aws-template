@@ -188,6 +188,28 @@ data "aws_iam_policy_document" "clumio_s3_restore_policy_document" {
     sid = "AllowS3PutForRestores"
   }
 
+  # Allows Clumio to check restore target status
+  statement {
+    actions = [
+      "s3:GetBucketVersioning",
+      "s3:ListBucketVersions",
+      "s3:GetObject",
+      "s3:GetObjectTagging"
+    ]
+    condition {
+      test = "StringEquals"
+      values = [
+        var.aws_account_id
+      ]
+      variable = "s3:ResourceAccount"
+    }
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:s3:::*"
+    ]
+    sid = "AllowS3CheckRestoreTargets"
+  }
+
   # Allow for copy From clumio
   statement {
     actions = [
