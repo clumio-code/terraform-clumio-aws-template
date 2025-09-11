@@ -1,3 +1,10 @@
+## 0.34.0
+Added separate inventory policy for AWS backup following CFT
+Added Recycle bin ingestor
+Separated DynamoDB/RDS backup and restore IAM policy
+Reclaimed required permission for S3 restore
+Fixed misspell in EC2MSSQL
+
 ## 0.33.1
 Changed the Clumio provider version required to >=0.14.0, <0.16.0.
 

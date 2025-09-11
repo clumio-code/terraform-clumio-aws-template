@@ -202,7 +202,7 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
     sid = "InstanceSnapshotCleanupPermissions"
   }
 
-  # Required during the backup and restore of an RDS instance/cluster.
+  # Required during the backup of an RDS instance/cluster.
   statement {
     actions = [
       "kms:CreateGrant"
@@ -216,6 +216,88 @@ data "aws_iam_policy_document" "clumio_rds_backup_policy_document" {
 }
 
 data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
+  # Required to copy the cluster snapshot from Clumio.
+  statement {
+    actions = [
+      "rds:CopyDBClusterSnapshot",
+    ]
+    effect = "Allow"
+    resources = [
+      # Allow actions on customer account.
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
+      # Allow actions on Clumio account.
+      "arn:${local.partition}:rds:*:${var.data_plane_account_id}:cluster-snapshot:*"
+    ]
+    sid = "CopyClusterSnapshotFromClumio"
+  }
+
+  # Required to copy the instance snapshot from Clumio.
+  statement {
+    actions = [
+      "rds:CopyDBSnapshot",
+    ]
+    effect = "Allow"
+    resources = [
+      # Allow actions on customer account.
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*",
+      # Allow actions on Clumio account.
+      "arn:${local.partition}:rds:*:${var.data_plane_account_id}:snapshot:*",
+      "arn:${local.partition}:rds:*:${var.data_plane_account_id}:og:*"
+    ]
+    sid = "CopyInstanceSnapshotFromClumio"
+  }
+
+  # Required for verifying the RDS subnet configuration during restore.
+  statement {
+    actions = [
+      "rds:DescribeDBSubnetGroups"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:subgrp:*"
+    ]
+    sid = "VerifyingSubnetGroups"
+  }
+
+  # Required to clean up Clumio-created temporary cluster snapshot.
+  statement {
+    actions = [
+      "rds:DeleteDBClusterSnapshot"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        "*"
+      ]
+      variable = "rds:cluster-snapshot-tag/clumio.rds.snapshot.tag"
+    }
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+    sid = "ClusterSnapshotCleanupPermissions"
+  }
+
+  # Required to clean up Clumio-created temporary instance snapshot.
+  statement {
+    actions = [
+      "rds:DeleteDBSnapshot"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        "*"
+      ]
+      variable = "rds:snapshot-tag/clumio.rds.snapshot.tag"
+    }
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+    sid = "InstanceSnapshotCleanupPermissions"
+  }
+
   # Required to identify the Clumio restored instance/cluster for cleanup.
   statement {
     actions = [
@@ -224,7 +306,9 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     effect = "Allow"
     resources = [
       "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
-      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*"
+      "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*"
     ]
     sid = "ListClumioTagsForRestoredTag"
   }
@@ -337,7 +421,7 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     sid = "RemoveClumioTagAfterRestore"
   }
 
-  # Required to identify the Clumio restored instance/cluster for cleanup.
+  # Required to identify the Clumio restored instance/cluster and their temporary snapshots for cleanup.
   statement {
     actions = [
       "rds:AddTagsToResource"
@@ -346,7 +430,9 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     resources = [
       "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:cluster:*",
       "arn:${local.partition}:rds:${var.aws_region}:${var.aws_account_id}:db:*",
-      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*"
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:og:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-snapshot:*",
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:snapshot:*"
     ]
     sid = "AddingClumioTagToRestoredRDSResource"
   }
@@ -463,6 +549,18 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
       "arn:${local.partition}:iam::${var.aws_account_id}:role/*"
     ]
     sid = "PassAssociatedRoles"
+  }
+
+  # Required during the restore of an RDS instance/cluster.
+  statement {
+    actions = [
+      "kms:CreateGrant"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:kms:*:*:key/*"
+    ]
+    sid = "RestoreKMSPermissions"
   }
 }
 

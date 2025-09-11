@@ -264,7 +264,7 @@ data "aws_iam_policy_document" "clumio_event_pub_policy_document" {
 data "aws_iam_policy_document" "clumio_inventory_policy_document" {
   # Allow Clumio insight into other AWS-backed up resources
   dynamic "statement" {
-    for_each = var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? [1] : []
+    for_each = var.collect_inventory_aws_backup_recovery_points ? [1] : []
     content {
       actions = [
         "backup:ListProtectedResources"
@@ -421,6 +421,22 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
         "*"
       ]
       sid = "DescribeEbsResources"
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.is_ebs_enabled ? [1] : []
+    content {
+      actions = [
+        "rbin:ListRules",
+        "rbin:GetRule"
+      ]
+      effect = "Allow"
+      resources = [
+        # Allow actions on customer account.
+        "arn:${local.partition}:rbin:${var.aws_region}:${var.aws_account_id}:rule/*",
+      ]
+      sid = "DescribeRBinResources"
     }
   }
 
@@ -605,7 +621,8 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
         "s3:GetLifecycleConfiguration",
         "s3:GetBucketLogging",
         "s3:GetBucketObjectLockConfiguration",
-        "s3:GetMetricsConfiguration"
+        "s3:GetMetricsConfiguration",
+        "backup:ListProtectedResources"
       ]
       condition {
         test = "StringEquals"
@@ -991,11 +1008,11 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
   protect_config_version             = "24.3"
-  protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.3" : ""
-  protect_ebs_version                = var.is_ebs_enabled ? "25.3" : ""
+  protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.4" : ""
+  protect_ebs_version                = var.is_ebs_enabled ? "25.4" : ""
   protect_ec2_mssql_version          = var.is_ec2_mssql_enabled ? "4.4" : ""
-  protect_rds_version                = var.is_rds_enabled ? "21.0" : ""
-  protect_s3_version                 = var.is_s3_enabled ? "7.5" : ""
+  protect_rds_version                = var.is_rds_enabled ? "21.1" : ""
+  protect_s3_version                 = var.is_s3_enabled ? "7.6" : ""
   protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "6.1" : ""
   protect_warm_tier_version          = var.is_dynamodb_enabled ? "1.1" : ""
   region                             = var.aws_region

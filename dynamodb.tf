@@ -192,7 +192,9 @@ data "aws_iam_policy_document" "clumio_dynamodb_restore_policy_document" {
       "dynamodb:PutItem",
       "dynamodb:GetItem",
       "dynamodb:DeleteItem",
-      "dynamodb:BatchWriteItem"
+      "dynamodb:BatchWriteItem",
+      # Required to restore the table configuration.
+      "dynamodb:UpdateTable"
     ]
     effect = "Allow"
     # Region requires a wild card to support cross region replica restore.
