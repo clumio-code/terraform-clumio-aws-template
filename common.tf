@@ -172,7 +172,10 @@ data "aws_iam_policy_document" "clumio_drift_detect_policy_document" {
       var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ebs_cloudtrail_event_rule[0].arn : "",
       var.is_ebs_enabled ? aws_cloudwatch_event_rule.clumio_ec2_cloudtrail_event_rule[0].arn : "",
       var.is_s3_enabled ? aws_cloudwatch_event_rule.clumio_s3_cloudtrail_event_rule[0].arn : "",
-    var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? aws_cloudwatch_event_rule.clumio_s3_aws_backup_cloudwatch_event_rule[0].arn : "", ])
+      var.is_s3_enabled && var.collect_inventory_aws_backup_recovery_points ? aws_cloudwatch_event_rule.clumio_s3_aws_backup_cloudwatch_event_rule[0].arn : "",
+      var.is_iceberg_on_glue_enabled ? aws_cloudwatch_event_rule.clumio_iceberg_on_glue_cloudwatch_event_rule[0].arn : "",
+      var.is_iceberg_on_glue_enabled ? aws_cloudwatch_event_rule.clumio_iceberg_on_glue_cloudtrail_event_rule[0].arn : "",
+    var.is_iceberg_on_s3_tables_enabled ? aws_cloudwatch_event_rule.clumio_iceberg_on_s3_tables_cloudtrail_event_rule[0].arn : "", ])
     sid = "ReflectOnClumioCfnStack"
   }
 }
@@ -727,6 +730,48 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
       sid = "GetS3CloudwatchMetrics"
     }
   }
+
+  dynamic "statement" {
+    for_each = var.is_iceberg_on_glue_enabled ? [1] : []
+    content {
+      actions = [
+        "glue:GetTable",
+        "glue:GetTables",
+        "glue:GetTableVersion",
+        "glue:GetTableVersions",
+        "glue:GetDatabase",
+        "glue:GetDatabases"
+      ]
+      effect = "Allow"
+      resources = [
+        "arn:${local.partition}:glue:${var.aws_region}:${var.aws_account_id}:catalog",
+        "arn:${local.partition}:glue:${var.aws_region}:${var.aws_account_id}:database/*",
+        "arn:${local.partition}:glue:${var.aws_region}:${var.aws_account_id}:table/*/*"
+      ]
+      sid = "AllowGetGlueTablesVersionsDatabases"
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.is_iceberg_on_s3_tables_enabled ? [1] : []
+    content {
+      actions = [
+        "s3tables:GetTableBucket",
+        "s3tables:ListTableBuckets",
+        "s3tables:GetNamespace",
+        "s3tables:ListNamespaces",
+        "s3tables:GetTable",
+        "s3tables:ListTables",
+        "s3tables:GetTableMetadataLocation",
+        "s3tables:GetTableMaintenanceConfiguration"
+      ]
+      effect = "Allow"
+      resources = [
+        "arn:${local.partition}:s3tables:${var.aws_region}:${var.aws_account_id}:*"
+      ]
+      sid = "AllowGetS3TableBucketsNamespacesTables"
+    }
+  }
 }
 
 data "aws_iam_policy_document" "clumio_kms_policy_document" {
@@ -984,6 +1029,10 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     aws_iam_policy.clumio_s3_continuous_backup_event_bridge_policy,
     aws_iam_policy.clumio_dynamodb_backup_policy,
     aws_iam_policy.clumio_dynamodb_restore_policy,
+    aws_iam_policy.clumio_iceberg_on_glue_backup_policy,
+    aws_iam_policy.clumio_iceberg_on_glue_restore_policy,
+    aws_iam_policy.clumio_iceberg_on_s3_tables_backup_policy,
+    aws_iam_policy.clumio_iceberg_on_s3_tables_restore_policy,
     aws_cloudwatch_event_target.clumio_dynamo_cloudtrail_event_rule_target,
     aws_cloudwatch_event_target.clumio_dynamo_aws_backup_cloudwatch_event_rule_target,
     aws_cloudwatch_event_target.clumio_ebs_cloudwatch_event_rule_target,
@@ -994,7 +1043,10 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     aws_cloudwatch_event_target.clumio_ec2_aws_backup_cloudwatch_event_rule_target,
     aws_cloudwatch_event_target.clumio_rds_cloudwatch_event_rule_target,
     aws_cloudwatch_event_target.clumio_rds_cloudtrail_event_rule_target,
-    aws_cloudwatch_event_target.clumio_rds_aws_backup_cloudwatch_event_rule_target
+    aws_cloudwatch_event_target.clumio_rds_aws_backup_cloudwatch_event_rule_target,
+    aws_cloudwatch_event_target.clumio_iceberg_on_glue_cloudwatch_event_rule_target,
+    aws_cloudwatch_event_target.clumio_iceberg_on_glue_cloudtrail_event_rule_target,
+    aws_cloudwatch_event_target.clumio_iceberg_on_s3_tables_cloudtrail_event_rule_target
   ]
   discover_version      = "4.6"
   intermediate_role_arn = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
@@ -1007,20 +1059,22 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "CreateClumioInventoryTopicEncryptionKey" : var.create_clumio_inventory_sns_topic_encryption_key,
     "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
-  protect_config_version             = "24.3"
-  protect_dynamodb_version           = var.is_dynamodb_enabled ? "7.4" : ""
-  protect_ebs_version                = var.is_ebs_enabled ? "25.4" : ""
-  protect_ec2_mssql_version          = var.is_ec2_mssql_enabled ? "4.4" : ""
-  protect_rds_version                = var.is_rds_enabled ? "21.1" : ""
-  protect_s3_version                 = var.is_s3_enabled ? "7.6" : ""
-  protect_warm_tier_dynamodb_version = var.is_dynamodb_enabled ? "6.1" : ""
-  protect_warm_tier_version          = var.is_dynamodb_enabled ? "1.1" : ""
-  region                             = var.aws_region
-  role_arn                           = aws_iam_role.clumio_iam_role.arn
-  role_external_id                   = var.role_external_id
-  token                              = var.clumio_token
-  wait_for_data_plane_resources      = var.wait_for_data_plane_resources
-  wait_for_ingestion                 = var.wait_for_ingestion
+  protect_config_version               = "24.4"
+  protect_dynamodb_version             = var.is_dynamodb_enabled ? "7.4" : ""
+  protect_ebs_version                  = var.is_ebs_enabled ? "25.4" : ""
+  protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "4.4" : ""
+  protect_rds_version                  = var.is_rds_enabled ? "21.1" : ""
+  protect_s3_version                   = var.is_s3_enabled ? "7.6" : ""
+  protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "6.1" : ""
+  protect_warm_tier_version            = var.is_dynamodb_enabled ? "1.1" : ""
+  protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "1.0" : ""
+  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "1.0" : ""
+  region                               = var.aws_region
+  role_arn                             = aws_iam_role.clumio_iam_role.arn
+  role_external_id                     = var.role_external_id
+  token                                = var.clumio_token
+  wait_for_data_plane_resources        = var.wait_for_data_plane_resources
+  wait_for_ingestion                   = var.wait_for_ingestion
 }
 
 resource "time_sleep" "wait_30_seconds_for_iam_propagation" {
