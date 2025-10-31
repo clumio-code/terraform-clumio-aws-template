@@ -1,3 +1,6 @@
+## 0.35.0
+Added support for Iceberg asset types
+
 ## 0.34.0
 Added separate inventory policy for AWS backup following CFT
 Added Recycle bin ingestor
