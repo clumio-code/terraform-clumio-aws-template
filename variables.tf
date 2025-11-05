@@ -62,6 +62,18 @@ variable "is_s3_enabled" {
   default     = false
 }
 
+variable "is_iceberg_on_glue_enabled" {
+  description = "Flag to indicate if Clumio Protect for Iceberg on Glue is enabled"
+  type        = bool
+  default     = false
+}
+
+variable "is_iceberg_on_s3_tables_enabled" {
+  description = "Flag to indicate if Clumio Protect for Iceberg on S3 Tables is enabled"
+  type        = bool
+  default     = false
+}
+
 variable "collect_inventory_aws_backup_recovery_points" {
   description = "Indicates whether AWS Backup (Recovery Point) data is collected for Discover. This data helps assess asset backup status more effectively."
   type        = bool
