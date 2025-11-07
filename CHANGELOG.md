@@ -1,3 +1,6 @@
+## 0.35.1
+Fixed version constraint for the module
+
 ## 0.35.0
 Added support for Iceberg asset types
 
