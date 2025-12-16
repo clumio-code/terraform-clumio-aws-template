@@ -268,7 +268,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
   # - starts a snapshot.
   # - puts the snapshot data of the volume to be restored in
   # the snapshot.
-  # - complete the snashot.
+  # - complete the snapshot.
   # Clumio restore task invokes StartSnapshot to restore a snapshot.
   # Allow StartSnapshot only if the request contains ClumioVendorTag.
   statement {
@@ -527,7 +527,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
       "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*",
       "arn:${local.partition}:ec2:*:*:subnet/*",
       "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:key-pair/*",
-      "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:security-group/*"
+      "arn:${local.partition}:ec2:*:*:security-group/*"
     ]
     sid = "RunInstance"
   }

@@ -1,3 +1,7 @@
+## 0.35.2
+* Added CW tag events for S3.
+* Broadened the scope of the Security group.
+
 ## 0.35.1
 Fixed version constraint for the module
 
