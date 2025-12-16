@@ -38,8 +38,8 @@ locals {
 }
 
 locals {
-  should_create_tag_event_rule = var.is_ebs_enabled || var.is_dynamodb_enabled || var.is_rds_enabled
-  tag_event_rule_data_sources  = jsonencode(compact(concat(var.is_ebs_enabled ? ["ebs", "ec2"] : [""], var.is_rds_enabled ? ["rds"] : [""], var.is_dynamodb_enabled ? ["dynamodb"] : [""])))
+  should_create_tag_event_rule = var.is_ebs_enabled || var.is_dynamodb_enabled || var.is_rds_enabled || var.is_s3_enabled
+  tag_event_rule_data_sources  = jsonencode(compact(concat(var.is_ebs_enabled ? ["ebs", "ec2"] : [""], var.is_rds_enabled ? ["rds"] : [""], var.is_dynamodb_enabled ? ["dynamodb"] : [""], var.is_s3_enabled ? ["s3"] : [""])))
   tag_event_rule_event_pattern = format("{\"detail\":{\"service\":%s},\"source\":[\"aws.tag\"]}", local.tag_event_rule_data_sources)
 }
 
@@ -1061,7 +1061,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
   }
   protect_config_version               = "24.4"
   protect_dynamodb_version             = var.is_dynamodb_enabled ? "7.4" : ""
-  protect_ebs_version                  = var.is_ebs_enabled ? "25.4" : ""
+  protect_ebs_version                  = var.is_ebs_enabled ? "25.5" : ""
   protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "4.4" : ""
   protect_rds_version                  = var.is_rds_enabled ? "21.1" : ""
   protect_s3_version                   = var.is_s3_enabled ? "7.6" : ""
