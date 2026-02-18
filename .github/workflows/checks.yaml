@@ -24,3 +24,13 @@ jobs:
         with:
           python-version: '3.14'
 
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+
+      - name: Install pre-commit
+        run: |
+          pip install pre-commit
+          
+      - name: Run pre-commit
+        run: |
+          pre-commit run --all-files --show-diff-on-failure
