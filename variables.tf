@@ -126,3 +126,9 @@ variable "clumio_inventory_sns_topic_encryption_key" {
   type        = string
   default     = null
 }
+
+variable "clumio_pass_role_deny_list" {
+  type        = list(string)
+  default     = []
+  description = "List of IAM role ARNs that must be explicitly denied for iam:PassRole."
+}
