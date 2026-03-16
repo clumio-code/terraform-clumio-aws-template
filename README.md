@@ -100,14 +100,14 @@ module "clumio_aws_connection_module" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.16.1, <0.18.0 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.17.0, <0.19.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.16.1, <0.18.0 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.17.0, <0.19.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | n/a |
 
 ## Modules
@@ -176,9 +176,9 @@ No modules.
 | [aws_iam_role.clumio_support_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.clumio_drift_detect_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.clumio_ec2_mssql_ssm_instance_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_iam_role_policy.clumio_iam_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.clumio_inventory_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.clumio_kms_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.clumio_pass_role_deny_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.clumio_ssm_notification_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.clumio_support_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy_attachment.clumio_ec2_mssql_backup_restore_policy_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
@@ -245,13 +245,13 @@ No modules.
 | [aws_iam_policy_document.clumio_event_pub_key_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_event_pub_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_iam_permissions_boundary_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.clumio_iam_role_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_iceberg_on_glue_backup_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_iceberg_on_glue_restore_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_iceberg_on_s3_tables_backup_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_iceberg_on_s3_tables_restore_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_inventory_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_kms_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.clumio_pass_role_deny_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_rds_backup_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_rds_restore_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.clumio_s3_backup_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -273,6 +273,7 @@ No modules.
 | <a name="input_clumio_aws_account_id"></a> [clumio\_aws\_account\_id](#input\_clumio\_aws\_account\_id) | Clumio Control Plane Account Id. | `string` | n/a | yes |
 | <a name="input_clumio_iam_role_tags"></a> [clumio\_iam\_role\_tags](#input\_clumio\_iam\_role\_tags) | Additional tags for Clumio IAM Roles. | `map(string)` | <pre>{<br/>  "Vendor": "Clumio"<br/>}</pre> | no |
 | <a name="input_clumio_inventory_sns_topic_encryption_key"></a> [clumio\_inventory\_sns\_topic\_encryption\_key](#input\_clumio\_inventory\_sns\_topic\_encryption\_key) | Optional existing KMS Key for the Clumio Inventory SNS topic. If one is provided, it MUST have a key policy similar to the one denoted in data.aws\_iam\_policy\_document.clumio\_event\_pub\_key\_policy\_document in [common.tf](https://github.com/clumio-code/terraform-clumio-aws-template/blob/main/common.tf). | `string` | `null` | no |
+| <a name="input_clumio_pass_role_deny_list"></a> [clumio\_pass\_role\_deny\_list](#input\_clumio\_pass\_role\_deny\_list) | List of IAM role ARNs that must be explicitly denied for iam:PassRole. | `list(string)` | `[]` | no |
 | <a name="input_clumio_token"></a> [clumio\_token](#input\_clumio\_token) | The AWS integration ID token. | `string` | n/a | yes |
 | <a name="input_collect_inventory_aws_backup_recovery_points"></a> [collect\_inventory\_aws\_backup\_recovery\_points](#input\_collect\_inventory\_aws\_backup\_recovery\_points) | Indicates whether AWS Backup (Recovery Point) data is collected for Discover. This data helps assess asset backup status more effectively. | `bool` | `true` | no |
 | <a name="input_create_clumio_inventory_sns_topic_encryption_key"></a> [create\_clumio\_inventory\_sns\_topic\_encryption\_key](#input\_create\_clumio\_inventory\_sns\_topic\_encryption\_key) | Indicates that a KMS Key must be created and associated with the Clumio Inventory SNS topic. | `bool` | `false` | no |

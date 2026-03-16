@@ -1,3 +1,9 @@
+## 0.36.0
+* Added a deny list to passRole permission such that customer can choose to block access to specified roles.
+* Removed ClumioIAMRolePolicy for DynamoDB which is no longer needed.
+* Added granular permissions for KMS key root account access.
+* Changed the Clumio provider version required to >=0.17.0, <0.19.0.
+
 ## 0.35.2
 * Added CW tag events for S3.
 * Broadened the scope of the Security group.

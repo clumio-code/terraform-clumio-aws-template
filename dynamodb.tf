@@ -408,42 +408,6 @@ data "aws_iam_policy_document" "clumio_iam_permissions_boundary_document" {
   }
 }
 
-data "aws_iam_policy_document" "clumio_iam_role_policy_document" {
-  count = var.is_dynamodb_enabled ? 1 : 0
-  # Allow Clumio to create roles within a Permissions Boundary.
-  statement {
-    actions = [
-      "iam:CreateRole",
-      "iam:AttachRolePolicy"
-    ]
-    condition {
-      test = "StringEquals"
-      values = [
-        aws_iam_policy.clumio_iam_permissions_boundary[0].arn
-      ]
-      variable = "iam:PermissionsBoundary"
-    }
-    effect = "Allow"
-    resources = [
-      "arn:${local.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
-    ]
-    sid = "AllowCreateRole"
-  }
-
-  # Allow Clumio to delete the roles it has created.
-  statement {
-    actions = [
-      "iam:DetachRolePolicy",
-      "iam:DeleteRole"
-    ]
-    effect = "Allow"
-    resources = [
-      "arn:${local.partition}:iam::${var.aws_account_id}:role/clumio/Clumio-DynamoDB-SecureVault-Restore-T*"
-    ]
-    sid = "AllowDeleteRole"
-  }
-}
-
 resource "aws_cloudwatch_event_rule" "clumio_dynamo_cloudtrail_event_rule" {
   count         = var.is_dynamodb_enabled ? 1 : 0
   depends_on    = [time_sleep.wait_before_create]
@@ -520,16 +484,5 @@ resource "aws_iam_role_policy_attachment" "clumio_iam_role_clumio_dynamodb_resto
   count      = var.is_dynamodb_enabled ? 1 : 0
   policy_arn = aws_iam_policy.clumio_dynamodb_restore_policy[0].arn
   role       = aws_iam_role.clumio_iam_role.name
-}
-
-# The policy to be attached to Clumio IAM role which is needed for restoring tables that have Local Secondary Indexes (LSI).
-resource "aws_iam_role_policy" "clumio_iam_role_policy" {
-  count = var.is_dynamodb_enabled ? 1 : 0
-  depends_on = [
-    time_sleep.wait_before_create
-  ]
-  name   = "ClumioIAMRolePolicy-${var.aws_region}-${var.clumio_token}"
-  policy = data.aws_iam_policy_document.clumio_iam_role_policy_document[0].json
-  role   = aws_iam_role.clumio_iam_role.id
 }
 

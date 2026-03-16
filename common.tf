@@ -264,6 +264,23 @@ data "aws_iam_policy_document" "clumio_event_pub_policy_document" {
   }
 }
 
+data "aws_iam_policy_document" "clumio_pass_role_deny_policy_document" {
+  statement {
+    sid     = "DenyPassRoleToServices"
+    effect  = "Deny"
+    actions = ["iam:PassRole"]
+
+    resources = var.clumio_pass_role_deny_list
+
+    condition {
+      test     = "StringLike"
+      variable = "iam:PassedToService"
+      values   = ["*"]
+    }
+  }
+}
+
+
 data "aws_iam_policy_document" "clumio_inventory_policy_document" {
   # Allow Clumio insight into other AWS-backed up resources
   dynamic "statement" {
@@ -824,7 +841,7 @@ data "aws_iam_policy_document" "clumio_event_pub_key_policy_document" {
   version   = "2012-10-17"
   policy_id = "clumio-event-pub-key"
   statement {
-    sid    = "Enable IAM User Permissions"
+    sid    = "AllowRootAccountKeyAdmin"
     effect = "Allow"
     principals {
       identifiers = [
@@ -833,14 +850,28 @@ data "aws_iam_policy_document" "clumio_event_pub_key_policy_document" {
       type = "AWS"
     }
     actions = [
-      "kms:*"
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:TagResource",
+      "kms:UntagResource",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+      "kms:RotateKeyOnDemand"
     ]
     resources = [
       "*"
     ]
   }
   statement {
-    sid    = "Allow EventBridge to use the key"
+    sid    = "AllowEventBridgeServiceUse"
     effect = "Allow"
     principals {
       identifiers = [
@@ -857,7 +888,7 @@ data "aws_iam_policy_document" "clumio_event_pub_key_policy_document" {
     ]
   }
   statement {
-    sid    = "Allow SNS to use the key"
+    sid    = "AllowSNSServiceUse"
     effect = "Allow"
     principals {
       identifiers = [
@@ -944,6 +975,13 @@ resource "aws_iam_role_policy" "clumio_drift_detect_policy" {
   role   = aws_iam_role.clumio_iam_role.id
 }
 
+resource "aws_iam_role_policy" "clumio_pass_role_deny_policy" {
+  count  = length(var.clumio_pass_role_deny_list) > 0 ? 1 : 0
+  name   = "ClumioPassRoleDenyPolicy-${var.aws_region}-${var.clumio_token}"
+  policy = data.aws_iam_policy_document.clumio_pass_role_deny_policy_document.json
+  role   = aws_iam_role.clumio_iam_role.id
+}
+
 resource "aws_iam_role_policy" "clumio_inventory_policy" {
   name   = "ClumioInventoryPolicy-${var.aws_region}-${var.clumio_token}"
   policy = data.aws_iam_policy_document.clumio_inventory_policy_document.json
@@ -996,6 +1034,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     time_sleep.wait_30_seconds_for_iam_propagation,
     aws_iam_policy.clumio_base_managed_policy,
     aws_iam_role_policy.clumio_drift_detect_policy,
+    aws_iam_role_policy.clumio_pass_role_deny_policy,
     aws_iam_role_policy.clumio_inventory_policy,
     aws_iam_role_policy.clumio_kms_policy,
     aws_cloudwatch_event_target.clumio_tag_event_rule_target,
@@ -1059,8 +1098,8 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "CreateClumioInventoryTopicEncryptionKey" : var.create_clumio_inventory_sns_topic_encryption_key,
     "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
-  protect_config_version               = "24.4"
-  protect_dynamodb_version             = var.is_dynamodb_enabled ? "7.4" : ""
+  protect_config_version               = "25.1"
+  protect_dynamodb_version             = var.is_dynamodb_enabled ? "7.5" : ""
   protect_ebs_version                  = var.is_ebs_enabled ? "25.5" : ""
   protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "4.4" : ""
   protect_rds_version                  = var.is_rds_enabled ? "21.1" : ""
@@ -1095,4 +1134,3 @@ resource "time_sleep" "wait_5_seconds_for_clumio_base_managed_policy" {
 resource "time_sleep" "wait_before_create" {
   create_duration = var.wait_time_before_create
 }
-
