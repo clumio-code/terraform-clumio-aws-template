@@ -132,3 +132,13 @@ variable "clumio_pass_role_deny_list" {
   default     = []
   description = "List of IAM role ARNs that must be explicitly denied for iam:PassRole."
 }
+
+variable "iam_entities_identifier" {
+  type        = string
+  default     = ""
+  description = "Custom identifier used to label IAM entities (Roles and Managed Policies) created for the Clumio integration. Note that changing this value will trigger replacement of the associated IAM entities."
+  validation {
+    condition     = length(var.iam_entities_identifier) <= 36
+    error_message = "The iam_entities_identifier must be at most 36 characters long."
+  }
+}

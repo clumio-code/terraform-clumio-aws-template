@@ -425,7 +425,7 @@ data "aws_iam_policy_document" "clumio_ssm_notification_role_document" {
 #########################################################
 resource "aws_iam_instance_profile" "clumio_ec2_mssql_ssm_instance_profile" {
   count = var.is_ec2_mssql_enabled ? 1 : 0
-  name  = "Clumio-SSM-IP-${var.aws_region}-${var.clumio_token}"
+  name  = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-Clumio-SSM-IP-${var.aws_region}" : "Clumio-SSM-IP-${var.aws_region}-${var.clumio_token}"
   path  = var.path
   role  = aws_iam_role.clumio_ec2_mssql_ssm_instance_role_v2[0].name
 }
@@ -436,7 +436,7 @@ resource "aws_iam_role" "clumio_ec2_mssql_ssm_instance_role_v2" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name                 = "ClumioSSM-${var.aws_region}-${var.clumio_token}"
+  name                 = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioSSM-${var.aws_region}" : "ClumioSSM-${var.aws_region}-${var.clumio_token}"
   path                 = var.path
   permissions_boundary = var.permissions_boundary_arn
   tags                 = var.clumio_iam_role_tags
@@ -448,7 +448,7 @@ resource "aws_iam_role" "clumio_ssm_notification_role" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name                 = "ClumioSSMNotifRole-${lookup(local.region_map, var.aws_region, "")}-${var.clumio_token}"
+  name                 = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioSSMNotifRole-${lookup(local.region_map, var.aws_region, "")}" : "ClumioSSMNotifRole-${lookup(local.region_map, var.aws_region, "")}-${var.clumio_token}"
   path                 = var.path
   permissions_boundary = var.permissions_boundary_arn
   tags                 = var.clumio_iam_role_tags
@@ -683,7 +683,7 @@ resource "aws_iam_policy" "clumio_ec2_mssql_backup_restore_policy" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name   = "ClumioEC2MSSQLBackupRestorePolicy-${var.aws_region}-${var.clumio_token}"
+  name   = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioEC2MSSQLBackupRestorePolicy-${var.aws_region}" : "ClumioEC2MSSQLBackupRestorePolicy-${var.aws_region}-${var.clumio_token}"
   path   = var.path
   policy = data.aws_iam_policy_document.clumio_ec2_mssql_backup_restore_policy_document[0].json
 }

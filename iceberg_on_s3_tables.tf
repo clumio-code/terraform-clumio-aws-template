@@ -208,7 +208,7 @@ resource "aws_iam_policy" "clumio_iceberg_on_s3_tables_backup_policy" {
     time_sleep.wait_before_create
   ]
   description = "Clumio Managed IAM Policy for Iceberg on AWS S3 Tables Backup."
-  name        = "ClumioIcebergOnS3TablesBackupPolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioIcebergOnS3TablesBackupPolicy-${var.aws_region}" : "ClumioIcebergOnS3TablesBackupPolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_iceberg_on_s3_tables_backup_policy_document[0].json
 }
@@ -219,7 +219,7 @@ resource "aws_iam_policy" "clumio_iceberg_on_s3_tables_restore_policy" {
     time_sleep.wait_before_create
   ]
   description = "Clumio Managed IAM Policy for Iceberg on AWS S3 Tables Restore."
-  name        = "ClumioIcebergOnS3TablesRestorePolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioIcebergOnS3TablesRestorePolicy-${var.aws_region}" : "ClumioIcebergOnS3TablesRestorePolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_iceberg_on_s3_tables_restore_policy_document[0].json
 }

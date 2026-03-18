@@ -615,7 +615,7 @@ resource "aws_iam_policy" "clumio_rds_backup_policy" {
     time_sleep.wait_before_create
   ]
   description = "Grants access to Clumio for RDS Snap and SecureVault in-region and cross-region backups."
-  name        = "ClumioRdsBackupPolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioRdsBackupPolicy-${var.aws_region}" : "ClumioRdsBackupPolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_rds_backup_policy_document.json
 }
@@ -626,7 +626,7 @@ resource "aws_iam_policy" "clumio_rds_restore_policy" {
     time_sleep.wait_before_create
   ]
   description = "Grants access to Clumio for RDS Snap and SecureVault restores."
-  name        = "ClumioRdsRestorePolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioRdsRestorePolicy-${var.aws_region}" : "ClumioRdsRestorePolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_rds_restore_policy_document.json
 }

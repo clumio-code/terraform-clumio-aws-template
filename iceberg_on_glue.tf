@@ -233,7 +233,7 @@ resource "aws_iam_policy" "clumio_iceberg_on_glue_backup_policy" {
     time_sleep.wait_before_create
   ]
   description = "Clumio Managed IAM Policy for Iceberg on AWS Glue Backup."
-  name        = "ClumioIcebergOnGlueBackupPolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioIcebergOnGlueBackupPolicy-${var.aws_region}" : "ClumioIcebergOnGlueBackupPolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_iceberg_on_glue_backup_policy_document[0].json
 }
@@ -244,7 +244,7 @@ resource "aws_iam_policy" "clumio_iceberg_on_glue_restore_policy" {
     time_sleep.wait_before_create
   ]
   description = "Clumio Managed IAM Policy for Iceberg on AWS Glue Restore."
-  name        = "ClumioIcebergOnGlueRestorePolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioIcebergOnGlueRestorePolicy-${var.aws_region}" : "ClumioIcebergOnGlueRestorePolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_iceberg_on_glue_restore_policy_document[0].json
 }
