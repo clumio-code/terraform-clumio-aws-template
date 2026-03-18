@@ -1,4 +1,4 @@
-## 0.36.1
+## 0.37.0
 * Added `iam_entities_identifier` variable with a max 36-character validation constraint
 * Updated IAM policy and role names across all templates to prefix names with the custom identifier when provided, falling back to token-based naming otherwise
 * Updated configuration versions to latest
