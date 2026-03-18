@@ -852,7 +852,7 @@ resource "aws_iam_policy" "clumio_ec2_backup_policy" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name   = "ClumioEC2BackupPolicy-${var.aws_region}-${var.clumio_token}"
+  name   = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioEC2BackupPolicy-${var.aws_region}" : "ClumioEC2BackupPolicy-${var.aws_region}-${var.clumio_token}"
   path   = var.path
   policy = data.aws_iam_policy_document.clumio_ec2_backup_policy_document.json
 }
@@ -863,7 +863,7 @@ resource "aws_iam_policy" "clumio_ec2_restore_policy" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name   = "ClumioEC2RestorePolicy-${var.aws_region}-${var.clumio_token}"
+  name   = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioEC2RestorePolicy-${var.aws_region}" : "ClumioEC2RestorePolicy-${var.aws_region}-${var.clumio_token}"
   path   = var.path
   policy = data.aws_iam_policy_document.clumio_ec2_restore_policy_document.json
 }

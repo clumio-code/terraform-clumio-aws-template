@@ -277,7 +277,7 @@ resource "aws_iam_policy" "clumio_s3_backup_policy" {
     time_sleep.wait_before_create
   ]
   description = "Grants access to Clumio for S3 backup"
-  name        = "ClumioS3BackupPolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioS3BackupPolicy-${var.aws_region}" : "ClumioS3BackupPolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_s3_backup_policy_document[0].json
 }
@@ -288,14 +288,14 @@ resource "aws_iam_policy" "clumio_s3_restore_policy" {
     time_sleep.wait_before_create
   ]
   description = "Grants access to Clumio for S3 restore"
-  name        = "ClumioS3RestorePolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioS3RestorePolicy-${var.aws_region}" : "ClumioS3RestorePolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_s3_restore_policy_document[0].json
 }
 
 resource "aws_iam_policy" "clumio_s3_continuous_backup_event_bridge_policy" {
   count  = var.is_s3_enabled ? 1 : 0
-  name   = "ClumioS3EbPolicy-${var.aws_account_id}-${var.aws_region}-${var.clumio_token}"
+  name   = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioS3EbPolicy-${var.aws_region}" : "ClumioS3EbPolicy-${var.aws_account_id}-${var.aws_region}-${var.clumio_token}"
   policy = data.aws_iam_policy_document.clumio_s3_continuous_backup_event_bridge_policy_document.json
 }
 
@@ -305,7 +305,7 @@ resource "aws_iam_role" "clumio_s3_continuous_backup_event_bridge_role" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name                 = "ClumioS3EbRole-${lookup(local.region_map, var.aws_region, "")}-${var.clumio_token}"
+  name                 = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioS3EbRole-${lookup(local.region_map, var.aws_region, "")}" : "ClumioS3EbRole-${lookup(local.region_map, var.aws_region, "")}-${var.clumio_token}"
   path                 = var.path
   permissions_boundary = var.permissions_boundary_arn
   tags                 = var.clumio_iam_role_tags

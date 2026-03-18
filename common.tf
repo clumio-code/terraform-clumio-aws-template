@@ -9,6 +9,9 @@ locals {
     intermediate_role = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerSupportRole"
     root              = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:root"
   }
+
+  # Custom IAM entities configuration
+  specified_custom_iam_identifier = var.iam_entities_identifier != ""
 }
 
 locals {
@@ -931,7 +934,7 @@ resource "aws_cloudwatch_event_target" "clumio_tag_event_rule_target" {
 # The base Clumio policy
 resource "aws_iam_policy" "clumio_base_managed_policy" {
   count  = 1
-  name   = "ClumioBaseManagedPolicy-${var.aws_region}-${var.clumio_token}"
+  name   = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioBaseManagedPolicy-${var.aws_region}" : "ClumioBaseManagedPolicy-${var.aws_region}-${var.clumio_token}"
   path   = var.path
   policy = data.aws_iam_policy_document.clumio_base_managed_policy_document.json
 }
@@ -941,7 +944,7 @@ resource "aws_iam_role" "clumio_iam_role" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name                 = "ClumioIAMRole-${lookup(local.region_map, var.aws_region, "")}-${var.clumio_token}"
+  name                 = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioIAMRole-${lookup(local.region_map, var.aws_region, "")}" : "ClumioIAMRole-${lookup(local.region_map, var.aws_region, "")}-${var.clumio_token}"
   path                 = var.path
   permissions_boundary = var.permissions_boundary_arn
   tags                 = var.clumio_iam_role_tags
@@ -953,7 +956,7 @@ resource "aws_iam_role" "clumio_support_role" {
   depends_on = [
     time_sleep.wait_before_create
   ]
-  name                 = "ClumioSuppt-${var.aws_region}-${var.clumio_token}"
+  name                 = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioSuppt-${var.aws_region}" : "ClumioSuppt-${var.aws_region}-${var.clumio_token}"
   path                 = var.path
   permissions_boundary = var.permissions_boundary_arn
   tags                 = var.clumio_iam_role_tags
@@ -1028,7 +1031,7 @@ resource "aws_sns_topic_policy" "clumio_event_pub_policy" {
 resource "clumio_post_process_aws_connection" "clumio_callback" {
   account_id          = var.aws_account_id
   clumio_event_pub_id = aws_sns_topic.clumio_event_pub.arn
-  config_version      = "4.6"
+  config_version      = "5.1"
   depends_on = [
     aws_iam_role.clumio_iam_role,
     time_sleep.wait_30_seconds_for_iam_propagation,
@@ -1087,7 +1090,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     aws_cloudwatch_event_target.clumio_iceberg_on_glue_cloudtrail_event_rule_target,
     aws_cloudwatch_event_target.clumio_iceberg_on_s3_tables_cloudtrail_event_rule_target
   ]
-  discover_version      = "4.6"
+  discover_version      = "5.1"
   intermediate_role_arn = "arn:${local.partition}:iam::${var.clumio_aws_account_id}:role/ClumioCustomerProtectRole"
   properties = {
     "ClumioS3ContinuousBackupEventBridgeRoleArn" : var.is_s3_enabled ? aws_iam_role.clumio_s3_continuous_backup_event_bridge_role[0].arn : "",
@@ -1098,16 +1101,16 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "CreateClumioInventoryTopicEncryptionKey" : var.create_clumio_inventory_sns_topic_encryption_key,
     "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
-  protect_config_version               = "25.1"
-  protect_dynamodb_version             = var.is_dynamodb_enabled ? "7.5" : ""
-  protect_ebs_version                  = var.is_ebs_enabled ? "25.5" : ""
-  protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "4.4" : ""
-  protect_rds_version                  = var.is_rds_enabled ? "21.1" : ""
-  protect_s3_version                   = var.is_s3_enabled ? "7.6" : ""
-  protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "6.1" : ""
+  protect_config_version               = "26.0"
+  protect_dynamodb_version             = var.is_dynamodb_enabled ? "8.0" : ""
+  protect_ebs_version                  = var.is_ebs_enabled ? "27.0" : ""
+  protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "5.0" : ""
+  protect_rds_version                  = var.is_rds_enabled ? "23.0" : ""
+  protect_s3_version                   = var.is_s3_enabled ? "9.0" : ""
+  protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "8.0" : ""
   protect_warm_tier_version            = var.is_dynamodb_enabled ? "1.1" : ""
-  protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "1.0" : ""
-  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "1.0" : ""
+  protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "2.0" : ""
+  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "2.0" : ""
   region                               = var.aws_region
   role_arn                             = aws_iam_role.clumio_iam_role.arn
   role_external_id                     = var.role_external_id

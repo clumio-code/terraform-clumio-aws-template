@@ -445,7 +445,7 @@ resource "aws_iam_policy" "clumio_dynamodb_backup_policy" {
     time_sleep.wait_before_create
   ]
   description = "Grants access to Clumio for DynamoDB Backups."
-  name        = "ClumioDynamoDbBackupPolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioDynamoDbBackupPolicy-${var.aws_region}" : "ClumioDynamoDbBackupPolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_dynamodb_backup_policy_document.json
 }
@@ -457,7 +457,7 @@ resource "aws_iam_policy" "clumio_dynamodb_restore_policy" {
     time_sleep.wait_before_create
   ]
   description = "Grants access to Clumio for DynamoDB Restores."
-  name        = "ClumioDynamoDbRestorePolicy-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioDynamoDbRestorePolicy-${var.aws_region}" : "ClumioDynamoDbRestorePolicy-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_dynamodb_restore_policy_document.json
 }
@@ -469,7 +469,7 @@ resource "aws_iam_policy" "clumio_iam_permissions_boundary" {
     time_sleep.wait_before_create
   ]
   description = "Enforces a permissions boundary for roles created by Clumio."
-  name        = "ClumioIAMPermissionsBoundary-${var.aws_region}-${var.clumio_token}"
+  name        = local.specified_custom_iam_identifier ? "${var.iam_entities_identifier}-ClumioIAMPermissionsBoundary-${var.aws_region}" : "ClumioIAMPermissionsBoundary-${var.aws_region}-${var.clumio_token}"
   path        = var.path
   policy      = data.aws_iam_policy_document.clumio_iam_permissions_boundary_document[0].json
 }
