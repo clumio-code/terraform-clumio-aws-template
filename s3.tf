@@ -159,6 +159,11 @@ data "aws_iam_policy_document" "clumio_s3_continuous_backup_event_bridge_role_do
       ]
       type = "Service"
     }
+    condition {
+      test     = "StringEquals"
+      values   = [var.aws_account_id]
+      variable = "AWS:SourceAccount"
+    }
     sid = "AllowEventBridgeAssumeRole"
   }
 }

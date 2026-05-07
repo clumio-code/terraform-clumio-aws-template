@@ -1,3 +1,10 @@
+## 0.38.0
+* Improved RDS restore support for validating and restoring parameter group configurations.
+* Tightened S3 continuous backup role trust conditions.
+* Added required S3 Tables tag permissions for Iceberg on S3 Tables.
+* Reduced Iceberg backup bucket-listing permissions.
+* Changed the Clumio provider version required to >=0.19.0, <0.21.0.
+
 ## 0.37.1
 * Updated version constraint for the module
 

@@ -41,8 +41,8 @@ locals {
 }
 
 locals {
-  should_create_tag_event_rule = var.is_ebs_enabled || var.is_dynamodb_enabled || var.is_rds_enabled || var.is_s3_enabled
-  tag_event_rule_data_sources  = jsonencode(compact(concat(var.is_ebs_enabled ? ["ebs", "ec2"] : [""], var.is_rds_enabled ? ["rds"] : [""], var.is_dynamodb_enabled ? ["dynamodb"] : [""], var.is_s3_enabled ? ["s3"] : [""])))
+  should_create_tag_event_rule = var.is_ebs_enabled || var.is_dynamodb_enabled || var.is_rds_enabled || var.is_s3_enabled || var.is_iceberg_on_s3_tables_enabled
+  tag_event_rule_data_sources  = jsonencode(compact(concat(var.is_ebs_enabled ? ["ebs", "ec2"] : [""], var.is_rds_enabled ? ["rds"] : [""], var.is_dynamodb_enabled ? ["dynamodb"] : [""], var.is_s3_enabled ? ["s3"] : [""], var.is_iceberg_on_s3_tables_enabled ? ["s3tables"] : [""])))
   tag_event_rule_event_pattern = format("{\"detail\":{\"service\":%s},\"source\":[\"aws.tag\"]}", local.tag_event_rule_data_sources)
 }
 
@@ -783,6 +783,7 @@ data "aws_iam_policy_document" "clumio_inventory_policy_document" {
         "s3tables:GetTable",
         "s3tables:ListTables",
         "s3tables:GetTableMetadataLocation",
+        "s3tables:ListTagsForResource",
         "s3tables:GetTableMaintenanceConfiguration"
       ]
       effect = "Allow"
@@ -1106,11 +1107,11 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
   protect_ebs_version                  = var.is_ebs_enabled ? "27.0" : ""
   protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "5.0" : ""
   protect_rds_version                  = var.is_rds_enabled ? "23.0" : ""
-  protect_s3_version                   = var.is_s3_enabled ? "9.0" : ""
+  protect_s3_version                   = var.is_s3_enabled ? "9.1" : ""
   protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "8.0" : ""
   protect_warm_tier_version            = var.is_dynamodb_enabled ? "1.1" : ""
-  protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "2.0" : ""
-  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "2.0" : ""
+  protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "3.0" : ""
+  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "3.0" : ""
   region                               = var.aws_region
   role_arn                             = aws_iam_role.clumio_iam_role.arn
   role_external_id                     = var.role_external_id
