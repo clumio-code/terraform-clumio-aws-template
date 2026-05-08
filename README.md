@@ -100,14 +100,14 @@ module "clumio_aws_connection_module" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.18.0, <0.20.0 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.19.0, <0.21.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.18.0, <0.20.0 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.19.0, <0.21.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | n/a |
 
 ## Modules

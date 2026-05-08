@@ -330,13 +330,17 @@ data "aws_iam_policy_document" "clumio_rds_restore_policy_document" {
     sid = "RestoreInstancesInACluster"
   }
 
-  # Required to restore the parameter group configuration.
+  # Required to validate and restore the RDS parameter group configuration.
   statement {
     actions = [
-      "rds:CreateDBParameterGroup"
+      "rds:CreateDBClusterParameterGroup",
+      "rds:CreateDBParameterGroup",
+      "rds:DescribeDBClusterParameterGroups",
+      "rds:DescribeDBParameterGroups",
     ]
     effect = "Allow"
     resources = [
+      "arn:${local.partition}:rds:*:${var.aws_account_id}:cluster-pg:*",
       "arn:${local.partition}:rds:*:${var.aws_account_id}:pg:*"
     ]
     sid = "RestoreParameterGroups"

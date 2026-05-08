@@ -5,9 +5,6 @@ data "aws_iam_policy_document" "clumio_iceberg_on_glue_backup_policy_document" {
   statement {
     actions = [
       "s3:GetObject",
-      "s3:ListBucket",
-      "s3:ListBucketVersions",
-      "s3:ListBucketMultipartUploads",
       "s3:PutObject",
       "s3:AbortMultipartUpload",
     ]
@@ -34,9 +31,6 @@ data "aws_iam_policy_document" "clumio_iceberg_on_glue_backup_policy_document" {
   statement {
     actions = [
       "s3:GetObject",
-      "s3:ListBucket",
-      "s3:ListBucketVersions",
-      "s3:ListBucketMultipartUploads"
     ]
 
     condition {
