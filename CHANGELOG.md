@@ -1,3 +1,6 @@
+## 0.38.1
+* Changed the Clumio provider version required to >=0.20.0, <0.22.0.
+
 ## 0.38.0
 * Improved RDS restore support for validating and restoring parameter group configurations.
 * Tightened S3 continuous backup role trust conditions.
