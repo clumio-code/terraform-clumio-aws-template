@@ -51,7 +51,7 @@ variable "is_ec2_mssql_enabled" {
 }
 
 variable "is_rds_enabled" {
-  description = "Flag to indicate if Clumio Protect and Discover for RDS are enabled"
+  description = "Flag to indicate if Clumio Protect and Discover for RDS are enabled. The IAM permissions granted by this flag are also used by Clumio Protect and Discover for DocumentDB and Neptune, since those services share the RDS API."
   type        = bool
   default     = false
 }
