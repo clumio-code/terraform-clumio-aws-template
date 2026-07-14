@@ -46,6 +46,8 @@ module "clumio_aws_connection_module" {
 
 An additional `is_ec2_mssql_enable` flag is supported for legacy connections. Please contact the Support Team if you need assistance with enabling it.
 
+Note: The IAM permissions granted when `is_rds_enabled` is set to `true` are also shared by Clumio Protect and Discover for DocumentDB and Neptune, since both services use the underlying RDS API. No separate flag is needed to grant these permissions for DocumentDB and Neptune.
+
 ## Upgrading module
 Run the following terraform commands to upgrade from a older version of the module.
 ```terraform
@@ -284,7 +286,7 @@ No modules.
 | <a name="input_is_ec2_mssql_enabled"></a> [is\_ec2\_mssql\_enabled](#input\_is\_ec2\_mssql\_enabled) | Flag to indicate if Clumio Protect and Discover for Mssql on EC2 are enabled | `bool` | `false` | no |
 | <a name="input_is_iceberg_on_glue_enabled"></a> [is\_iceberg\_on\_glue\_enabled](#input\_is\_iceberg\_on\_glue\_enabled) | Flag to indicate if Clumio Protect for Iceberg on Glue is enabled | `bool` | `false` | no |
 | <a name="input_is_iceberg_on_s3_tables_enabled"></a> [is\_iceberg\_on\_s3\_tables\_enabled](#input\_is\_iceberg\_on\_s3\_tables\_enabled) | Flag to indicate if Clumio Protect for Iceberg on S3 Tables is enabled | `bool` | `false` | no |
-| <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect and Discover for RDS are enabled | `bool` | `false` | no |
+| <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect and Discover for RDS are enabled. The IAM permissions granted by this flag are also used by Clumio Protect and Discover for DocumentDB and Neptune, since those services share the RDS API. | `bool` | `false` | no |
 | <a name="input_is_s3_enabled"></a> [is\_s3\_enabled](#input\_is\_s3\_enabled) | Flag to indicate if Clumio Protect and Discover for S3 are enabled | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | Value of path set on the AWS IAM roles, policies and instance\_profile resources of the module. If not specified the default value is /clumio/. | `string` | `"/clumio/"` | no |
 | <a name="input_permissions_boundary_arn"></a> [permissions\_boundary\_arn](#input\_permissions\_boundary\_arn) | ARN of the permissions boundary to be set on Clumio Roles. | `string` | `""` | no |
