@@ -1,3 +1,7 @@
+## 0.38.3
+* Removed references to the deprecated Clumio Discover service from the data source flag descriptions.
+* Regenerated the module documentation, which also refreshes the provider version constraint shown in the README.
+
 ## 0.38.2
 * Changed the Clumio provider version required to >=0.21.0, <0.23.0.
 
