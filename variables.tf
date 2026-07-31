@@ -33,31 +33,31 @@ variable "data_plane_account_id" {
 }
 
 variable "is_dynamodb_enabled" {
-  description = "Flag to indicate if Clumio Protect and Discover for DynamoDB are enabled"
+  description = "Flag to indicate if Clumio Protect for DynamoDB is enabled"
   type        = bool
   default     = false
 }
 
 variable "is_ebs_enabled" {
-  description = "Flag to indicate if Clumio Protect and Discover for EBS are enabled"
+  description = "Flag to indicate if Clumio Protect for EBS is enabled"
   type        = bool
   default     = false
 }
 
 variable "is_ec2_mssql_enabled" {
-  description = "Flag to indicate if Clumio Protect and Discover for Mssql on EC2 are enabled"
+  description = "Flag to indicate if Clumio Protect for Mssql on EC2 is enabled"
   type        = bool
   default     = false
 }
 
 variable "is_rds_enabled" {
-  description = "Flag to indicate if Clumio Protect and Discover for RDS are enabled. The IAM permissions granted by this flag are also used by Clumio Protect and Discover for DocumentDB and Neptune, since those services share the RDS API."
+  description = "Flag to indicate if Clumio Protect for RDS is enabled. The IAM permissions granted by this flag are also used by Clumio Protect for DocumentDB and Neptune, since those services share the RDS API."
   type        = bool
   default     = false
 }
 
 variable "is_s3_enabled" {
-  description = "Flag to indicate if Clumio Protect and Discover for S3 are enabled"
+  description = "Flag to indicate if Clumio Protect for S3 is enabled"
   type        = bool
   default     = false
 }
