@@ -46,7 +46,7 @@ module "clumio_aws_connection_module" {
 
 An additional `is_ec2_mssql_enable` flag is supported for legacy connections. Please contact the Support Team if you need assistance with enabling it.
 
-Note: The IAM permissions granted when `is_rds_enabled` is set to `true` are also shared by Clumio Protect and Discover for DocumentDB and Neptune, since both services use the underlying RDS API. No separate flag is needed to grant these permissions for DocumentDB and Neptune.
+Note: The IAM permissions granted when `is_rds_enabled` is set to `true` are also shared by Clumio Protect for DocumentDB and Neptune, since both services use the underlying RDS API. No separate flag is needed to grant these permissions for DocumentDB and Neptune.
 
 ## Upgrading module
 Run the following terraform commands to upgrade from a older version of the module.
@@ -102,14 +102,14 @@ module "clumio_aws_connection_module" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.20.0, <0.22.0 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.21.0, <0.23.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.20.0, <0.22.0 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.21.0, <0.23.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | n/a |
 
 ## Modules
@@ -281,13 +281,13 @@ No modules.
 | <a name="input_create_clumio_inventory_sns_topic_encryption_key"></a> [create\_clumio\_inventory\_sns\_topic\_encryption\_key](#input\_create\_clumio\_inventory\_sns\_topic\_encryption\_key) | Indicates that a KMS Key must be created and associated with the Clumio Inventory SNS topic. | `bool` | `false` | no |
 | <a name="input_data_plane_account_id"></a> [data\_plane\_account\_id](#input\_data\_plane\_account\_id) | Allow only one role in clumio control plane to assume the ClumioIAMRole in customer's account. | `string` | `"*"` | no |
 | <a name="input_iam_entities_identifier"></a> [iam\_entities\_identifier](#input\_iam\_entities\_identifier) | Custom identifier used to label IAM entities (Roles and Managed Policies) created for the Clumio integration. Note that changing this value will trigger replacement of the associated IAM entities. | `string` | `""` | no |
-| <a name="input_is_dynamodb_enabled"></a> [is\_dynamodb\_enabled](#input\_is\_dynamodb\_enabled) | Flag to indicate if Clumio Protect and Discover for DynamoDB are enabled | `bool` | `false` | no |
-| <a name="input_is_ebs_enabled"></a> [is\_ebs\_enabled](#input\_is\_ebs\_enabled) | Flag to indicate if Clumio Protect and Discover for EBS are enabled | `bool` | `false` | no |
-| <a name="input_is_ec2_mssql_enabled"></a> [is\_ec2\_mssql\_enabled](#input\_is\_ec2\_mssql\_enabled) | Flag to indicate if Clumio Protect and Discover for Mssql on EC2 are enabled | `bool` | `false` | no |
+| <a name="input_is_dynamodb_enabled"></a> [is\_dynamodb\_enabled](#input\_is\_dynamodb\_enabled) | Flag to indicate if Clumio Protect for DynamoDB is enabled | `bool` | `false` | no |
+| <a name="input_is_ebs_enabled"></a> [is\_ebs\_enabled](#input\_is\_ebs\_enabled) | Flag to indicate if Clumio Protect for EBS is enabled | `bool` | `false` | no |
+| <a name="input_is_ec2_mssql_enabled"></a> [is\_ec2\_mssql\_enabled](#input\_is\_ec2\_mssql\_enabled) | Flag to indicate if Clumio Protect for Mssql on EC2 is enabled | `bool` | `false` | no |
 | <a name="input_is_iceberg_on_glue_enabled"></a> [is\_iceberg\_on\_glue\_enabled](#input\_is\_iceberg\_on\_glue\_enabled) | Flag to indicate if Clumio Protect for Iceberg on Glue is enabled | `bool` | `false` | no |
 | <a name="input_is_iceberg_on_s3_tables_enabled"></a> [is\_iceberg\_on\_s3\_tables\_enabled](#input\_is\_iceberg\_on\_s3\_tables\_enabled) | Flag to indicate if Clumio Protect for Iceberg on S3 Tables is enabled | `bool` | `false` | no |
-| <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect and Discover for RDS are enabled. The IAM permissions granted by this flag are also used by Clumio Protect and Discover for DocumentDB and Neptune, since those services share the RDS API. | `bool` | `false` | no |
-| <a name="input_is_s3_enabled"></a> [is\_s3\_enabled](#input\_is\_s3\_enabled) | Flag to indicate if Clumio Protect and Discover for S3 are enabled | `bool` | `false` | no |
+| <a name="input_is_rds_enabled"></a> [is\_rds\_enabled](#input\_is\_rds\_enabled) | Flag to indicate if Clumio Protect for RDS is enabled. The IAM permissions granted by this flag are also used by Clumio Protect for DocumentDB and Neptune, since those services share the RDS API. | `bool` | `false` | no |
+| <a name="input_is_s3_enabled"></a> [is\_s3\_enabled](#input\_is\_s3\_enabled) | Flag to indicate if Clumio Protect for S3 is enabled | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | Value of path set on the AWS IAM roles, policies and instance\_profile resources of the module. If not specified the default value is /clumio/. | `string` | `"/clumio/"` | no |
 | <a name="input_permissions_boundary_arn"></a> [permissions\_boundary\_arn](#input\_permissions\_boundary\_arn) | ARN of the permissions boundary to be set on Clumio Roles. | `string` | `""` | no |
 | <a name="input_role_external_id"></a> [role\_external\_id](#input\_role\_external\_id) | A key that must be used by Clumio to assume the service role in your account. This should be a secure string, like a password, but it does not need to be remembered (random characters are best). | `string` | n/a | yes |
