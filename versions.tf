@@ -3,7 +3,7 @@ terraform {
     aws = {}
     clumio = {
       source  = "clumio-code/clumio"
-      version = ">=0.21.0, <0.23.0"
+      version = ">=0.22.0, <0.24.0"
     }
   }
 }
