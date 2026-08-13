@@ -31,6 +31,7 @@ data "aws_iam_policy_document" "clumio_iceberg_on_glue_backup_policy_document" {
   statement {
     actions = [
       "s3:GetObject",
+      "s3:GetBucketLocation",
     ]
 
     condition {
@@ -115,6 +116,9 @@ data "aws_iam_policy_document" "clumio_iceberg_on_glue_restore_policy_document" 
       "glue:GetTable",
       "glue:CreateTable",
       "glue:UpdateTable",
+      "glue:UpdateColumnStatisticsForTable",
+      "glue:GetColumnStatisticsForTable",
+      "glue:DeleteColumnStatisticsForTable",
       "glue:GetTableOptimizer",
       "glue:CreateTableOptimizer",
       "glue:GetDatabase",

@@ -42,8 +42,20 @@ locals {
 
 locals {
   should_create_tag_event_rule = var.is_ebs_enabled || var.is_dynamodb_enabled || var.is_rds_enabled || var.is_s3_enabled || var.is_iceberg_on_s3_tables_enabled
-  tag_event_rule_data_sources  = jsonencode(compact(concat(var.is_ebs_enabled ? ["ebs", "ec2"] : [""], var.is_rds_enabled ? ["rds"] : [""], var.is_dynamodb_enabled ? ["dynamodb"] : [""], var.is_s3_enabled ? ["s3"] : [""], var.is_iceberg_on_s3_tables_enabled ? ["s3tables"] : [""])))
-  tag_event_rule_event_pattern = format("{\"detail\":{\"service\":%s},\"source\":[\"aws.tag\"]}", local.tag_event_rule_data_sources)
+  tag_event_rule_services      = compact(concat(var.is_ebs_enabled ? ["ec2"] : [""], var.is_rds_enabled ? ["rds"] : [""], var.is_dynamodb_enabled ? ["dynamodb"] : [""], var.is_s3_enabled ? ["s3"] : [""], var.is_iceberg_on_s3_tables_enabled ? ["s3tables"] : [""]))
+  tag_event_rule_resource_types = distinct(concat(
+    var.is_ebs_enabled ? ["instance", "image", "volume", "snapshot", ""] : [],
+    var.is_rds_enabled ? ["db", "cluster", "snapshot", "cluster-snapshot", ""] : [],
+    var.is_dynamodb_enabled ? ["table", ""] : [],
+    var.is_s3_enabled ? ["", "bucket"] : [],
+  var.is_iceberg_on_s3_tables_enabled ? ["bucket", ""] : []))
+  tag_event_rule_event_pattern = jsonencode({
+    "detail" : {
+      "service" : local.tag_event_rule_services,
+      "resource-type" : concat(local.tag_event_rule_resource_types, [{ "exists" : false }]),
+    },
+    "source" : ["aws.tag"],
+  })
 }
 
 data "aws_caller_identity" "current" {
@@ -1103,15 +1115,15 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
     "ClumioInventoryTopicEncryptionKey" : var.clumio_inventory_sns_topic_encryption_key
   }
   protect_config_version               = "26.0"
-  protect_dynamodb_version             = var.is_dynamodb_enabled ? "8.0" : ""
-  protect_ebs_version                  = var.is_ebs_enabled ? "27.0" : ""
+  protect_dynamodb_version             = var.is_dynamodb_enabled ? "8.1" : ""
+  protect_ebs_version                  = var.is_ebs_enabled ? "27.1" : ""
   protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "5.0" : ""
-  protect_rds_version                  = var.is_rds_enabled ? "23.0" : ""
-  protect_s3_version                   = var.is_s3_enabled ? "9.1" : ""
-  protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "8.0" : ""
+  protect_rds_version                  = var.is_rds_enabled ? "23.2" : ""
+  protect_s3_version                   = var.is_s3_enabled ? "9.2" : ""
+  protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "8.1" : ""
   protect_warm_tier_version            = var.is_dynamodb_enabled ? "1.1" : ""
-  protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "3.0" : ""
-  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "3.0" : ""
+  protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "4.0" : ""
+  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "3.1" : ""
   region                               = var.aws_region
   role_arn                             = aws_iam_role.clumio_iam_role.arn
   role_external_id                     = var.role_external_id

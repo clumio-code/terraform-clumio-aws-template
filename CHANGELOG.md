@@ -1,3 +1,9 @@
+## 0.39.0
+* Added Glue column statistics and S3 bucket location permissions for Iceberg on AWS Glue.
+* Restricted the tag-change event rule to the resource types of the enabled data sources.
+* Changed the Clumio provider version required to >=0.22.0, <0.24.0.
+* Marked the API token variable in the example as sensitive.
+
 ## 0.38.3
 * Improved documentation for module variables.
 
