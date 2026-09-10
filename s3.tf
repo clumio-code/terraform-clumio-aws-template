@@ -145,6 +145,17 @@ data "aws_iam_policy_document" "clumio_s3_continuous_backup_event_bridge_policy_
     ]
     sid = "AllowPutEvents"
   }
+  # Allow for Customer events to be delivered directly to the arena SQS event queues
+  statement {
+    actions = [
+      "sqs:SendMessage"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:sqs:*:${var.data_plane_account_id}:daebak_event_*"
+    ]
+    sid = "AllowSendMessage"
+  }
 }
 
 data "aws_iam_policy_document" "clumio_s3_continuous_backup_event_bridge_role_document" {

@@ -1,16 +1,28 @@
 variable "aws_account_id" {
   description = "Client AWS Account Id."
   type        = string
+  validation {
+    condition     = can(regex("^[0-9]{12}$", var.aws_account_id))
+    error_message = "The aws_account_id must be a 12-digit AWS account id."
+  }
 }
 
 variable "aws_region" {
   description = "AWS Region."
   type        = string
+  validation {
+    condition     = can(regex("^[a-z]{2,4}(-[a-z]+)+-[0-9]$", var.aws_region))
+    error_message = "The aws_region must be a valid AWS region, for example us-west-2."
+  }
 }
 
 variable "clumio_aws_account_id" {
   description = "Clumio Control Plane Account Id."
   type        = string
+  validation {
+    condition     = can(regex("^[0-9]{12}$", var.clumio_aws_account_id))
+    error_message = "The clumio_aws_account_id must be a 12-digit AWS account id."
+  }
 }
 
 variable "clumio_iam_role_tags" {
@@ -24,6 +36,7 @@ variable "clumio_iam_role_tags" {
 variable "clumio_token" {
   description = "The AWS integration ID token."
   type        = string
+  sensitive   = true
 }
 
 variable "data_plane_account_id" {
@@ -95,6 +108,7 @@ variable "permissions_boundary_arn" {
 variable "role_external_id" {
   description = "A key that must be used by Clumio to assume the service role in your account. This should be a secure string, like a password, but it does not need to be remembered (random characters are best)."
   type        = string
+  sensitive   = true
 }
 
 variable "wait_for_data_plane_resources" {
