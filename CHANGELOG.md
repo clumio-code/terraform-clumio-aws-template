@@ -1,3 +1,9 @@
+## 0.40.0
+* Allowed the customer event rule to deliver events directly to the Clumio event queues.
+* Added input validation for the account, region, and Clumio account variables and marked `clumio_token` and `role_external_id` as sensitive.
+* Pinned the AWS and time providers and set the minimum Terraform version to 1.0.
+* Changed the Clumio provider version required to >=0.22.0, <0.25.0.
+
 ## 0.39.0
 * Added Glue column statistics and S3 bucket location permissions for Iceberg on AWS Glue.
 * Restricted the tag-change event rule to the resource types of the enabled data sources.
