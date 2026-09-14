@@ -102,15 +102,18 @@ module "clumio_aws_connection_module" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.22.0, <0.24.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
+| <a name="requirement_clumio"></a> [clumio](#requirement\_clumio) | >=0.22.0, <0.25.0 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.22.0, <0.24.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0 |
+| <a name="provider_clumio"></a> [clumio](#provider\_clumio) | >=0.22.0, <0.25.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 
 ## Modules
 

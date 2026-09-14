@@ -1119,7 +1119,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
   protect_ebs_version                  = var.is_ebs_enabled ? "27.1" : ""
   protect_ec2_mssql_version            = var.is_ec2_mssql_enabled ? "5.0" : ""
   protect_rds_version                  = var.is_rds_enabled ? "23.2" : ""
-  protect_s3_version                   = var.is_s3_enabled ? "9.2" : ""
+  protect_s3_version                   = var.is_s3_enabled ? "9.3" : ""
   protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "8.1" : ""
   protect_warm_tier_version            = var.is_dynamodb_enabled ? "1.1" : ""
   protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "4.0" : ""
