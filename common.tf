@@ -1136,7 +1136,7 @@ resource "clumio_post_process_aws_connection" "clumio_callback" {
   protect_warm_tier_dynamodb_version   = var.is_dynamodb_enabled ? "8.1" : ""
   protect_warm_tier_version            = var.is_dynamodb_enabled ? "1.1" : ""
   protect_iceberg_on_glue_version      = var.is_iceberg_on_glue_enabled ? "4.0" : ""
-  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "3.1" : ""
+  protect_iceberg_on_s3_tables_version = var.is_iceberg_on_s3_tables_enabled ? "3.2" : ""
   region                               = var.aws_region
   role_arn                             = aws_iam_role.clumio_iam_role.arn
   role_external_id                     = var.role_external_id
