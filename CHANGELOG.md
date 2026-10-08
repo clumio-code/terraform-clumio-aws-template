@@ -1,3 +1,6 @@
+## 0.42.0
+* Added the S3 Tables bucket maintenance configuration and tagging permissions for Iceberg on S3 Tables.
+
 ## 0.41.0
 * Added region short names for af-south-1, ap-east-2, ap-south-2, ap-southeast-3 through ap-southeast-7, ca-west-1, eu-south-1, il-central-1, me-central-1, and mx-central-1.
 

@@ -139,7 +139,10 @@ data "aws_iam_policy_document" "clumio_iceberg_on_s3_tables_restore_policy_docum
       "s3tables:GetTableMetadataLocation",
       "s3tables:UpdateTableMetadataLocation",
       "s3tables:GetTableMaintenanceConfiguration",
-      "s3tables:PutTableMaintenanceConfiguration"
+      "s3tables:PutTableMaintenanceConfiguration",
+      "s3tables:GetTableBucketMaintenanceConfiguration",
+      "s3tables:PutTableBucketMaintenanceConfiguration",
+      "s3tables:TagResource"
     ]
 
     condition {
