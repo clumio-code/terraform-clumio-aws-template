@@ -7,7 +7,7 @@ terraform {
     }
     clumio = {
       source  = "clumio-code/clumio"
-      version = ">=0.22.0, <0.25.0"
+      version = ">=0.22.0, <0.26.0"
     }
     time = {
       source  = "hashicorp/time"
