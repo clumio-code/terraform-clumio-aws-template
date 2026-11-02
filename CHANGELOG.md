@@ -1,3 +1,6 @@
+## 0.42.1
+* Changed the Clumio provider version required to >=0.22.0, <0.26.0.
+
 ## 0.42.0
 * Added the S3 Tables bucket maintenance configuration and tagging permissions for Iceberg on S3 Tables.
 
