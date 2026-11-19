@@ -440,12 +440,12 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     resources = [
       "arn:${local.partition}:ec2:${var.aws_region}:${var.aws_account_id}:instance/*"
     ]
-    sid = "DetachVolumeFromClumioRestoredInstance"
+    sid = "DetachFromRestoredInstance"
   }
 
   # Allow attach detach any volume as Clumio restore has the capability to attach/detach pre-existing volumes
   # in the account to the restored instance. However, the restore operation can detach volumes only
-  # from Clumio restored instances as per the statement DetachVolumeFromClumioRestoredInstance.
+  # from Clumio restored instances as per the statement DetachFromRestoredInstance.
   statement {
     actions = [
       "ec2:AttachVolume",
@@ -693,7 +693,7 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
     resources = [
       "arn:${local.partition}:iam::${var.aws_account_id}:role/*"
     ]
-    sid = "AssignClumioDataProtectionInstanceRole"
+    sid = "PassRoleToEc2"
   }
 
   # **** EBS/EC2 Read Operations ****
@@ -753,6 +753,27 @@ data "aws_iam_policy_document" "clumio_ec2_restore_policy_document" {
       "*"
     ]
     sid = "EC2DescribeOperations"
+  }
+
+  # Clumio restore launches or starts instances whose volumes may be encrypted with a customer
+  # managed KMS key. EC2 then creates a grant on that key on behalf of the caller.
+  # Allow CreateGrant only when an AWS service such as EC2 makes the call on Clumio's behalf.
+  statement {
+    actions = [
+      "kms:CreateGrant"
+    ]
+    condition {
+      test = "Bool"
+      values = [
+        "true"
+      ]
+      variable = "kms:GrantIsForAWSResource"
+    }
+    effect = "Allow"
+    resources = [
+      "arn:${local.partition}:kms:*:*:key/*"
+    ]
+    sid = "KmsGrant"
   }
 }
 
