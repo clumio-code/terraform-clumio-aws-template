@@ -1,3 +1,7 @@
+## 0.43.0
+* Allowed Clumio restore to create grants on customer managed KMS keys through AWS services such as EC2.
+* Updated the EBS protection version to 27.2.
+
 ## 0.42.1
 * Changed the Clumio provider version required to >=0.22.0, <0.26.0.
 
